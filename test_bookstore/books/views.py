@@ -27,3 +27,8 @@ def simple_upload(request):
             'uploaded_file_url': uploaded_file_url
         })
     return render(request, 'simple_upload.html')
+
+def onixfile(request):
+    documents = Document.objects.all()
+    print(request)
+    return render(request, 'onixfile.html', {'documents': documents})
