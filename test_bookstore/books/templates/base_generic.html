@@ -75,6 +75,7 @@
                 #li a {
                 color:orange;
                 }
+                
             </style>
     
         <script type="text/javascript" async="" src="//static.getclicky.com/js"></script>
@@ -100,16 +101,14 @@
                     <img class="navbar-logo navbar-logo-lg visible-lg" src="https://draft2digital-prod-static.s3.amazonaws.com/img/outer/d2d-logo-dark.png">
                     <img class="navbar-logo navbar-logo-sm visible-md visible-sm" src="https://draft2digital-prod-static.s3.amazonaws.com/img/outer/d2d-logo-dark-sm.png">
                 </a>
-                <button type="button" style="margin: inherit">
-                    <li style="text-align: center;"><a href="{% url 'index' %}">Home</a></li>
-                    <li style="text-align: center;"><a href="{% url 'index'%}">Search for Books</a></li> <!--Needs to be change to the actual path for searching books-->
-                    <li style="text-align: center;"><a href="{% url 'index'%}">Onix File Management</a></li><!--Needs to be changed to the actual path of the api-->
-                    </button>
+                
   
             </div>
             
                 <ul class="nav navbar-nav pull-right">
                     <li class="selected"><a class="main-page-nav" href="{% url 'index' %}"><span>TEST BOOKSTORE</span></a></li>
+                    <li class=""><a class="main-page-nav" href="{% url 'index' %}"><span>SEARCH BOOKS</span></a></li>
+                    <li class=""><a class="main-page-nav" href="{% url 'simple_upload' %}"><span>ONIX FILE MANAGEMENT</span></a></li>
                 </ul>
             
         </div>
@@ -119,13 +118,11 @@
             {% endblock %}
       </div>
       
-      <div class="col-sm-10 "> {% block content %}{% endblock %}
+      <div class="content1" style = "margin:150px 60px 0 140px; display:block;padding-top:5px;"> 
+
+        {% block content %}{% endblock %}
          <!--The content of the page goes here-->
-      
-      
-     
-      
-      
+
       </div>
     </div>
 
