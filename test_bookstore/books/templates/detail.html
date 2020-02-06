@@ -1,1 +1,49 @@
 {% extends "base_generic.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
+
+ 
+    <div class = "headers"></div>
+        <h1>{{ book.title }}</h1>
+        <br>
+        <h2>{{ book.subtitle }}</h2> 
+        <br>
+        <h3>by {{ book.authors }}</h3>
+    </div>
+    <div class = "main">
+    <br>
+    <div class = "attributes">
+        <p><strong>Series:</strong> {{ book.series }}</p>
+        <h6><strong>Volume:</strong> {{ book.volume }}</h6>
+        <h6><strong>ISBN: </strong>{{ book.isbn_13 }}</h6>
+        <br>
+        <h6><strong>Description:</strong></h6>
+        <p class = "indent_this"> {{ book.desc }} </p>
+        <br>
+        <h6><strong>Available:</strong></h6>
+        {% for letter in book.formats_as_list %}
+            {% if  letter == 'E' %}
+                <p class = "indent_this">Ebook</p>
+            {% elif letter == 'H' %}
+                <p class = "indent_this">Hardcover</p>
+            {% elif letter == 'A' %}
+                <p class = "indent_this">Audio</p>
+            {% elif letter == 'P' %}
+                <p class = "indent_this">Paper</p>
+            {% endif %}
+        {%endfor%}
+        <br>
+        {% if book.sale_flag %}
+            <p style = "color: green;"> For Sale</p>
+        {% else %}  
+            <p style = "color: red;">Not For Sale</p>
+        {% endif %}
+  </div>
+</div>
+
+  
+{% endblock %}

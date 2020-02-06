@@ -24,6 +24,8 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+    def formats_as_list(self):
+        return list(self.book_formats)
    
 
 class Document(models.Model):
