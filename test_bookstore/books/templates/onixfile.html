@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+ 
+
+
+
+
+<body>
+  <style>
+  .nav{
+    border:1px solid #ccc;
+    border-width:1px 0;
+    list-style:none;
+    margin:0;
+    padding:0;
+    text-align:center;
+}
+.nav li{
+    display:inline;
+}
+.nav a{
+    display:inline-block;
+    padding:10px;
+}
+  </style>
+   
+ <h1>Welcome to the TEST BOOKSTORE</h1>
+  <ul class="nav">
+    <li><a href="{% url 'simple_upload' %}">Upload Onix Files</a></li>
+    <li><a href="{% url 'index' %}">Process Onix Files</a></li>
+    
+  </ul>
+</body>   
+{% endblock %}
