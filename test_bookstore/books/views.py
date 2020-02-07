@@ -65,3 +65,5 @@ def process_Onix(request):
         }
     return render(request,'process.html', context)                                                                                             
 
+def search(request):
+    return render(request, 'search.html')
