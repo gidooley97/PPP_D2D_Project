@@ -3,15 +3,30 @@
 {% load static %}
 
 {% block content %}
+<h1 style="color: rgb(99, 99, 99); font-size: xx-large;">Upload Onix</h1>
+
+
+
+<div style=" font-size: large;margin:125px 100px 0 300px; display:block;padding-top:5px;">
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" name="myfile">
-    <button type="submit">Upload</button>
+    <input type="file" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;"name="myfile">
+    <button type="submit" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;">Upload</button>
   </form>
+</div>
+  
 
   {% if uploaded_file_url %}
-    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    <p style="font-size: large; padding-bottom:5px;">File uploaded at: {{ uploaded_file_url }}</p>
   {% endif %}
 
-  <p><a href="{% url 'index' %}">Return to home</a></p>
+
+
+ <footer style="margin:150px 100px 0 50px; display:block;padding-top:5px;">
+   
+  <div><p><a href="{% url 'index' %}">Return to home</a></p></div>
+
+</footer> 
+
+  
 {% endblock %}

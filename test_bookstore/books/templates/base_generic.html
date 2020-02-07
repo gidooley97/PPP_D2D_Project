@@ -75,6 +75,84 @@
                 #li a {
                 color:orange;
                 }
+                .navbar-top-piece {
+                background-color: #1C2559;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+                height: 35px;
+                min-height: 35px;
+                padding:0px 25px
+                }
+
+                .navbar-top-piece .navbar-nav li a {
+                color: #FFFFFF;
+                padding: 7px 30px;
+                font-weight:200
+                }
+
+                .navbar-top-piece .navbar-nav li a span:hover {
+                border-bottom: 2px solid #FF5722;
+                padding-bottom:2px
+                }
+
+                .navbar-top-piece .navbar-header .phone-logo {
+                height: 40px;
+                margin-top:4px
+                }
+
+                .navbar-top-piece .navbar-header .phone-btn-signup {
+                margin-top:5px
+                }
+
+                #navbar-top-piece-links ul {
+                float:right
+                }
+                html, body {
+                width: auto;
+                overflow-x:hidden
+                }
+
+                body {
+                font-family: "Roboto", Verdana, Geneva, sans-serif;
+                font-size:14px
+                }
+                @media (max-width: 767px) {
+                .navbar-top-piece {
+                    height: 48px;
+                    border:none
+                }
+
+                .navbar-top-piece .navbar-toggle {
+                    border: none;
+                    float:left
+                }
+
+                .navbar-top-piece .navbar-toggle:focus {
+                background:#1C2559
+                }
+
+                .navbar-top-piece .navbar-toggle:hover {
+                background:#1C2559
+                }
+
+                #navbar-top-piece-links {
+                    background:#1C2559
+                }
+
+                #navbar-top-piece-links ul {
+                float:left
+                }
+
+                #navbar-top-piece-links ul li a span:hover {
+                border-bottom: 2px solid #FF5722;
+                padding-bottom:2px
+                }
+
+                .navbar-bottom-piece + .container-fluid {
+                margin-top:48px
+                }
+}
+
+
                 
             </style>
     
@@ -87,6 +165,32 @@
 <body>
     <link rel="stylesheet" href="https://draft2digital-prod-static.s3.amazonaws.com/CACHE/css/output.8eb4e9619684.css" type="text/css" media="screen">
     <link rel="stylesheet" href="https://draft2digital-prod-static.s3.amazonaws.com/CACHE/css/output.1eb22c397aed.css" type="text/css">
+    <nav class="navbar navbar-inverse navbar-fixed-top navbar-top-piece" id="navbar-top-piece">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-top-piece-links">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/"><img src="https://draft2digital-prod-static.s3.amazonaws.com/img/outer/d2d-logo-dark-xs.png" class="phone-logo visible-xs pull-left"></a>
+                
+                
+                    <a class="btn-link visible-xs pull-right phone-btn-signup"><span>Test Bookstore</span></a>
+                
+            </div>
+            <div id="navbar-top-piece-links" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'index' %}"><span>Search Books</span></a></li>
+                    <li><a href="{% url 'onixfile' %}"><span>Onix File Management</span></a></li> 
+                    
+                        
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
     <nav class="navbar navbar-inverse navbar-fixed-top navbar-bottom-piece hidden-xs" id="navbar-bottom-piece">
         <nav class="navbar navbar-inverse navbar-fixed-top navbar-top-piece" id="navbar-top-piece">
             <div class="container-fluid">
@@ -114,7 +218,8 @@
             
         </div>
     </nav>
-
+    <div class="navbar-top-space"></div>
+    <div class="navbar-bottom-space hidden-xs"></div>
     
             {% endblock %}
       </div>
@@ -126,7 +231,7 @@
 
       </div>
     </div>
-
+    
   </div>
 </body>
 </html>

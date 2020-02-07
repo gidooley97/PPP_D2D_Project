@@ -3,16 +3,32 @@
 {% load static %}
 
 {% block content %}
-  <H1>Process recently uploaded Onix file</H1>
-  <form method="post" enctype="multipart/form-data" class="form-group">
+<h1 style="color: rgb(99, 99, 99); font-size: xx-large;">Process Onix</h1>
+
+
+
+<div style="margin:100px 100px 0 300px; display:block;padding-top:5px;">
+  <p style="font-size: large; padding-bottom:5px;">Click process to parse the most recent Onix File</p>
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <button type="submit">Process</button>
+    <!-- <input type="file" name="myfile"> -->
+    <button type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;" >Process</button>
   </form>
+</div>
+  
 
-  {% if file_is_found %}
-    <p id="message">Successfully processed the Onix file</p>
+  {% if message %}
+<p style="font-size: large; padding-bottom:5px; color:{{color}};">{{message}}</p>
   {% endif %}
 
-  <p><a href="{% url 'index' %}">Return to home</a></p>
+
+
+ <footer style="margin:150px 100px 0 50px; display:block;padding-top:5px;">
+   
+  <div><p><a href="{% url 'index' %}">Return to home</a></p></div>
+
+</footer> 
+
+  
 {% endblock %}
