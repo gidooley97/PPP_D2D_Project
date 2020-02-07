@@ -23,7 +23,8 @@ def simple_upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
+        fs.delete('onix.xml')#make sure the previous file is deleted
+        filename = fs.save('onix.xml', myfile) #use the same name for all uploaded onix files. To ease the check.
         uploaded_file_url = fs.url(filename)
         return render(request, 'simple_upload.html', {
             'uploaded_file_url': uploaded_file_url
@@ -40,4 +41,27 @@ def detail(request, book_id):
         book = Book.objects.get(pk=book_id)
     except Book.DoesNotExist:
         raise Http404("Question does not exist")
+
     return render(request, 'detail.html', {'book': book})
+
+def process_Onix(request):
+    message=''
+    color = 'red' # red if error message and green if success
+    if request.method=='POST':
+        fs=FileSystemStorage()
+        if fs.exists('onix.xml'):
+            #Code to parse goes here
+            message='Successfully processed the Onix file.'
+            color='green'
+        
+        
+        else:
+            message='No file to process.'
+            color='red'
+
+    context={
+        'message':message,
+        'color':color
+        }
+    return render(request,'process.html', context)                                                                                             
+
