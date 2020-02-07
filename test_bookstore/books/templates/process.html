@@ -1,0 +1,18 @@
+{% extends 'base_generic.html' %}
+
+{% load static %}
+
+{% block content %}
+  <H1>Process recently uploaded Onix file</H1>
+  <form method="post" enctype="multipart/form-data" class="form-group">
+    {% csrf_token %}
+
+    <button type="submit">Process</button>
+  </form>
+
+  {% if file_is_found %}
+    <p id="message">Successfully processed the Onix file</p>
+  {% endif %}
+
+  <p><a href="{% url 'index' %}">Return to home</a></p>
+{% endblock %}
