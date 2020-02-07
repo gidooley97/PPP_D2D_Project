@@ -32,3 +32,12 @@ def onixfile(request):
     documents = Document.objects.all()
     print(request)
     return render(request, 'onixfile.html', {'documents': documents})
+def process_Onix(request):
+    context={'file_is_found':'False'}
+    if request.method=='POST':
+        #call the parsing code here.
+        context= {'file_is_found':'True'}
+    
+    return render(request, 'process.html',context)
+
+
