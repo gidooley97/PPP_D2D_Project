@@ -10,7 +10,7 @@
 <div style=" font-size: large;margin:125px 100px 0 300px; display:block;padding-top:5px;">
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;"name="myfile">
+    <input type="file" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;"name="myfile" required>
     <button type="submit" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;">Upload</button>
   </form>
 </div>
@@ -19,6 +19,7 @@
   {% if uploaded_file_url %}
     <p style="font-size: large; padding-bottom:5px;">File uploaded at: {{ uploaded_file_url }}</p>
   {% endif %}
+
 
 
 
