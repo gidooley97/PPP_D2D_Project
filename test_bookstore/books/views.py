@@ -12,6 +12,8 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Document, Book
 from .forms import DocumentForm
+from django.db.models import Q
+from django.views.generic import TemplateView, ListView
 
 
 def index(request):
@@ -65,5 +67,12 @@ def process_Onix(request):
         }
     return render(request,'process.html', context)                                                                                             
 
-def search(request):
-    return render(request, 'search.html')
+class SearchResultsView(ListView):
+    model = Book
+    template_name = 'search.html'
+
+    def get_queryset(self): # new
+        return Book.objects.filter(
+            Q(title__icontains='The') | Q(authors__icontains='the')
+        )
+    
