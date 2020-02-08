@@ -6,7 +6,11 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
 
-<h1>Search Results</h1>
+<form action="{% url 'search' %}" method="get">
+    <input name="q" type="text" placeholder="Search...">
+  </form>
+
+<h1 class = "searchhead">Search Results</h1>
 
 <ul>
   {% for book in object_list %}

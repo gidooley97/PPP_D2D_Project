@@ -27,8 +27,13 @@ h3 {
     margin-right: 50%;
 }
 .attributes{
-font-size: 1.7em;
+    font-size: 1.7em;
 }
 .indent_this{
     margin-left:5%;  
+}
+
+.searchhead{
+    margin-bottom: .25em;
+    font-size: 3em;
 }
