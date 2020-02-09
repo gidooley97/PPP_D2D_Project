@@ -12,7 +12,8 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Document, Book
 from .forms import DocumentForm
-
+from lxml import etree
+from . import process_onix 
 
 def index(request):
     documents = Document.objects.all()
@@ -49,10 +50,16 @@ def detail(request, book_id):
 def process_Onix(request):
     message=''
     color = 'red' # red if error message and green if success
+    path= "real_stuff_onix3_01.xml"
+    root= load_onix_file(path)
+    print(root)
+    
     if request.method=='POST':
         fs=FileSystemStorage()
         if fs.exists('onix.xml'):
             #Code to parse goes here
+            #context = etree.parse(path)
+           
             message='Successfully processed the Onix file.'
             color='green'
         
@@ -65,5 +72,16 @@ def process_Onix(request):
         'message':message,
         'color':color
         }
-    return render(request,'process.html', context)                                                                                             
+    return render(request,'process.html', context)   
+
+def load_onix_file(path):
+    
+    try:
+        with open(path) as fobj:
+            xml = fobj.read()
+        context = etree.fromstring(xml)
+    except:
+        print("unable to parse onix file.")
+        raise
+    return context                                                                                          
 
