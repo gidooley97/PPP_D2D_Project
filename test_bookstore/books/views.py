@@ -51,16 +51,18 @@ def process_Onix(request):
     message=''
     color = 'red' # red if error message and green if success
     path= "documents/onix.xml"
-    root= load_onix_file(path)
+    
     if request.method=='POST':
         
         fs=FileSystemStorage()
         if fs.exists('onix.xml'):
             #Code to parse goes here
-            
+            root= load_onix_file(path)
             data=process_data(root)
             for dt in data:
                 print(dt.title,dt.isbn_13,dt.subtitle,dt.authors,dt.volume,dt.sale_flag, sep=", ")
+
+            #Store data in the database
             
             message='Successfully processed the Onix file.'
             color='green'
