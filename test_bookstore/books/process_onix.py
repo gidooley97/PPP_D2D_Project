@@ -45,9 +45,9 @@ def load_onix_file(path):
     return context
 
 
-def process_data():
-    path = "real_stuff_onix3_01.xml"
-    root = load_onix_file(path)
+def process_data(root):
+    #path= "real_stuff_onix3_01.xml"
+    #root = load_onix_file(path)
     book_list = []
 
     product_elemnts = root.xpath("d:Product", namespaces=ns)
@@ -61,14 +61,16 @@ def process_data():
 
         # lang_el = prod_el.xpath(".//d:Language[d:LanguageRole='01']/d:LanguageCode", namespaces=ns)
         # language = lang_el[0].text
-        title = prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleText", namespaces=ns)
+        title = prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:TitleText", namespaces=ns)[0].text
         #let's talk about series and title
-        subtitle=prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:Subtitle", namespaces=ns)
+        subtitle=''
+        if prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:Subtitle", namespaces=ns):
+            subtitle=prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:Subtitle", namespaces=ns)[0].text
         collection_el=prod_el.xpath(".//d:Collection", namespaces=ns)
         volume = ''
         if collection_el:
             if prod_el.xpath(".//d:PartNumber", namespaces=ns):
-                volume = prod_el.xpath(".//d:PartNumber", namespaces=ns)
+                volume = prod_el.xpath(".//d:PartNumber", namespaces=ns)[0].text
         description = prod_el.xpath(".//d:TextContent[d:TextType='03']/d:Text", namespaces=ns)[0].text
         pub_stat_code=prod_el.xpath(".//d:PublishingStatus", namespaces=ns)[0].text
         publ_status =PUBLISHING_STATUS[pub_stat_code]
@@ -78,14 +80,10 @@ def process_data():
         #data
         auths= ','.join(authors)
         series =''
-        print(publ_status)
+        
         tmp_book_data = BookData(title,auths,isbn_13,subtitle,series,volume ,description, book_format,sale_flag)
-      
-
-
-       
-
+        book_list.append(tmp_book_data) #Add book data to list
     return book_list
 
 
-
+#process_data()
