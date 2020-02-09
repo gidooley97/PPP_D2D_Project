@@ -1,11 +1,3 @@
-
-.headers{
-    font-family: calibri, times;
-    margin-left:1.0em;
-    margin-top:1.0em;
-    margin-right: 60.0em;
-}
-
 h1 {
     font-family: calibri, times;
     font-size: 4.5em; 
@@ -22,13 +14,14 @@ h3 {
 }
 .main{
     font-family: calibri, times;
-    margin-left:15.0em;
-    margin-top:1.0em;
-    margin-right: 60.0em;
+    margin-left: 8%;
+    margin-top: 1%;
+    margin-right: 50%;
+    
 }
 .attributes{
 font-size: 1.7em;
 }
 .indent_this{
-    margin-left:2.0em;  
+    margin-left:5%;  
 }
