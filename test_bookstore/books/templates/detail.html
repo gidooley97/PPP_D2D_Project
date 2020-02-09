@@ -7,16 +7,15 @@
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
 
  
-    <div class = "headers"></div>
+    <div class = "main">
         <h1>{{ book.title }}</h1>
         <br>
         <h2>{{ book.subtitle }}</h2> 
         <br>
         <h3>by {{ book.authors }}</h3>
-    </div>
-    <div class = "main">
-    <br>
+ 
     <div class = "attributes">
+    <br>
         <p><strong>Series:</strong> {{ book.series }}</p>
         <h6><strong>Volume:</strong> {{ book.volume }}</h6>
         <h6><strong>ISBN: </strong>{{ book.isbn_13 }}</h6>
@@ -42,8 +41,7 @@
         {% else %}  
             <p style = "color: red;">Not For Sale</p>
         {% endif %}
-  </div>
 </div>
-
+</div>
   
 {% endblock %}
