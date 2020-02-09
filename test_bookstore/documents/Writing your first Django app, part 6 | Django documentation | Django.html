@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html class=" mdzr-js mdzr-borderradius mdzr-boxshadow mdzr-cssanimations mdzr-svg" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ROBOTS" content="ALL">
+    <meta name="MSSmartTagsPreventParsing" content="true">
+    <meta name="Copyright" content="Django Software Foundation">
+    <meta name="keywords" content="Python, Django, framework, open-source">
+    <meta name="description" content="">
+
+    
+  
+    
+      
+    
+  
+  <link rel="canonical" href="https://docs.djangoproject.com/en/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="el" href="https://docs.djangoproject.com/el/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="en" href="https://docs.djangoproject.com/en/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="es" href="https://docs.djangoproject.com/es/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="fr" href="https://docs.djangoproject.com/fr/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="id" href="https://docs.djangoproject.com/id/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="ja" href="https://docs.djangoproject.com/ja/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="ko" href="https://docs.djangoproject.com/ko/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="pl" href="https://docs.djangoproject.com/pl/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="pt-br" href="https://docs.djangoproject.com/pt-br/3.0/intro/tutorial06/">
+  
+    
+      
+    
+    <link rel="alternate" hreflang="zh-hans" href="https://docs.djangoproject.com/zh-hans/3.0/intro/tutorial06/">
+  
+
+  <link rel="search" type="application/opensearchdescription+xml" href="https://docs.djangoproject.com/en/3.0/search/description/" title="Django documentation">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="https://static.djangoproject.com/img/icon-touch.e4872c4da341.png">
+    <link rel="icon" sizes="192x192" href="https://static.djangoproject.com/img/icon-touch.e4872c4da341.png">
+    <link rel="shortcut icon" href="https://static.djangoproject.com/img/favicon.6dbf28c0650e.ico">
+    <meta name="msapplication-TileColor" content="#113228">
+    <meta name="msapplication-TileImage" content="https://static.djangoproject.com/img/icon-tile.b01ac0ef9f67.png">
+
+    <title>Writing your first Django app, part 6 | Django documentation | Django</title>
+
+    <link rel="stylesheet" href="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/output.css">
+    <script src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/webfontloader.js"></script>
+    <link rel="stylesheet" href="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/css.css"><script>
+    WebFont.load({
+      custom: {
+        families: ['FontAwesome', 'Fira+Mono'],
+      },
+      google: {
+        families: ['Roboto:400italic,700italic,300,700,400:latin'
+        ]
+      },
+      classes: false,
+      events: false,
+      timeout: 1000
+    });
+    </script>
+    <script src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/modernizr.js"></script>
+    
+  <script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="main.07884ebc4865" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/main.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="mod/mobile-menu" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/mobile-menu.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="mod/version-switcher" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/version-switcher.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="mod/search-key" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/search-key.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="mod/clippify" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/clippify.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="mod/console-tabs" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/console-tabs.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="jquery" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/jquery.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="clipboard" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/clipboard.js"></script></head>
+
+  <body id="generic" class="">
+
+    <div role="banner" id="top">
+  <div class="container">
+    <a class="logo" href="https://www.djangoproject.com/">Django</a>
+    <p class="meta">The web framework for perfectionists with deadlines.</p>
+    <div class="menu-button"><i class="icon icon-reorder"></i><span>Menu</span></div><div role="navigation" class="nav-menu-on">
+      <ul>
+        <li>
+          <a href="https://www.djangoproject.com/start/overview/">Overview</a>
+        </li>
+        <li>
+          <a href="https://www.djangoproject.com/download/">Download</a>
+        </li>
+        <li class="active">
+          <a href="https://docs.djangoproject.com/">Documentation</a>
+        </li>
+        <li>
+          <a href="https://www.djangoproject.com/weblog/">News</a>
+        </li>
+        <li>
+          <a href="https://www.djangoproject.com/community/">Community</a>
+        </li>
+        <li>
+          <a href="https://github.com/django/django" target="_blank" rel="noopener">Code</a>
+        </li>
+        <li>
+          <a href="https://code.djangoproject.com/">Issues</a>
+        </li>
+        <li>
+          <a href="https://www.djangoproject.com/foundation/">About</a>
+        </li>
+        <li>
+          <a href="https://www.djangoproject.com/fundraising/">♥ Donate</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+    <div class="copy-banner">
+      <div class="container 
+container--flex container--flex--wrap--mobile
+">
+        
+<h1><a href="https://docs.djangoproject.com/en/3.0/">Documentation</a></h1>
+
+
+<form action="https://docs.djangoproject.com/en/3.0/search/" class="search form-input" role="search">
+  <label class="visuallyhidden" for="id_q">Search:</label>
+    <input type="search" name="q" placeholder="Search 3.0 documentation" id="id_q">
+
+    <button type="submit">
+      <i class="icon icon-search"></i>
+      <span class="visuallyhidden">Search</span>
+    </button>
+</form>
+
+
+      </div>
+    </div>
+    <div id="billboard"></div>
+
+    <div class="container sidebar-right">
+      <div role="main">
+
+        
+          
+        
+
+        
+<div id="version-switcher">
+  <ul id="faq-link">
+    <li class="current-link">
+      <a href="https://docs.djangoproject.com/en/3.0/faq/help/">
+        <span>Getting Help</span>
+      </a>
+    </li>
+  </ul>
+  <ul id="doc-languages" class="language-switcher">
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/el/3.0/intro/tutorial06/">el</a>
+  </li>
+  
+  
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/es/3.0/intro/tutorial06/">es</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/fr/3.0/intro/tutorial06/">fr</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/id/3.0/intro/tutorial06/">id</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/ja/3.0/intro/tutorial06/">ja</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/ko/3.0/intro/tutorial06/">ko</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/pl/3.0/intro/tutorial06/">pl</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/pt-br/3.0/intro/tutorial06/">pt-br</a>
+  </li>
+  
+  
+  
+  <li class="other">
+    
+      
+    
+    <a href="https://docs.djangoproject.com/zh-hans/3.0/intro/tutorial06/">zh-hans</a>
+  </li>
+  
+  
+    <li class="current" title="Click on the links on the left to switch to another language.">
+      <span>Language: <strong>en</strong></span>
+    </li>
+  </ul>
+
+  
+  <ul id="doc-versions" class="version-switcher">
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/1.8/intro/tutorial06/">1.8</a>
+    </li>
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/1.10/intro/tutorial06/">1.10</a>
+    </li>
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/1.11/intro/tutorial06/">1.11</a>
+    </li>
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/2.0/intro/tutorial06/">2.0</a>
+    </li>
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/2.1/intro/tutorial06/">2.1</a>
+    </li>
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/2.2/intro/tutorial06/">2.2</a>
+    </li>
+    
+    
+    
+    
+    
+    <li class="other">
+      
+        
+      
+      <a href="https://docs.djangoproject.com/en/dev/intro/tutorial06/">dev</a>
+    </li>
+    
+    
+    <li class="current" title="This document describes Django 3.0. Click on the links on the left to see other versions.">
+       <span>Documentation version:
+         <strong>3.0</strong>
+       </span>
+    </li>
+  </ul>
+</div>
+
+
+<div id="docs-content">
+<div class="section" id="s-writing-your-first-django-app-part-6">
+<span id="writing-your-first-django-app-part-6"></span><h1>Writing your first Django app, part 6<a class="headerlink" href="#writing-your-first-django-app-part-6" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial begins where <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/intro/tutorial05/"><span class="doc">Tutorial 5</span></a> left off.
+We’ve built a tested Web-poll application, and we’ll now add a stylesheet and
+an image.</p>
+<p>Aside from the HTML generated by the server, web applications generally need
+to serve additional files — such as images, JavaScript, or CSS — necessary to
+render the complete web page. In Django, we refer to these files as “static
+files”.</p>
+<p>For small projects, this isn’t a big deal, because you can keep the static
+files somewhere your web server can find it. However, in bigger projects –
+especially those comprised of multiple apps – dealing with the multiple sets
+of static files provided by each application starts to get tricky.</p>
+<p>That’s what <code class="docutils literal notranslate"><span class="pre">django.contrib.staticfiles</span></code> is for: it collects static files
+from each of your applications (and any other places you specify) into a
+single location that can easily be served in production.</p>
+<div class="admonition-where-to-get-help admonition">
+<p class="first admonition-title">Where to get help:</p>
+<p class="last">If you’re having trouble going through this tutorial, please head over to
+the <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/faq/help/"><span class="doc">Getting Help</span></a> section of the FAQ.</p>
+</div>
+<div class="section" id="s-customize-your-app-s-look-and-feel">
+<span id="customize-your-app-s-look-and-feel"></span><h2>Customize your <em>app’s</em> look and feel<a class="headerlink" href="#customize-your-app-s-look-and-feel" title="Permalink to this headline">¶</a></h2>
+<p>First, create a directory called <code class="docutils literal notranslate"><span class="pre">static</span></code> in your <code class="docutils literal notranslate"><span class="pre">polls</span></code> directory. Django
+will look for static files there, similarly to how Django finds templates
+inside <code class="docutils literal notranslate"><span class="pre">polls/templates/</span></code>.</p>
+<p>Django’s <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_FINDERS"><code class="xref std std-setting docutils literal notranslate"><span class="pre">STATICFILES_FINDERS</span></code></a> setting contains a list
+of finders that know how to discover static files from various
+sources. One of the defaults is <code class="docutils literal notranslate"><span class="pre">AppDirectoriesFinder</span></code> which
+looks for a “static” subdirectory in each of the
+<a class="reference internal" href="https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-INSTALLED_APPS"><code class="xref std std-setting docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code></a>, like the one in <code class="docutils literal notranslate"><span class="pre">polls</span></code> we just created. The admin
+site uses the same directory structure for its static files.</p>
+<p>Within the <code class="docutils literal notranslate"><span class="pre">static</span></code> directory you have just created, create another directory
+called <code class="docutils literal notranslate"><span class="pre">polls</span></code> and within that create a file called <code class="docutils literal notranslate"><span class="pre">style.css</span></code>. In other
+words, your stylesheet should be at <code class="docutils literal notranslate"><span class="pre">polls/static/polls/style.css</span></code>. Because
+of how the <code class="docutils literal notranslate"><span class="pre">AppDirectoriesFinder</span></code> staticfile finder works, you can refer to
+this static file in Django as <code class="docutils literal notranslate"><span class="pre">polls/style.css</span></code>, similar to how you reference
+the path for templates.</p>
+<div class="admonition-static-file-namespacing admonition">
+<p class="first admonition-title">Static file namespacing</p>
+<p class="last">Just like templates, we <em>might</em> be able to get away with putting our static
+files directly in <code class="docutils literal notranslate"><span class="pre">polls/static</span></code> (rather than creating another <code class="docutils literal notranslate"><span class="pre">polls</span></code>
+subdirectory), but it would actually be a bad idea. Django will choose the
+first static file it finds whose name matches, and if you had a static file
+with the same name in a <em>different</em> application, Django would be unable to
+distinguish between them. We need to be able to point Django at the right
+one, and the best way to ensure this is by <em>namespacing</em> them. That is, by
+putting those static files inside <em>another</em> directory named for the
+application itself.</p>
+</div>
+<p>Put the following code in that stylesheet (<code class="docutils literal notranslate"><span class="pre">polls/static/polls/style.css</span></code>):</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">polls/static/polls/style.css</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a><span class="btn-clipboard" title="Copy this code"><i class="icon icon-clipboard"></i></span></div>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">li</span> <span class="nt">a</span> <span class="p">{</span>
+    <span class="k">color</span><span class="p">:</span> <span class="kc">green</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Next, add the following at the top of <code class="docutils literal notranslate"><span class="pre">polls/templates/polls/index.html</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">polls/templates/polls/index.html</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a><span class="btn-clipboard" title="Copy this code"><i class="icon icon-clipboard"></i></span></div>
+<div class="highlight-html+django notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">load</span> <span class="nv">static</span> <span class="cp">%}</span>
+
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/css"</span> <span class="na">href</span><span class="o">=</span><span class="s">"</span><span class="cp">{%</span> <span class="k">static</span> <span class="s1">'polls/style.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">%}</span></code> template tag generates the absolute URL of static files.</p>
+<p>That’s all you need to do for development.</p>
+<p>Start the server (or restart it if it’s already running):</p>
+<div class="console-block" id="console-block-0">
+<input class="c-tab-unix" id="c-tab-0-unix" type="radio" name="console-0" checked="checked">
+<label for="c-tab-0-unix" title="Linux/macOS">/</label>
+<input class="c-tab-win" id="c-tab-0-win" type="radio" name="console-0">
+<label for="c-tab-0-win" title="Windows"></label>
+<section class="c-content-unix" id="c-content-0-unix">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python manage.py runserver
+</pre></div>
+</div>
+</section>
+<section class="c-content-win" id="c-content-0-win">
+<div class="highlight"><pre><span></span><span class="gp">...\&gt;</span> py manage.py runserver
+</pre></div>
+</section>
+</div>
+<p>Reload <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/polls/</span></code> and you should see that the question
+links are green (Django style!) which means that your stylesheet was properly
+loaded.</p>
+</div>
+<div class="section" id="s-adding-a-background-image">
+<span id="adding-a-background-image"></span><h2>Adding a background-image<a class="headerlink" href="#adding-a-background-image" title="Permalink to this headline">¶</a></h2>
+<p>Next, we’ll create a subdirectory for images. Create an <code class="docutils literal notranslate"><span class="pre">images</span></code> subdirectory
+in the <code class="docutils literal notranslate"><span class="pre">polls/static/polls/</span></code> directory. Inside this directory, put an image
+called <code class="docutils literal notranslate"><span class="pre">background.gif</span></code>. In other words, put your image in
+<code class="docutils literal notranslate"><span class="pre">polls/static/polls/images/background.gif</span></code>.</p>
+<p>Then, add to your stylesheet (<code class="docutils literal notranslate"><span class="pre">polls/static/polls/style.css</span></code>):</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">polls/static/polls/style.css</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a><span class="btn-clipboard" title="Copy this code"><i class="icon icon-clipboard"></i></span></div>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">body</span> <span class="p">{</span>
+    <span class="k">background</span><span class="p">:</span> <span class="kc">white</span> <span class="nb">url</span><span class="p">(</span><span class="s2">"images/background.gif"</span><span class="p">)</span> <span class="kc">no-repeat</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Reload <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/polls/</span></code> and you should see the background
+loaded in the top left of the screen.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Of course the <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">static</span> <span class="pre">%}</span></code> template tag is not available for use in
+static files like your stylesheet which aren’t generated by Django. You
+should always use <strong>relative paths</strong> to link your static files between each
+other, because then you can change <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATIC_URL"><code class="xref std std-setting docutils literal notranslate"><span class="pre">STATIC_URL</span></code></a> (used by the
+<a class="reference internal" href="https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#std:templatetag-static"><code class="xref std std-ttag docutils literal notranslate"><span class="pre">static</span></code></a> template tag to generate its URLs) without having to modify
+a bunch of paths in your static files as well.</p>
+</div>
+<p>These are the <strong>basics</strong>. For more details on settings and other bits included
+with the framework see
+<a class="reference internal" href="https://docs.djangoproject.com/en/3.0/howto/static-files/"><span class="doc">the static files howto</span></a> and
+<a class="reference internal" href="https://docs.djangoproject.com/en/3.0/ref/contrib/staticfiles/"><span class="doc">the staticfiles reference</span></a>. <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/howto/static-files/deployment/"><span class="doc">Deploying
+static files</span></a> discusses how to use static
+files on a real server.</p>
+<p>When you’re comfortable with the static files, read <a class="reference internal" href="https://docs.djangoproject.com/en/3.0/intro/tutorial07/"><span class="doc">part 7 of this
+tutorial</span></a> to learn how to customize Django’s
+automatically-generated admin site.</p>
+</div>
+</div>
+
+</div>
+
+
+
+<div class="browse-horizontal">
+  
+  <div class="left"><a href="https://docs.djangoproject.com/en/3.0/intro/tutorial05/"><i class="icon icon-chevron-left"></i> Writing your first Django app, part 5</a></div>
+  
+  
+  <div class="right"><a href="https://docs.djangoproject.com/en/3.0/intro/tutorial07/">Writing your first Django app, part 7 <i class="icon icon-chevron-right"></i></a></div>
+  
+</div>
+
+
+
+        <a href="#top" class="backtotop"><i class="icon icon-chevron-up"></i> Back to Top</a>
+      </div>
+
+      
+<h1 class="visuallyhidden">Additional Information</h1>
+<div role="complementary">
+
+  
+
+
+  <div class="fundraising-sidebar">
+    <h2>Support Django!</h2>
+
+    <div class="small-heart">
+      <img src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/fundraising-heart.svg" alt="Support Django!">
+    </div>
+
+    <div class="small-cta">
+      <ul class="list-links-small">
+        <li><a href="https://www.djangoproject.com/fundraising/">
+          Honza Král donated to the Django Software Foundation to
+          support Django development. Donate today!
+        </a></li>
+      </ul>
+    </div>
+  </div>
+
+
+
+  
+    <h2>Contents</h2>
+    
+    <ul>
+<li><a class="reference internal" href="#">Writing your first Django app, part 6</a><ul>
+<li><a class="reference internal" href="#customize-your-app-s-look-and-feel">Customize your <em>app’s</em> look and feel</a></li>
+<li><a class="reference internal" href="#adding-a-background-image">Adding a background-image</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  
+
+  
+  <h2>Browse</h2>
+  <ul>
+    
+    
+    <li>Prev: <a href="https://docs.djangoproject.com/en/3.0/intro/tutorial05/">Writing your first Django app, part 5</a></li>
+    
+    
+    <li>Next: <a href="https://docs.djangoproject.com/en/3.0/intro/tutorial07/">Writing your first Django app, part 7</a></li>
+    
+    <li><a href="https://docs.djangoproject.com/en/3.0/contents/">Table of contents</a></li>
+    
+    <li><a href="https://docs.djangoproject.com/en/3.0/genindex/">General Index</a></li>
+    
+    <li><a href="https://docs.djangoproject.com/en/3.0/py-modindex/">Python Module Index</a></li>
+    
+    
+  </ul>
+  
+
+  
+  <h2>You are here:</h2>
+  <ul>
+    <li>
+      <a href="https://docs.djangoproject.com/en/3.0/">Django 3.0 documentation</a>
+      
+      <ul><li><a href="https://docs.djangoproject.com/en/3.0/intro/">Getting started</a>
+      
+      <ul><li>Writing your first Django app, part 6</li></ul>
+      </li></ul>
+    </li>
+  </ul>
+  
+
+  
+  <h2 id="getting-help-sidebar">Getting help</h2>
+  <dl class="list-links">
+    <dt><a href="https://docs.djangoproject.com/en/3.0/faq/">FAQ</a></dt>
+    <dd>Try the FAQ — it's got answers to many common questions.</dd>
+
+    <dt><a href="https://docs.djangoproject.com/en/stable/genindex/">Index</a>, <a href="https://docs.djangoproject.com/en/stable/py-modindex/">Module Index</a>, or <a href="https://docs.djangoproject.com/en/stable/contents/">Table of Contents</a></dt>
+    <dd>Handy when looking for specific information.</dd>
+
+    <dt><a href="https://groups.google.com/group/django-users/">django-users mailing list</a></dt>
+    <dd>Search for information in the archives of the django-users mailing list, or post a question.</dd>
+
+    <dt><a href="irc://irc.freenode.net/django">#django IRC channel</a></dt>
+    <dd>Ask a question in the #django IRC channel, or search the IRC logs to see if it’s been asked before.</dd>
+
+    <dt><a href="https://code.djangoproject.com/">Ticket tracker</a></dt>
+    <dd>Report bugs with Django or Django documentation in our ticket tracker.</dd>
+  </dl>
+  
+
+  
+  <h2>Download:</h2>
+  <p>
+    Offline (Django 3.0):
+    <a href="https://media.djangoproject.com/docs/django-docs-3.0-en.zip">HTML</a> |
+    <a href="https://media.readthedocs.org/pdf/django/3.0.x/django.pdf">PDF</a> |
+    <a href="https://media.readthedocs.org/epub/django/3.0.x/django.epub">ePub</a>
+    <br>
+    <span class="quiet">
+      Provided by <a href="https://readthedocs.org/">Read the Docs</a>.
+    </span>
+  </p>
+  
+</div>
+
+      
+
+    </div>
+
+     
+     
+
+    
+    
+    
+
+    
+      
+<div role="contentinfo">
+  <div class="subfooter">
+    <div class="container">
+      <h1 class="visuallyhidden">Django Links</h1>
+
+      <div class="col learn">
+        <h2>Learn More</h2>
+        <ul>
+          <li><a href="https://www.djangoproject.com/start/overview/">About Django</a></li>
+          
+          <li><a href="https://www.djangoproject.com/start/">Getting Started with Django</a></li>
+          <li><a href="https://docs.djangoproject.com/en/dev/internals/organization/">Team Organization</a></li>
+          <li><a href="https://www.djangoproject.com/foundation/">Django Software Foundation</a></li>
+          <li><a href="https://www.djangoproject.com/conduct/">Code of Conduct</a></li>
+          <li><a href="https://www.djangoproject.com/diversity/">Diversity Statement</a></li>
+        </ul>
+      </div>
+
+      <div class="col involved">
+        <h2>Get Involved</h2>
+        <ul>
+          <li><a href="https://www.djangoproject.com/community/">Join a Group</a></li>
+          <li><a href="https://docs.djangoproject.com/en/dev/internals/contributing/">Contribute to Django</a></li>
+          <li><a href="https://docs.djangoproject.com/en/dev/internals/contributing/bugs-and-features/">Submit a Bug</a></li>
+          <li><a href="https://docs.djangoproject.com/en/dev/internals/security/#reporting-security-issues">Report a Security Issue</a></li>
+        </ul>
+      </div>
+
+      <div class="col follow last-child">
+        <h2>Follow Us</h2>
+        <ul>
+          <li><a href="https://github.com/django">GitHub</a></li>
+          <li><a href="https://twitter.com/djangoproject">Twitter</a></li>
+          <li><a href="https://www.djangoproject.com/rss/weblog/">News RSS</a></li>
+          <li><a href="https://groups.google.com/forum/#!forum/django-users">Django Users Mailing List</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="container">
+      <div class="footer-logo">
+        <a class="logo" href="https://www.djangoproject.com/">Django</a>
+      </div>
+      <ul class="thanks">
+        <li>
+          <span>Hosting by</span> <a class="rackspace" href="https://www.rackspace.com/">Rackspace</a>
+        </li>
+        <li class="design"><span>Design by</span> <a class="threespot" href="https://www.threespot.com/">Threespot</a> <span class="ampersand">&amp;</span> <a class="andrevv" href="http://andrevv.com/"></a></li>
+      </ul>
+      <p class="copyright">© 2005-2020
+        <a href="https://www.djangoproject.com/foundation/"> Django Software
+        Foundation</a> and individual contributors. Django is a
+        <a href="https://www.djangoproject.com/trademarks/">registered
+        trademark</a> of the Django Software Foundation.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+    
+
+    
+    <script>
+    function extless(input) {
+        return input.replace(/(.*)\.[^.]+$/, '$1');
+    }
+    var require = {
+        shim: {
+            'jquery': [],
+            'jquery.inview': ["jquery"],
+            'jquery.payment': ["jquery"],
+            'jquery.flot': ["jquery"],
+            'jquery.unveil': ["jquery"],
+            'stripe': {
+              exports: 'Stripe'
+            }
+        },
+        paths: {
+            "jquery": extless("https://static.djangoproject.com/js/lib/jquery/dist/jquery.min.87e69028f78d.js"),
+            "jquery.inview": extless("https://static.djangoproject.com/js/lib/jquery.inview/jquery.inview.min.4edba1c65592.js"),
+            "jquery.payment": extless("https://static.djangoproject.com/js/lib/jquery.payment/lib/jquery.payment.e99c05ca79ae.js"),
+            "jquery.unveil": extless("https://static.djangoproject.com/js/lib/unveil/jquery.unveil.min.ac79eb277093.js"),
+            "jquery.flot": extless("https://static.djangoproject.com/js/lib/jquery-flot/jquery.flot.min.9964206e9d7f.js"),
+            "clipboard": extless("https://static.djangoproject.com/js/lib/clipboard/dist/clipboard.min.bd70fd596a23.js"),
+            "mod/floating-warning": extless("https://static.djangoproject.com/js/mod/floating-warning.a21b2abd2884.js"),
+            "mod/list-collapsing": extless("https://static.djangoproject.com/js/mod/list-collapsing.c1a08d3ef9e9.js"),
+            "mod/list-feature": extless("https://static.djangoproject.com/js/mod/list-feature.73529480f25b.js"),
+            "mod/mobile-menu": extless("https://static.djangoproject.com/js/mod/mobile-menu.841726ee903a.js"),
+            "mod/version-switcher": extless("https://static.djangoproject.com/js/mod/version-switcher.c28bb83972bb.js"),
+            "mod/search-key": extless("https://static.djangoproject.com/js/mod/search-key.f3c0a6fcfedd.js"),
+            "mod/stripe-custom-checkout": extless("https://static.djangoproject.com/js/mod/stripe-custom-checkout.40ebeda6d3fe.js"),
+            "mod/stripe-change-card": extless("https://static.djangoproject.com/js/mod/stripe-change-card.682c710317a8.js"),
+            "mod/console-tabs": extless("https://static.djangoproject.com/js/mod/console-tabs.70ce882faaf3.js"),
+            "stripe-checkout": "https://checkout.stripe.com/checkout",
+            "stripe": "https://js.stripe.com/v2/?"  // ? needed due to require.js
+        }
+    };
+    </script>
+    <script data-main="https://static.djangoproject.com/js/main.07884ebc4865.js" src="Writing%20your%20first%20Django%20app,%20part%206%20|%20Django%20documentation%20|%20Django_files/require.js"></script>
+    
+
+
+
+  
+
+</body></html>
