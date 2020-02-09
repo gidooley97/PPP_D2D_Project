@@ -31,7 +31,7 @@ PUBLISHING_STATUS = {"00": "Unspecified", "01": "Cancelled", "02": "Forthcoming"
 BOOK_FORMATS={"00":"Undefined","AA":"Audio","AB":"Audio cassette","AC":"CD-Audio","AD":"DAT",
  "AE":"Audio disc","AF":"Audio tape","AG":"MiniDisc", "AH":"CD-Extra","AI":"DVD Audio","AJ":"Downloadable audio file",
  "AK":"Pre-recorded digital audio player","BA":"Book","BB":"Hardback","BC":"Paperback / softback",
-  "VL":"VCD","VM":"SVCD", 	"VN":"HD DVD","VO": "Blu-ray", "EA":"Digital (delivered electronically)",
+  "VL":"VCD","VM":"SVCD", "VN":"HD DVD","VO": "Blu-ray", "EA":"Digital (delivered electronically)",
    "EB":"Digital download and online","EC":"Digital online","ED":"Digital download"}	 	
 		 	
 
