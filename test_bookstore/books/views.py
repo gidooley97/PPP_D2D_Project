@@ -51,17 +51,17 @@ def process_Onix(request):
     message=''
     color = 'green' # red if error message and green if success
     path= "documents/onix.xml"
-    root= load_onix_file(path)
-    data=process_data(root)[:5]
-    for dt in data:
-        print(dt.series)
+    # root= load_onix_file(path)
+    # data=process_data(root)[:5]
+    # for dt in data:
+    #     print(dt.series)
     if request.method=='POST':
         
         fs=FileSystemStorage()
         if fs.exists('onix.xml'):
             #Code to parse goes here
             root= load_onix_file(path)
-            data=process_data(root)[:5]
+            data=process_data(root)
             #Store data in the database
             for dt in data:          
                 try:
