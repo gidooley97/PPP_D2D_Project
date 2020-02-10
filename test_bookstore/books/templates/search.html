@@ -12,10 +12,10 @@
 
 <h1 class = "searchhead">Search Results</h1>
 
-<ul>
+<ul class = "nav">
   {% for book in object_list %}
     <li>
-        {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }}
+        <a href ="{% url 'detail' book_id=book.id%}"> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }}</a>
     </li>
   {% endfor %}
 </ul>
