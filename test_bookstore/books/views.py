@@ -49,9 +49,12 @@ def detail(request, book_id):
 
 def process_Onix(request):
     message=''
-    color = 'red' # red if error message and green if success
+    color = 'green' # red if error message and green if success
     path= "documents/onix.xml"
-    
+    root= load_onix_file(path)
+    data=process_data(root)[:5]
+    for dt in data:
+        print(dt.series)
     if request.method=='POST':
         
         fs=FileSystemStorage()
@@ -63,7 +66,7 @@ def process_Onix(request):
             for dt in data:          
                 try:
                     book = Book.objects.get(isbn_13=dt.isbn_13)
-                    print("Updating")
+                    #print("Updating")
                     book.title =dt.title
                     book.authors=dt.authors
                     book.subtitle = dt.subtitle
@@ -75,7 +78,7 @@ def process_Onix(request):
                     book.save()
                 
                 except Book.DoesNotExist:
-                    print("inserting")
+                    #print("inserting")
                     book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
                     subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
                     desc=dt.desc, book_formats=dt.book_formats,
@@ -83,10 +86,10 @@ def process_Onix(request):
 
             message='Successfully processed the Onix file.'
             color='green'
-        books = Book.objects.all()
-        for bk in books:
-            print(bk)
-        
+            books = Book.objects.all()
+            for bk in books:
+                print(bk)
+            fs.delete('onix.xml') #delete onix file
         else:
             message='No file to process.'
             color='red'
@@ -98,11 +101,11 @@ def process_Onix(request):
     return render(request,'process.html', context)   
 
 def load_onix_file(path):
-    
+    context=''
     try:
         context = etree.parse(path)
     except:
         print("unable to parse onix file.")
-        raise
+        
     return context                                                                                          
 
