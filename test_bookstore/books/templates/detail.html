@@ -24,7 +24,8 @@
         <p class = "indent_this"> {{ book.desc |safe }} </p>
         <br>
         <h6><strong>Available:</strong></h6>
-        {% for letter in book.formats_as_list %}
+        {{book.book_formats}}
+        <!-- {% for letter in book.formats_as_list %}
             {% if  letter == 'E' %}
                 <p class = "indent_this">Ebook</p>
             {% elif letter == 'H' %}
@@ -34,7 +35,8 @@
             {% elif letter == 'P' %}
                 <p class = "indent_this">Paper</p>
             {% endif %}
-        {%endfor%}
+        {%endfor%} -->
+        <br>
         <br>
         {% if book.sale_flag %}
             <p style = "color: green;"> For Sale</p>
