@@ -2,24 +2,28 @@
 
 {% block content %}
 
-{% load static %}
+{% load static %} 
 
-<link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
+ <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
 
-<form action="{% url 'search' %}" method="get">
-    <input name="q" type="text" placeholder="Search...">
+<div>
+
+
+  <form style="width: 50%;" action="{% url 'search' %}" method="get" >
+      <input  name= "q" type="text" placeholder="Search..." size="75">
+      <input type="submit" value="Search">
   </form>
 
-<h1 class = "searchhead">Search Results</h1>
+  <h1 class = "searchhead">Search Results</h1>
 
-<ul class = "nav">
-  {% for book in object_list %}
-    <li>
-        <a href ="{% url 'detail' book_id=book.id%}"> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }}</a>
-    </li>
-  {% endfor %}
-</ul>
-
+  <ul class = "nav">
+    {% for book in object_list %}
+      <li>
+          <a href ="{% url 'detail' book_id=book.id%}"> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
 
   
 {% endblock %}
