@@ -5,7 +5,7 @@
 {% load static %}
 <style>
   .button {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50; 
   border: none;
   color: white;
   padding: 12px 20px;
@@ -19,7 +19,7 @@
 }
 .button2 {
   background-color: white; 
-  color: black; 
+  color: rgb(252, 252, 252); 
   border: 2px solid #008CBA;
 }
 
@@ -32,22 +32,24 @@
 </style>
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
 
-<form action="{% url 'search' %}" method="get">
-    <input name="q" type="text" placeholder="Search...">
-    <button type="submit"><i class="fa fa-search"></i></button>
+  <form style="width: 50%;" action="{% url 'search' %}" method="get" >
+      <input  name= "q" type="text" placeholder="Search..." size="75">
+      <input type="submit" value="Search">
   </form>
-
-<h1 class = "searchhead">Search Results</h1>
 
 <ul class = "nav" style="border:1px solid #042a7a;">
   {% for book in object_list %}
     <li>
-        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }}</span>
-        <button class="button button2" style="display:inline-block;"><a href="{% url 'detail' book_id=book.id%}">Details</a></button>
+        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp; </span>
+        
+        
+        <button class="button button2" style="display:inline-block; vertical-align: baseline;"><a href="{% url 'detail' book_id=book.id%}">Details</a></button>
+      
     </li>
   {% endfor %}
 </ul>
 
+</div>
 
   
 {% endblock %}
