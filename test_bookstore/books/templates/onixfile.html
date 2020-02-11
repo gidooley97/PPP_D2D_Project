@@ -1,5 +1,5 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
  
 
@@ -9,7 +9,7 @@
 <body>
   <style>
   .nav{
-    border:1px solid #ccc;
+    
     border-width:1px 0;
     list-style:none;
     margin:0;
@@ -25,10 +25,10 @@
 }
   </style>
    
- <h1>Welcome to the TEST BOOKSTORE</h1>
-  <ul class="nav">
-    <li><a href="{% url 'simple_upload' %}">Upload Onix Files</a></li>
-    <li><a href="{% url 'process' %}">Process Onix Files</a></li>
+ <h1 style="font-size: xx-large; margin: -10px 30px 40px 375px;">Onix File Management</h1>
+  <ul class="nav" style="margin:-10px 30px 40px -60px;;">
+    <button><a href="{% url 'simple_upload' %}">Upload Onix Files</a></button>
+    <button><a href="{% url 'process' %}">Process Onix Files</a></button>
     
   </ul>
 </body>   
