@@ -3,11 +3,11 @@
 {% load static %}
 
 {% block content %}
-<h1 style="color: rgb(99, 99, 99); font-size: xx-large;">Process Onix</h1>
+<h1 style="color: rgb(99, 99, 99); font-size: xx-large; text-align: left; padding-left: 20%;">Process Onix</h1>
 
 
 
-<div style="margin:100px 100px 0 300px; display:block;padding-top:5px;">
+<div style="position: center;; display:block;padding-top:5px; padding-left: 20%;">
   <p style="font-size: large; padding-bottom:5px;">Click process to parse the most recent Onix File</p>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -19,12 +19,12 @@
   
 
   {% if message %}
-<p style="font-size: large; padding-bottom:5px; color:{{color}};">{{message}}</p>
+<p style="font-size: large; padding-left: 20%; padding-bottom:5px; color:{{color}};">{{message}}</p>
   {% endif %}
 
 
 
- <footer style="margin:150px 100px 0 50px; display:block;padding-top:5px;">
+ <footer style="position: relative; display:block;padding-top:5px; padding-left: 20%;">
    
   <div><p><a href="{% url 'index' %}">Return to home</a></p></div>
 
