@@ -3,22 +3,19 @@ from django.db import models
 from django.forms import ModelForm
 
 
-FORMAT_TYPES = (
-        ('H', 'Hardcover'),
-        ('P', 'Paperback'),
-        ('E', 'Ebook'),
-        ('A', 'Audio')
-    )
+
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
     authors = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     isbn_13 = models.CharField(max_length = 13)
     subtitle = models.CharField(max_length=200, default = '', blank=True)
     series = models.CharField(max_length = 200,default = '', blank=True)
     volume = models.CharField(max_length = 3, default = '', blank=True)
     desc = models.TextField()
-    book_formats = models.CharField(max_length=4)
+    book_formats = models.CharField(max_length=60)
+    language = models.CharField(max_length=50)
     sale_flag = models.BooleanField(default=False)
     
 
