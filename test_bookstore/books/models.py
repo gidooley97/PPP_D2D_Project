@@ -8,7 +8,7 @@ from django.forms import ModelForm
 class Book(models.Model):
     title = models.CharField(max_length=200)
     authors = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.CharField(max_length=15)
     isbn_13 = models.CharField(max_length = 13)
     subtitle = models.CharField(max_length=200, default = '', blank=True)
     series = models.CharField(max_length = 200,default = '', blank=True)
