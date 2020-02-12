@@ -6,7 +6,7 @@ ns = {"d": "http://ns.editeur.org/onix/3.0/reference"}
 
 
 class BookData:
-    def __init__(self, title, auth, isbn_13, subtitle, series, volume, desc, book_format, sale_flag):
+    def __init__(self, title, auth, isbn_13, subtitle, series, volume, desc, book_format, sale_flag, language, price):
         self.title = title
         self.authors = auth
         self.isbn_13 = isbn_13
@@ -16,6 +16,8 @@ class BookData:
         self.desc = desc
         self.book_formats = book_format
         self.sale_flag = sale_flag
+        self.language = language
+        self.price = price
     def __str__(self):
         return self.title +' '+self.isbn_13
 
@@ -59,8 +61,11 @@ def process_data(root):
         for auth in auth_els:
             authors.append(auth.text)
 
-        # lang_el = prod_el.xpath(".//d:Language[d:LanguageRole='01']/d:LanguageCode", namespaces=ns)
-        # language = lang_el[0].text
+        lang_el = prod_el.xpath(".//d:Language[d:LanguageRole='01']/d:LanguageCode", namespaces=ns)
+        languages = []
+        for lang in lang_el:
+            languages.append(lang.text)
+
         title = prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:TitleText", namespaces=ns)[0].text
         #let's talk about series and title
         subtitle=''
@@ -75,17 +80,22 @@ def process_data(root):
         if prod_el.xpath(".//d:Collection/d:TitleDetail/d:TitleElement[d:SequenceNumber='2']/d:TitleText", namespaces=ns):
             series = prod_el.xpath(".//d:Collection/d:TitleDetail/d:TitleElement[d:SequenceNumber='2']/d:TitleText", namespaces=ns)[0].text
 
+        price = 'None'
+        if prod_el.xpath(".//d:Price[d:PriceType='01']/d:PriceAmount", namespaces=ns):
+            price = prod_el.xpath(".//d:Price[d:PriceType='01']/d:PriceAmount", namespaces=ns)[0].text
+
         description = prod_el.xpath(".//d:TextContent[d:TextType='03']/d:Text", namespaces=ns)[0].text
         pub_stat_code=prod_el.xpath(".//d:PublishingStatus", namespaces=ns)[0].text
-        publ_status =PUBLISHING_STATUS[pub_stat_code]
+        #publ_status =PUBLISHING_STATUS[pub_stat_code]
         book_format_code =  prod_el.xpath(".//d:ProductForm", namespaces=ns)[0].text
         book_format=BOOK_FORMATS[book_format_code]
         sale_flag= (pub_stat_code=="13" or pub_stat_code=="04")
         #data
         auths= ','.join(authors)
+        langs = ','.join(languages)
+        print(price)
         
-        
-        tmp_book_data = BookData(title,auths,isbn_13,subtitle,series,volume ,description, book_format,sale_flag)
+        tmp_book_data = BookData(title,auths,isbn_13,subtitle,series,volume ,description, book_format,sale_flag,langs,price)
         book_list.append(tmp_book_data) #Add book data to list
     return book_list
 
