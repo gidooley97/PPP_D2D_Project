@@ -13,14 +13,14 @@
     {% csrf_token %}
 
     <!-- <input type="file" name="myfile"> -->
-    <button type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;" >Process</button>
+    <button type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;" onclick="onProcess()" >Process</button>
   </form>
 </div>
   
 
-  {% if message %}
-<p style="font-size: large; padding-left: 20%; padding-bottom:5px; color:{{color}};">{{message}}</p>
-  {% endif %}
+
+<p style="font-size: large; padding-left: 20%; padding-bottom:5px; color:{{color}};" id="messageLbl">{{message}}</p>
+ 
 
 
 
