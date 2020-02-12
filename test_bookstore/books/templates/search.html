@@ -55,12 +55,12 @@
   </form>
   <h2 style="color: #042a7a;">Search Results</h2 >
 </div>
-  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%;" >
+  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
 
   {% for book in object_list %}
     <li>
-        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
-        <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+      <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+      <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
     </li>
   {% endfor %}
   </ul> 
