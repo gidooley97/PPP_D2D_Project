@@ -1,5 +1,8 @@
 {% extends "base_generic.html" %}
 
+{% load static %}
+
+
 {% block content %}
  
 
@@ -9,7 +12,7 @@
 <body>
   <style>
   .nav{
-    border:1px solid #ccc;
+    
     border-width:1px 0;
     list-style:none;
     margin:0;
@@ -25,11 +28,11 @@
 }
   </style>
    
- <h1>Welcome to the TEST BOOKSTORE</h1>
-  <ul class="nav">
-    <li><a href="{% url 'index' %}">Home</a></li>
-    <li><a href="{% url 'index' %}">Search Books</a></li>
-    <li><a href="{% url 'onixfile' %}">Onix File Management</a></li>
+ <h1 style="font-size: xx-large; text-align: center;">Welcome to the Test Bookstore</h1>
+  <ul class="nav" style="position: relative;;">
+    <button><a href="{% url 'index' %}">Search Books</a></button>
+    <button><a href="{% url 'onixfile' %}">Onix File Management</a></button>
+    
   </ul>
 </body>   
 {% endblock %}

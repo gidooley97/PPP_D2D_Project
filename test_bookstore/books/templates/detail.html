@@ -21,10 +21,22 @@
         <h6><strong>ISBN: </strong>{{ book.isbn_13 }}</h6>
         <br>
         <h6><strong>Description:</strong></h6>
-        <p class = "indent_this"> {{ book.desc }} </p>
+        <p class = "indent_this"> {{ book.desc |safe }} </p>
         <br>
-        <h6><strong>Available: </strong>{{ book.book_formats }}</h6>
-        
+        <h6><strong>Available:</strong></h6>
+        {{book.book_formats}}
+        <!-- {% for letter in book.formats_as_list %}
+            {% if  letter == 'E' %}
+                <p class = "indent_this">Ebook</p>
+            {% elif letter == 'H' %}
+                <p class = "indent_this">Hardcover</p>
+            {% elif letter == 'A' %}
+                <p class = "indent_this">Audio</p>
+            {% elif letter == 'P' %}
+                <p class = "indent_this">Paper</p>
+            {% endif %}
+        {%endfor%} -->
+        <br>
         <br>
         {% if book.sale_flag %}
             <p style = "color: green;"> For Sale</p>
