@@ -26,11 +26,16 @@
     display:inline-block;
     padding:10px;
 }
+h1{
+  font-family: sans-serif;
+  text-align: center;
+  font-size: 2em;
+}
   </style>
    
  <h1 style="font-size: xx-large; text-align: center;">Welcome to the Test Bookstore</h1>
   <ul class="nav" style="position: relative;;">
-    <button><a href="{% url 'index' %}">Search Books</a></button>
+    <button><a href="{% url 'search' %}">Search Books</a></button>
     <button><a href="{% url 'onixfile' %}">Onix File Management</a></button>
     
   </ul>

@@ -14,6 +14,11 @@ from .models import Document, Book
 from .forms import DocumentForm
 from lxml import etree
 from .process_onix import process_data
+from django.db.models import Q
+from django.views.generic import TemplateView, ListView
+from django.core.paginator import Paginator
+
+
 
 def index(request):
     documents = Document.objects.all()
@@ -109,3 +114,21 @@ def load_onix_file(path):
         
     return context                                                                                          
 
+class SearchResultsView(ListView):
+    model = Book
+    template_name = 'search.html'
+    paginate_by = 20
+
+    def get_queryset(self): 
+        object_list = []
+        query = self.request.GET.get('q')
+        if query is None:
+            query = "a"
+        object_list = Book.objects.filter(
+            Q(title__icontains=query) | Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
+            | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
+            | Q(sale_flag__icontains=query)
+        )
+        return object_list
+        
+    
