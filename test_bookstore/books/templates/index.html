@@ -1,18 +1,10 @@
 {% extends "base_generic.html" %}
-
 {% load static %}
-
-
 {% block content %}
- 
-
-
-
 
 <body>
   <style>
   .nav{
-    
     border-width:1px 0;
     list-style:none;
     margin:0;
@@ -29,11 +21,14 @@
 h1{
   font-family: sans-serif;
   text-align: center;
-  font-size: 2em;
+  font-size: 3.3em;
+  text-align: center;
+  padding-top: 15%;
+  padding-bottom: 2%;
 }
   </style>
    
- <h1 style="font-size: xx-large; text-align: center; padding-top: 15%;">Welcome to the Test Bookstore</h1>
+ <h1>Welcome to the Test Bookstore</h1>
   <ul class="nav" style="position: relative;;">
     <button><a href="{% url 'search' %}">Search Books</a></button>
     <button><a href="{% url 'onixfile' %}">Onix File Management</a></button>
