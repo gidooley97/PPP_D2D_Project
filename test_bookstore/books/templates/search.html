@@ -8,48 +8,61 @@
   background-color: #4CAF50; 
   border: none;
   color: white;
-  padding: 12px 20px;
+  padding: 0.5%;
   text-align: center;
-  text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 100%;
+  margin: 1%;
   transition-duration: 0.4s;
   cursor: pointer;
 }
 .button2 {
   background-color: white; 
   color: rgb(252, 252, 252); 
-  border: 2px solid #008CBA;
+  border:  solid #042a7a;
 }
 
 .button2:hover {
-  background-color: #008CBA;
+  background-color: #042a7a;
   color: white;
 }
+ 
+
 
 
 </style>
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
 
-  <form style="width: 50%;" action="{% url 'search' %}" method="get" >
-      <input  name= "q" type="text" placeholder="Search..." size="75">
+  <form style="width: 100%" action="{% url 'search' %}" method="get" >
+      <input  name= "q" type="text" placeholder="Search..." size="75%" >
       <input type="submit" value="Search">
   </form>
+     <ul class = "nav" style="border:1px solid #042a7a; width: 100%;" >
 
-<ul class = "nav" style="border:1px solid #042a7a;">
   {% for book in object_list %}
     <li>
-        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp; </span>
-        
-        
-        <button class="button button2" style="display:inline-block; vertical-align: baseline;"><a href="{% url 'detail' book_id=book.id%}">Details</a></button>
-      
+        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
+        <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
     </li>
   {% endfor %}
-</ul>
-
-</div>
-
+  </ul> 
   
-{% endblock %}
+<div class="col-sm-10 ">
+
+{% if is_paginated %}
+<div class="pagination">
+    <span class="page-links">
+        {% if page_obj.has_previous %}
+            <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endif %}
+
+{% endblock %}</div>
