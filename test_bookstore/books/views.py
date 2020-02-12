@@ -80,20 +80,22 @@ def process_Onix(request):
                     book.desc = dt.desc
                     book.book_formats= dt.book_formats
                     book.sale_flag = dt.sale_flag
+                    book.language = dt.language
+                    book.price = dt.price
                     book.save()
                 
                 except Book.DoesNotExist:
                     #print("inserting")
                     book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
                     subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
-                    desc=dt.desc, book_formats=dt.book_formats,
+                    desc=dt.desc, book_formats=dt.book_formats, language=dt.language, price=dt.price,
                     sale_flag=dt.sale_flag)
 
             message='Successfully processed the Onix file.'
             color='green'
-            books = Book.objects.all()
-            for bk in books:
-                print(bk)
+            #books = Book.objects.all()
+            #for bk in books:
+                #print(bk)
             fs.delete('onix.xml') #delete onix file
         else:
             message='No file to process.'
