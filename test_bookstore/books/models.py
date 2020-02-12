@@ -8,12 +8,14 @@ from django.forms import ModelForm
 class Book(models.Model):
     title = models.CharField(max_length=200)
     authors = models.CharField(max_length=200)
+    price = models.CharField(max_length=15)
     isbn_13 = models.CharField(max_length = 13)
     subtitle = models.CharField(max_length=200, default = '', blank=True)
     series = models.CharField(max_length = 200,default = '', blank=True)
     volume = models.CharField(max_length = 3, default = '', blank=True)
     desc = models.TextField()
     book_formats = models.CharField(max_length=60)
+    language = models.CharField(max_length=50)
     sale_flag = models.BooleanField(default=False)
     
 
