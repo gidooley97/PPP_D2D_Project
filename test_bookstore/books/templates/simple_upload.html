@@ -10,8 +10,8 @@
 <div style=" font-size: large;position: relative;; display:block;padding-top:5px; padding-left: 20%;">
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;"name="myfile" required>
-    <button type="submit" type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;">Upload</button>
+    <input type="file" type="submit" style="padding-top:2%; padding-bottom: 2%"name="myfile" required>
+    <button type="submit">Upload</button>
   </form>
 </div>
   
@@ -25,7 +25,7 @@
 
  <footer style="position: relative; display:block;padding-top:5px; padding-left: 20%;">
    
-  <div><p><a href="{% url 'process' %}">Process Onix File</a></p></div>
+  <div><p style = "padding-top: 1%;" ><a href="{% url 'process' %}" >Process Onix File</a></p></div>
 
 </footer> 
 
