@@ -48,27 +48,45 @@
 </style>
 
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
-<div class = "nav">
+<div class = "nav" style="padding-top: 5%;">
   <form style="width: 100%" action="{% url 'search' %}" method="get" >
       <input  name= "q" type="text" placeholder="Search..." size="75%" >
       <input type="submit" value="Search">
   </form>
   <h2 style="color: #042a7a;">Search Results</h2 >
+    <div class="col-sm-10 text-right">
+
+      {% if is_paginated %}
+      <div class="pagination">
+          <span class="page-links">
+              {% if page_obj.has_previous %}
+                  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+              {% endif %}
+              <span class="page-current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+              </span>
+              {% if page_obj.has_next %}
+                  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+              {% endif %}
+          </span>
+      </div>
+      {% endif %}
+      </div>  
 </div>
-  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%;" >
+  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
 
   {% for book in object_list %}
     <li>
-        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
-        <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+      <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+      <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
     </li>
   {% endfor %}
   </ul> 
   
-<div class="col-sm-10 ">
+<div class="col-sm-10 text-right">
 
 {% if is_paginated %}
-<div class="pagination">
+<div class="pagination ">
     <span class="page-links">
         {% if page_obj.has_previous %}
             <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>

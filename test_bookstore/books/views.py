@@ -66,36 +66,36 @@ def process_Onix(request):
         if fs.exists('onix.xml'):
             #Code to parse goes here
             root= load_onix_file(path)
-            if root:                 
-                data=process_data(root)
-                #Store data in the database
-                for dt in data:          
-                    try:
-                        book = Book.objects.get(isbn_13=dt.isbn_13)
-                        #print("Updating")
-                        book.title =dt.title
-                        book.authors=dt.authors
-                        book.subtitle = dt.subtitle
-                        book.series=dt.series
-                        book.volume=dt.volume
-                        book.desc = dt.desc
-                        book.book_formats= dt.book_formats
-                        book.sale_flag = dt.sale_flag
-                        book.save()
+            data=process_data(root)
+            #Store data in the database
+            for dt in data:          
+                try:
+                    book = Book.objects.get(isbn_13=dt.isbn_13)
+                    #print("Updating")
+                    book.title =dt.title
+                    book.authors=dt.authors
+                    book.subtitle = dt.subtitle
+                    book.series=dt.series
+                    book.volume=dt.volume
+                    book.desc = dt.desc
+                    book.book_formats= dt.book_formats
+                    book.sale_flag = dt.sale_flag
+                    book.language = dt.language
+                    book.price = dt.price
+                    book.save()
                 
-                    except Book.DoesNotExist:
-                        #print("inserting")
-                        book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
-                        subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
-                        desc=dt.desc, book_formats=dt.book_formats,
-                        sale_flag=dt.sale_flag)
+                except Book.DoesNotExist:
+                    #print("inserting")
+                    book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
+                    subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
+                    desc=dt.desc, book_formats=dt.book_formats, language=dt.language, price=dt.price,
+                    sale_flag=dt.sale_flag)
 
-                message='Successfully processed the Onix file.'
-                color='green'
-            else:#Display error message in case the file is not onix
-                message='Unable to process onix file. Try again. '
-                color='red'
-        
+            message='Successfully processed the Onix file.'
+            color='green'
+            #books = Book.objects.all()
+            #for bk in books:
+                #print(bk)
             fs.delete('onix.xml') #delete onix file
         else:
             message='No file to process.'
