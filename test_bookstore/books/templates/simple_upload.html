@@ -3,11 +3,11 @@
 {% load static %}
 
 {% block content %}
-<h1 style="color: rgb(99, 99, 99); font-size: xx-large; text-align: left; padding-left: 20%;padding-top: 15%;">Upload Onix</h1>
+<h1 style="color: rgb(99, 99, 99); font-size: 2.7em; text-align: left; padding-left: 20%;padding-top: 15%;">Upload Onix</h1>
 
 
 
-<div style=" font-size: large;position: relative;; display:block;padding-top:5px; padding-left: 20%;">
+<div style=" font-size:1.8em large;position: relative;; display:block;padding-top:5px; padding-left: 20%;">
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" type="submit" style="padding-top:2%; padding-bottom: 2%"name="myfile" required>

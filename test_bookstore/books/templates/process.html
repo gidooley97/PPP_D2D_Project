@@ -3,17 +3,17 @@
 {% load static %}
 
 {% block content %}
-<h1 style="color: rgb(99, 99, 99); font-size: xx-large; text-align: left; padding-left: 20%;padding-top: 15%;">Process Onix</h1>
+<h1 style="color: rgb(99, 99, 99); font-size: 2.7em; text-align: left; padding-left: 20%;padding-top: 15%; padding-bottom: 2%;">Process Onix</h1>
 
 
 
 <div style="position: center;; display:block;padding-top:5px; padding-left: 20%;">
-  <p style="font-size: large; padding-bottom:5px;">Click process to parse the most recent Onix File</p>
+  <p style="font-size: 1.4em; padding-bottom: 2%;">Click process to parse the most recent Onix File</p>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <!-- <input type="file" name="myfile"> -->
-    <button type="submit" style="padding-top:5px;padding-top:5px;padding: 16px;" onclick="onProcess()" >Process</button>
+    <button type="submit" onclick="onProcess()" >Process</button>
   </form>
 </div>
   
