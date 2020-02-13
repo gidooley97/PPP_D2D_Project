@@ -124,7 +124,7 @@ class SearchResultsView(ListView):
     
     def get_queryset(self): 
         object_list = []
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('s_bar')
         if query is None:
             query = "a"
         object_list = Book.objects.filter(

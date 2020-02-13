@@ -76,7 +76,7 @@
 
   {% for book in object_list %}
     <li>
-      <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+      <button class="button button2" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
       <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
     </li>
   {% endfor %}
