@@ -1,0 +1,95 @@
+#temporary_redirect_banner {
+    height: 4.375em;
+    color: #fff;
+    font-family: "Roboto", Verdana, Geneva, sans-serif;
+    font-size: 1.375em;
+    font-weight: bold;
+}
+#temporary_redirect_banner a {
+    font-weight: normal;
+}
+#li a {
+    color:orange;
+}
+.navbar-top-piece {
+    background-color: #1C2559;
+    border-bottom: .125em solid rgba(255, 255, 255, 0.3);
+    height: 2.1875em;
+    min-height: 2.1875em;
+    padding:0em 1.5625em
+}
+  
+.navbar-top-piece .navbar-nav li a {
+    color: #FFFFFF;
+    padding: 4375em 1.875em;
+    font-weight:200
+}
+  
+.navbar-top-piece .navbar-nav li a span:hover {
+    border-bottom: .125em solid #FF5722;
+    padding-bottom:.125em
+}
+  
+.navbar-top-piece .navbar-header .phone-logo {
+    height: 2.5em;
+    margin-top:.25em
+}
+.navbar-top-piece .navbar-header .phone-btn-signup {
+    margin-top:.3125em
+}
+  
+#navbar-top-piece-links ul {
+    float:right
+}
+html, body {
+    width: auto;
+    overflow-x:hidden
+}
+  
+body {
+    font-family: "Roboto", Verdana, Geneva, sans-serif;
+    font-size:0.75em;
+}
+@media (max-width: 48em) {
+    .navbar-top-piece {
+    height: 3em;
+    border:none
+    }
+  
+    .navbar-top-piece .navbar-toggle {
+        border: none;
+        float:left
+    }
+  
+    .navbar-top-piece .navbar-toggle:focus {
+        background:#1C2559
+    }
+  
+    .navbar-top-piece .navbar-toggle:hover {
+        background:#1C2559
+    }
+  
+    #navbar-top-piece-links {
+        background:#1C2559
+    }
+  
+    #navbar-top-piece-links ul {
+        float:left
+    }
+  
+    #navbar-top-piece-links ul li a span:hover {
+        border-bottom: .125em solid #FF5722;
+        padding-bottom:.125em
+    }
+  
+    .navbar-bottom-piece + .container-fluid {
+    margin-top:3em
+    }
+}
+  
+  
+  
+  
+  
+  
+  

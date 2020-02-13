@@ -1,0 +1,50 @@
+.button {
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 0.5%;
+    text-align: center;
+    display: inline-block;
+    font-size: 100%;
+    margin: 1%;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  .button2 {
+    background-color: white; 
+    color: rgb(252, 252, 252); 
+    border:  solid #042a7a;
+  }
+  
+  .button2:hover {
+    background-color: #042a7a;
+    color: white;
+  }
+
+  .nav {
+    border-width:1px 0;
+    list-style:none;
+    text-align:center;
+  }
+  
+  .nav li{
+    display:inline;
+  }
+  
+  .nav a{
+    display:inline-block;
+    padding:10px;
+  }
+  h2{
+    color: #042a7a;
+    margin-top: 5%;
+  }
+  .col-sm-10{
+    border:1px solid #042a7a;
+     width: 80%; 
+     margin-top: 1%; 
+     margin-left: 10%; 
+     margin-bottom: 3%;
+
+
+  }
