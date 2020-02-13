@@ -3,12 +3,13 @@
 {% load static %}
 
 {% block content %}
-<h1 style="color: rgb(99, 99, 99); font-size: 2.7em; text-align: left; padding-left: 20%;padding-top: 15%; padding-bottom: 2%;">Process Onix</h1>
+<link rel="stylesheet" type="text/css" href="{% static 'process_style.css' %}">
+<h1>Process Onix</h1>
 
 
 
-<div style="position: center;; display:block;padding-top:5px; padding-left: 20%;">
-  <p style="font-size: 1em; padding-bottom: 2%;">Click process to parse the most recent Onix File</p>
+<div class = "form_div">
+  <p class = "user_prompt">Click process to parse the most recent Onix File</p>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
@@ -19,15 +20,13 @@
   
 
 
-<p style="font-size: large; padding-left: 20%; padding-bottom:5px; color:{{color}};" id="messageLbl">{{message}}</p>
+<p class = "color:{{color}};" id="messageLbl">{{message}}</p>
  
 
 
 
- <footer style="position: relative; display:block;padding-top:5px; padding-left: 20%;">
-   
-  <div><p><a href="{% url 'index' %}">Return to home</a></p></div>
-
+ <footer >
+  <p><a href="{% url 'index' %}">Return to home</a></p>
 </footer> 
 
   

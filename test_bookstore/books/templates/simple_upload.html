@@ -4,29 +4,24 @@
 
 {% block content %}
 
-<h1 style="color: rgb(99, 99, 99); font-size: 2.7em; text-align: left; padding-left: 20%;padding-top: 15%;">Upload Onix</h1>
+<h1>Upload Onix</h1>
 
+<link rel="stylesheet" type="text/css" href="{% static 'upload_style.css' %}">
 
-
-<div style=" font-size:1.8em large;position: relative;; display:block;padding-top:5px; padding-left: 20%;">
+<div class = "form_div"></div>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" type="submit" style="padding-top:2%; padding-bottom: 2%"name="myfile" required>
-    <button type="submit">Upload</button>
+    <input type="file" type="submit" class = "fileSub" name="myfile" required>
+    <button id = 'up_btn' type="submit">Upload</button>
   </form>
 </div>
   
-
   {% if uploaded_file_url %}
-    <p style="font-size: large; padding-bottom:5px; padding-left: 20%;">File uploaded at: {{ uploaded_file_url }}</p>
+    <p class = "confirm_msg">File uploaded at: {{ uploaded_file_url }}</p>
   {% endif %}
-
-
-
-
- <footer style="position: relative; display:block;padding-top:5px; padding-left: 20%;">
-   
-  <div><p style = "padding-top: 1%;" ><a href="{% url 'process' %}" >Process Onix File</a></p></div>
+ <footer>
+  
+ <p style = "padding-top: 1%;" ><a href="{% url 'process' %}" >Process Onix File</a></p>
 
 </footer> 
 

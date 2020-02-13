@@ -3,56 +3,16 @@
 {% block content %}
 
 {% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'search_style.css' %}">
 <body>
-<style>
-  .button {
-  background-color: #4CAF50; 
-  border: none;
-  color: white;
-  padding: 0.5%;
-  text-align: center;
-  display: inline-block;
-  font-size: 100%;
-  margin: 1%;
-  transition-duration: 0.4s;
-  cursor: pointer;
-}
-.button2 {
-  background-color: white; 
-  color: rgb(252, 252, 252); 
-  border:  solid #042a7a;
-}
-
-.button2:hover {
-  background-color: #042a7a;
-  color: white;
-}
-
-.nav {
-  margin-top: 1%;
-    border-width:1px 0;
-    list-style:none;
-    text-align:center;
-}
-
-.nav li{
-    display:inline;
-}
-
-.nav a{
-    display:inline-block;
-    padding:10px;
-}
-
-</style>
 
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
-<div class = "nav" style="padding-top: 2;">
+<div class = "nav">
   <form style="width: 100%" action="{% url 'search' %}" method="get" >
       <input  style = "border-bottom-color: dimgrey;" name= "s_bar" type="text" placeholder="Search..." size="75%" >
       <input type="submit" value="Search">
   </form>
-  <h2 style="color: #042a7a;margin-top: 5%;">Search Results</h2 >
+  <h2>Search Results</h2 >
     <div class="col-sm-10 text-right">
 
       {% if is_paginated %}
@@ -72,7 +32,7 @@
       {% endif %}
       </div>  
 </div>
-  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-top: 1%; margin-left: 10%; margin-bottom: 3%;" >
+  <ul class="col-sm-10">
 
   {% for book in object_list %}
     <li>
