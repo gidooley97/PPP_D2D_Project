@@ -20,6 +20,7 @@ from django.core.paginator import Paginator
 
 
 
+
 def index(request):
     documents = Document.objects.all()
     print(request)
@@ -124,14 +125,20 @@ class SearchResultsView(ListView):
     
     def get_queryset(self): 
         object_list = []
+        title_list = []
+        other_list = []
         query = self.request.GET.get('s_bar')
         if query is None:
             query = "a"
-        object_list = Book.objects.filter(
-            Q(title__icontains=query) | Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
+        title_list = Book.objects.filter(Q(title__icontains=query))
+        other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
             | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
-            | Q(sale_flag__icontains=query)
-        )
+            | Q(sale_flag__icontains=query))
+
+        for x in title_list:
+            object_list.append(x)
+        for x in other_list:
+            object_list.append(x)
         return object_list
     
     
