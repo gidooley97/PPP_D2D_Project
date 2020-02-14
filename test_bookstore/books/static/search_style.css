@@ -9,11 +9,13 @@
     margin: 1%;
     transition-duration: 0.4s;
     cursor: pointer;
+    padding: 1%;
   }
   .button2 {
     background-color: white; 
     color: rgb(252, 252, 252); 
     border:  solid #042a7a;
+    padding:1%;
   }
   
   .button2:hover {
@@ -36,15 +38,10 @@
     padding:10px;
   }
   h2{
-    color: #042a7a;
+    color:#042a7a;
     margin-top: 5%;
-  }
-  .col-sm-10{
-    border:1px solid #042a7a;
-     width: 80%; 
-     margin-top: 1%; 
-     margin-left: 10%; 
-     margin-bottom: 3%;
-
+    font-size: 3em;
+    font-family: sans-serif;
 
   }
+ 
