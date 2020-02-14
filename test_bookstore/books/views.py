@@ -17,6 +17,8 @@ from .process_onix import process_data
 from django.db.models import Q
 from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
+from urllib.parse import urlencode
+from django import template
 
 
 
@@ -123,13 +125,15 @@ class SearchResultsView(ListView):
     template_name = 'search.html'
     paginate_by = 20
     
+
+    
     def get_queryset(self): 
         object_list = []
         title_list = []
         other_list = []
         query = self.request.GET.get('s_bar')
         if query is None:
-            query = "a"
+            query = "abcdefhijklmnopqrstuvwxyz"
         title_list = Book.objects.filter(Q(title__icontains=query))
         other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
             | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
@@ -140,5 +144,5 @@ class SearchResultsView(ListView):
         for x in other_list:
             object_list.append(x)
         return object_list
-    
+ 
     
