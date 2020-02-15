@@ -5,6 +5,7 @@
     padding:0;
     text-align:center;
     position: relative;
+    
 }
 .nav li{
     display:inline;
@@ -14,6 +15,7 @@
     padding:10px;
 }
 h1{
+  color: #042a7a;
   font-family: sans-serif;
   text-align: center;
   font-size: 3.3em;

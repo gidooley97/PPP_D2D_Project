@@ -15,7 +15,8 @@
     padding:10px;
 }
 h1{
-  font-size: xx-large; 
+  font-size: 3em; 
+  font-family: sans-serif;
   text-align: center; 
   padding-bottom: 2%;
 }
