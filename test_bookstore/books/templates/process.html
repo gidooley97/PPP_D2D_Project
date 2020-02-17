@@ -1,0 +1,33 @@
+{% extends 'base_generic.html' %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'process_style.css' %}">
+<h1 style = "color: #042a7a; font-size: 3em; font-family: sans-serif;">Process Onix</h1>
+
+
+
+<div class = "form_div">
+  <p class = "user_prompt">Click process to parse the most recent Onix File</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- <input type="file" name="myfile"> -->
+    <button type="submit" onclick="onProcess()" >Process</button>
+  </form>
+</div>
+  
+
+
+<p style = "color:{{color}};" id="messageLbl">{{message}}</p>
+ 
+
+
+
+ <footer >
+  <p><a href="{% url 'index' %}">Return to home</a></p>
+</footer> 
+
+  
+{% endblock %}

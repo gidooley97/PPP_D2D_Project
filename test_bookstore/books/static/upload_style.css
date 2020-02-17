@@ -1,0 +1,35 @@
+h1{
+    color: rgb(99, 99, 99);
+    font-size: 2.7em;
+    text-align: left; 
+    margin-left: 20%;
+    padding-top: 5%;
+}
+.form_div{
+    font-size:1.8em;
+    position: relative;
+    display:block;
+    padding-top:1%; 
+    margin-left: 20%;
+}
+
+.confirm_msg{
+    font-size: 2.8em; 
+    padding-bottom:5px; 
+    margin-left: 20%;
+}
+footer{
+    position: relative; 
+    display:block;
+    padding-top:5px; 
+    margin-left: 20%;
+}
+#up_btn{
+    margin-left:20%;
+}
+.fileSub{
+    padding-top:2%; 
+    padding-bottom: 2%; 
+    margin-left: 20%;
+}
+

@@ -5,10 +5,9 @@
 {% load static %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
-
  
     <div class = "main">
-        <h1>{{ book.title }}</h1>
+        <h1 style = "color: #042a7a;">{{ book.title }}</h1>
         <br>
         <h2>{{ book.subtitle }}</h2> 
         <br>
@@ -16,21 +15,29 @@
  
     <div class = "attributes">
     <br>
-        <p><strong>Series: </strong> {{ book.series }}</p>
+        <h6><strong>Price: $</strong> {{ book.price }}</h6>
+        <h6><strong>Series: </strong> {{ book.series }}</h6>
         <h6><strong>Volume: </strong> {{ book.volume }}</h6>
         <h6><strong>ISBN: </strong>{{ book.isbn_13 }}</h6>
         <br>
         <h6><strong>Description:</strong></h6>
-        <p class = "indent_this"> {{ book.desc }} </p>
+        <p class = "indent_this"> {{ book.desc |safe }} </p>
         <br>
-        <h6><strong>Available: </strong>{{ book.book_formats }}</h6>
+        <h6><strong>Available:</strong> {{book.book_formats}}</h6>
         
+        <h6><strong>Language: </strong>{{ book.language }}</h6>
+        <br>
+
         <br>
         {% if book.sale_flag %}
             <p style = "color: green;"> For Sale</p>
         {% else %}  
             <p style = "color: red;">Not For Sale</p>
         {% endif %}
+
+
+        <a href="{{request.META.HTTP_REFERER}}" style="padding-left: 70%; padding-bottom: 10%;">Go back</a>
+
 </div>
 </div>
   
