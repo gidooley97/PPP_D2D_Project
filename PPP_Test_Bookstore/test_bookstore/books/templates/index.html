@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'index_style.css' %}">  
+<body>
+  <div class = "navigation">
+    
+ <h1 style = "color: #042a7a;">Welcome to the Test Bookstore</h1>
+ <div class = "nav" style="padding-top: 2%;">
+  <form style="width: 100%;" action="{% url 'search' %}" method="get" >
+    <input  name= "s_bar"style = "padding: 1%; border-bottom-color: dimgrey; font-size: 1.3em;" type="text" placeholder="Search..." size="75%" >
+    <input type="submit" value="Search" style = "padding: 1%; font-size:1.3em;">
+  </form>
+</body>   
+{% endblock %}
