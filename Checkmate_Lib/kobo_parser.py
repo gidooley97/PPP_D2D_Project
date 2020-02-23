@@ -29,41 +29,68 @@ class KoboSite:
         print(title)
         return title
 
-    def subtitleParser(contnet):
+    def subtitleParser(self,content):
         pass
         
 
-    def authorsParser(content):
+    def authorsParser(self,content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        #author_element = root.xpath(".//span[@id='key-contributors']/a")[0]
-        #author = author_element.text
-        return author
+        author_elements = root.xpath("//span[@class='visible-contributors']/a[@class='contributor-name']")
+        authors = []
+        for auth_element in author_elements:
+            authors.append(auth_element.text)
+            print(auth_element.text)
+        return authors
 
-    def isbnParser(content):
+    def isbnParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
+        root = tree.getroot() #prove that isbn_13 is always 3rd li/span item.
+        isbn_element = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")[3].xpath('./span')[0]
+        isbn = isbn_element.text
+        print(isbn)
         return isbn
 
-    def formatParser(content):
-        pass
+    def formatParser(self, content):
+        #Kobo only has ebooks
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
+        form = format_element.text.strip().split(' ')[0]
+        print(form)
+        return form
+        
 
     def imageParser(content):
-        pass
+        pass # need to figure out this part
 
-    def descParser(content):
-        pass
-
-    def seriesParser(content):
-        pass
-
+    def descParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
+        desc= etree.tostring(desc_elements, method='html', with_tail='False')
+        # need to decide whther to take all or only the 1st p tag content
+        print(desc) 
+        return desc
+    def seriesParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()  
+        series ='' 
+        if root.xpath("//span[@class='product-sequence-field']/a"):
+            series = root.xpath("//span[@class='product-sequence-field']/a")[0].text    
+            series = series.strip().split('#')[0]
+        print(series) #volume is include in the series, find a way return both.
+        return series
     def volumeParser(content):
         pass
 
     def contentParser(content):
-        pass
+        pass # we already have this
 
     def saleReadyParser(content):
         pass
@@ -82,8 +109,8 @@ class KoboSite:
     def tester(content):
         print("Hello")
    
-
-############# End of Class #################
+   
+    ############# End of Class #################
 
 
 
@@ -92,7 +119,11 @@ def main():
    # url = prompt("Enter a url");
     content = fetch(url)
     site = KoboSite() 
-    site.titleParser(content)
+    #site.titleParser(content)
+    #site.authorsParser(content)
+    #site.isbnParser(content)
+    #site.formatParser(content)
+    site.descParser(content)
   
 def fetch(url):
     response = requests.get(url)
