@@ -6,7 +6,7 @@ import requests
 ############ KoboSite Class ################
 """parses the book data from kobo"""
 class KoboSite:
-    def __init__():
+    def __init__(self):
         pass
      
     def get_book_data_from_site(self,url):
@@ -19,12 +19,14 @@ class KoboSite:
         pass
 
     #------------ Utility Methods -------------
-    def titleParser(content):
+    def titleParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        #title_element = root.xpath(".//h1[@itemprop='name']")[0]
-        #title = title_element.text
+        print(root)
+        title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
+        title = title_element.text
+        print(title)
         return title
 
     def subtitleParser(contnet):
@@ -90,7 +92,7 @@ def main():
    # url = prompt("Enter a url");
     content = fetch(url)
     site = KoboSite() 
-    site.titleParser()
+    site.titleParser(content)
   
 def fetch(url):
     response = requests.get(url)
