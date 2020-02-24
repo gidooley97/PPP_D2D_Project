@@ -94,6 +94,7 @@ class KoboSite:
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()  
         series_element = ''
+        series = ''
         if root.xpath(".//span[@class='product-sequence-field']/a"):
             series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
             series = series_element.text
@@ -117,8 +118,10 @@ class KoboSite:
             series = series_element.text
         
             #Seperate series number from series title
+            
             series_split = series.split('#')
-            volume = series_split[1]
+            if len(series_split) > 1:
+                volume = series_split[1]
         print(volume)
         return volume
 
@@ -159,8 +162,28 @@ class KoboSite:
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
-    def parseAll(scontent, SiteBookData):
-        pass
+    def parseAll(self, site, content):
+        
+        print("Title: ")
+        site.titleParser(content)
+        print("Authors: ")
+        site.authorsParser(content)
+        print("ISBN: ")
+        site.isbnParser(content)
+        print("Format: ")
+        site.formatParser(content)
+        print("Description: ")
+        site.descParser(content)
+        print("Subtitle: ")
+        site.subtitleParser(content)
+        print("Series: ")
+        site.seriesParser(content)
+        print("volume: ")
+        site.volumeParser(content)
+        print("Image URL: ")
+        site.imageUrlParser(content)
+        print("Ready Status: ")
+        site.saleReadyParser(content)
 
    
    
@@ -169,10 +192,12 @@ class KoboSite:
 
 
 def main():
-    url = "https://www.kobo.com/us/en/ebook/the-green-mile-2"
-   # url = prompt("Enter a url");
+
+    #url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
+    url = input("Enter a url: ")
     content = fetch(url)
     site = KoboSite() 
+    site.parseAll(site,content)
     #site.titleParser(content)
     #site.authorsParser(content)
     site.isbnParser(content)
