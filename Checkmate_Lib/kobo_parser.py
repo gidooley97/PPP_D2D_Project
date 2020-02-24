@@ -30,7 +30,15 @@ class KoboSite:
         return title
 
     def subtitleParser(self,content):
-        pass
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        subtitle = ''
+        if root.xpath(".//h2/span[@class='subtitle product-field']"):
+            subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
+        print(subtitle)
+        return subtitle
+        
         
 
     def authorsParser(self,content):
@@ -64,7 +72,7 @@ class KoboSite:
         return form
         
 
-    def imageParser(content):
+    def imageParser(self, content):
         pass # need to figure out this part
 
     def descParser(self, content):
@@ -76,38 +84,64 @@ class KoboSite:
         # need to decide whther to take all or only the 1st p tag content
         print(desc) 
         return desc
+
     def seriesParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()  
-        series ='' 
-        if root.xpath("//span[@class='product-sequence-field']/a"):
-            series = root.xpath("//span[@class='product-sequence-field']/a")[0].text    
-            series = series.strip().split('#')[0]
-        print(series) #volume is include in the series, find a way return both.
-        return series
-    def volumeParser(content):
+        series_element = ''
+        if root.xpath(".//span[@class='product-sequence-field']/a"):
+            series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
+            series = series_element.text
+
+        #Seperate series number from series title
+        series_split = series.split('#')
+        print(series_split[0]) #volume is include in the series, find a way return both.
+        return series_split[0]
+
+
+
+
+    def volumeParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()  
+        series_element = ''
+        volume = ''
+        if root.xpath(".//span[@class='product-sequence-field']/a"):
+            series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
+            series = series_element.text
+        
+            #Seperate series number from series title
+            series_split = series.split('#')
+            volume = series_split[1]
+        print(volume)
+        return volume
+
+    def saleReadyParser(self, content):
         pass
 
-    def contentParser(content):
-        pass # we already have this
+    def imageUrlParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()  
+        imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
+        imgUrl = imgUrl_element
+        print(imgUrl)
+        return imgUrl
 
-    def saleReadyParser(content):
+    def extraParser(self, content):
         pass
 
-    def extraParser(content):
-        pass
 
-    def imageUrlParser(content):
-        pass
+
+    
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
     def parseAll(content, SiteBookData):
         pass
 
-    def tester(content):
-        print("Hello")
    
    
     ############# End of Class #################
@@ -115,7 +149,7 @@ class KoboSite:
 
 
 def main():
-    url = "https://www.kobo.com/us/en/ebook/the-green-mile-2"
+    url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
    # url = prompt("Enter a url");
     content = fetch(url)
     site = KoboSite() 
@@ -123,7 +157,12 @@ def main():
     #site.authorsParser(content)
     #site.isbnParser(content)
     #site.formatParser(content)
-    site.descParser(content)
+    #site.descParser(content)
+    #site.subtitleParser(content)
+    #site.seriesParser(content)
+    #site.volumeParser(content)
+    #site.imageUrlParser(content)
+    site.saleReadyParser(content)
   
 def fetch(url):
     response = requests.get(url)
