@@ -56,13 +56,17 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() #prove that isbn_13 is always 3rd li/span item.
-        isbn_element = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")[3].xpath('./span')[0]
-        isbn = isbn_element.text
+        isbn_elements = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")
+        isbn=''
+        for isbn_tmp in isbn_elements:
+            if isbn_tmp.text.strip()=='ISBN:':
+                isbn =isbn_tmp.xpath('./span')[0].text
+            
         print(isbn)
         return isbn
 
     def formatParser(self, content):
-        #Kobo only has ebooks
+        #Kobo only has ebooks and audio books
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
@@ -155,7 +159,7 @@ class KoboSite:
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
-    def parseAll(content, SiteBookData):
+    def parseAll(scontent, SiteBookData):
         pass
 
    
@@ -165,20 +169,20 @@ class KoboSite:
 
 
 def main():
-    url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
+    url = "https://www.kobo.com/us/en/ebook/the-green-mile-2"
    # url = prompt("Enter a url");
     content = fetch(url)
     site = KoboSite() 
     #site.titleParser(content)
     #site.authorsParser(content)
-    #site.isbnParser(content)
+    site.isbnParser(content)
     #site.formatParser(content)
     #site.descParser(content)
     #site.subtitleParser(content)
     #site.seriesParser(content)
     #site.volumeParser(content)
     #site.imageUrlParser(content)
-    site.saleReadyParser(content)
+    #site.saleReadyParser(content)
   
 def fetch(url):
     response = requests.get(url)
