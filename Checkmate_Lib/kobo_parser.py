@@ -119,7 +119,23 @@ class KoboSite:
         return volume
 
     def saleReadyParser(self, content):
-        pass
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        desc= root.xpath("//h2[@class='pricing-title']")[0].text
+        sale_flag = 0 # 0 = Buy   1 = Pre-order
+        # Check for the words 'Buy' and 'Pre-Order
+        desc_list = desc.split(' ')
+        for word in desc_list:
+            if word == 'Buy':
+                sale_flag = 0
+                print('Buy Now')
+            if word == 'Pre-Order':
+                sale_flag = 1
+                print("Pre-Order")
+        return sale_flag
+
+        print(desc)
 
     def imageUrlParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
