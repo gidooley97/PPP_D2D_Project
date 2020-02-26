@@ -36,7 +36,7 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        author_elements = root.xpath(".//a[@class='contributor']") #div[@class='contributors']/p/span
+        author_elements = root.xpath("//a[@class='contributor']") #div[@class='contributors']/p/span
         print(author_elements)
         authors = []
         for auth_element in author_elements:
@@ -48,8 +48,9 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
-        isbn_element = root.xpath(".//dd[@class='meta_description isbn']")[0]
-        isbn = isbn_element.text
+        isbn_element = root.xpath("/html/head/meta[18]")[0]#.//dl[@class='metadata']/dd[@class='meta_description isbn']
+        isbn = isbn_element
+        isbn.find('isbn')
         print(isbn)
         return isbn
 
@@ -124,7 +125,7 @@ def main():
     site = ScribdSite() 
     site.titleParser(content)
     site.authorsParser(content)
-    #site.isbnParser(content)
+    site.isbnParser(content)
     #site.formatParser(content)
     #site.descParser(content)
   
