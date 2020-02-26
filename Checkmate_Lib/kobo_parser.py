@@ -2,6 +2,10 @@ from site_book_data import SiteBookData
 import io
 from lxml import etree
 import requests
+from PIL import Image
+import requests
+from io import BytesIO
+import urllib.request
 
 ############ KoboSite Class ################
 """parses the book data from kobo"""
@@ -76,8 +80,45 @@ class KoboSite:
         return form
         
 
+
+
+
+
+
+
+
+
     def imageParser(self, content):
-        pass # need to figure out this part
+        url =   self.imageUrlParser(content)
+        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
+        print("Image Function: " + url)
+        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
+        #new_url = "http:" + url
+        #image = Image.open(new_url)
+       # image.save("here.jpg")
+
+        response = requests.get(url)
+        image = Image.open(urllib.request.urlopen(url))
+        image.save("here.jpg")
+
+
+    def imageUrlParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()  
+        imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
+        imgUrl = "http:" + imgUrl_element
+        print(imgUrl)
+        return imgUrl
+
+
+
+
+
+
+
+
+
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -144,14 +185,6 @@ class KoboSite:
 
         print(desc)
 
-    def imageUrlParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()  
-        imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
-        imgUrl = imgUrl_element
-        print(imgUrl)
-        return imgUrl
 
     def extraParser(self, content):
         pass
@@ -178,12 +211,14 @@ class KoboSite:
         site.subtitleParser(content)
         print("Series: ")
         site.seriesParser(content)
-        print("volume: ")
+        print("Volume: ")
         site.volumeParser(content)
         print("Image URL: ")
         site.imageUrlParser(content)
         print("Ready Status: ")
         site.saleReadyParser(content)
+        print("Image Saved")
+        site.imageParser(content)
 
    
    
@@ -192,7 +227,7 @@ class KoboSite:
 
 
 def main():
-
+    print("############################BEGIN###############################")
     #url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
     url = input("Enter a url: ")
     content = fetch(url)
@@ -206,7 +241,10 @@ def main():
     #site.subtitleParser(content)
     #site.seriesParser(content)
     #site.volumeParser(content)
-    #site.imageUrlParser(content)
+    #print("#################URL###################")
+   # site.imageUrlParser(content)
+   # print(##########)
+   # site.imageParser(content)
     #site.saleReadyParser(content)
   
 def fetch(url):
