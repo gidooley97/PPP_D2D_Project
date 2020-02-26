@@ -36,7 +36,7 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        author_elements = root.xpath("//a[@class='contributor']") #div[@class='contributors']/p/span
+        author_elements = root.xpath("//*[@class='contributor']") 
         print(author_elements)
         authors = []
         for auth_element in author_elements:
@@ -48,20 +48,18 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
-        isbn_element = root.xpath("/html/head/meta[18]")[0]#.//dl[@class='metadata']/dd[@class='meta_description isbn']
-        isbn = isbn_element
-        isbn.find('isbn')
+        isbn_element = root.xpath("/html/head/meta[18]/@content")
+        isbn = isbn_element[0]
         print(isbn)
         return isbn
 
-'''
+
     def formatParser(self, content):
-        #Scribd only has ebooks
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
-        format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
-        form = format_element.text.strip().split(' ')[0]
+        format_element = root.xpath("/html/head/meta[13]/@content")
+        form = format_element[0]
         print(form)
         return form
         
@@ -73,9 +71,8 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
-        desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
-        desc= etree.tostring(desc_elements, method='html', with_tail='False')
-        # need to decide whther to take all or only the 1st p tag content
+        desc_elements = root.xpath("/html/head/meta[16]/@content")
+        desc = desc_elements[0]
         print(desc) 
         return desc
 
@@ -84,8 +81,8 @@ class ScribdSite:
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()  
         series ='' 
-        if root.xpath("//span[@class='product-sequence-field']/a"):
-            series = root.xpath("//span[@class='product-sequence-field']/a")[0].text    
+        if root.xpath(""):
+            series = root.xpath("")[0].text    
             series = series.strip().split('#')[0]
         print(series) #volume is include in the series, find a way return both.
         return series
@@ -113,7 +110,6 @@ class ScribdSite:
     def tester(content):
         print("Hello")
    
-   '''
     ############# End of Class #################
 
 
@@ -126,8 +122,8 @@ def main():
     site.titleParser(content)
     site.authorsParser(content)
     site.isbnParser(content)
-    #site.formatParser(content)
-    #site.descParser(content)
+    site.formatParser(content)
+    site.descParser(content)
   
 def fetch(url):
     response = requests.get(url)
