@@ -2,10 +2,8 @@ from site_book_data import SiteBookData
 import io
 from lxml import etree
 import requests
-from PIL import Image
-import requests
-from io import BytesIO
-import urllib.request
+import mechanize
+#from mechanize import Browser
 
 ############ KoboSite Class ################
 """parses the book data from kobo"""
@@ -166,6 +164,7 @@ class KoboSite:
         print(volume)
         return volume
 
+  
     def saleReadyParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
@@ -227,15 +226,17 @@ class KoboSite:
 
 
 def main():
-    print("############################BEGIN###############################")
-    #url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
-    url = input("Enter a url: ")
+
+    url = "https://www.kobo.com"
+    #url = input("Enter a url: ")
     content = fetch(url)
-    site = KoboSite() 
-    site.parseAll(site,content)
+
+    fill_form(url)
+    #site = KoboSite() 
+    #site.parseAll(site,content)
     #site.titleParser(content)
     #site.authorsParser(content)
-    site.isbnParser(content)
+    #site.isbnParser(content)
     #site.formatParser(content)
     #site.descParser(content)
     #site.subtitleParser(content)
@@ -249,9 +250,26 @@ def main():
   
 def fetch(url):
     response = requests.get(url)
+    print(response.content)
     return response.content
 
-
+def fill_form(url):
+    #This funcrion navigates the search page 
+    br = mechanize.Browser()
+    br.set_handle_robots(False)
+    br.open(url)  
+    #selects the form to populate 
+    br.select_form(class_="search-form")
+    #populate the field. You may need to check if this is actually working
+    br['query'] ="lord of rings"
+    print(br['query'])
+    #submit the form and get the returned page.
+    res=br.submit()
+    fileobj = open("page.html","wb")#saves the returned page to a file. 
+    #You can open and se the content
+    fileobj.write(res.read())
+    fileobj.close()
+    #print(res.content)  
 
 
 
