@@ -32,7 +32,8 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        subtitle = root.xpath("/html/body/div[3]/div/h2/text()")
+        subtitle_element = root.xpath("/html/body/div[3]/div/h2")[0]
+        subtitle = subtitle_element.text
         return subtitle
         
         
@@ -58,8 +59,7 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        format_element = root.xpath("/html/body/div[3]/div/div/h6[6]/text()")
-        format_type = format_element
+        format_type = root.xpath("/html/body/div[3]/div/div/h6[6]/text()")[0]
         return format_type
 
     def imageParser(content):
@@ -69,11 +69,12 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        desc_elements = root.xpath("/html/body/div[3]/div/div/p[@class='indent_this']")
+        desc_elements = root.xpath("/html/body/div[3]/div/div/p[@class='indent_this']/text()")
         full_desc = ""
+        print(desc_elements)
         for desc in desc_elements:
-            full_desc = full_desc+desc.text
-        if full_desc.__len__ == 0
+            full_desc = full_desc+desc
+        if len(full_desc) == 0:
             full_desc
         cleanr = re.compile('<.*?>')
         cleantext = re.sub(cleanr, '', full_desc)
@@ -81,16 +82,16 @@ class KoboSite:
         return cleantext
 
     def seriesParser(content):
-        pass
+        /html/body/div[3]/div/div/h6[2]/text()
 
     def volumeParser(content):
-        pass
+        /html/body/div[3]/div/div/h6[3]/text()
 
     def contentParser(content):
         pass
 
     def saleReadyParser(content):
-        pass
+        /html/body/div[3]/div/div/p[2]
 
     def extraParser(content):
         pass
@@ -112,7 +113,7 @@ class KoboSite:
 
 
 def main():
-    url = "http://127.0.0.1:8000/books/30/"
+    url = "http://127.0.0.1:8000/books/4/"
     #url = prompt("Enter a url");
     content = fetch(url)
     site = KoboSite() 
