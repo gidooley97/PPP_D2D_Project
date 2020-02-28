@@ -2,33 +2,24 @@ from site_book_data import SiteBookData
 import io
 from lxml import etree
 import requests
-import mechanize
-#from mechanize import Browser
+from PIL import Image
+import requests
+from io import BytesIO
+import urllib.request
+from checkmate import BookSite
 
 ############ KoboSite Class ################
 """parses the book data from kobo"""
-class KoboSite:
-    def __init__(self):
-        pass
-     
-    def get_book_data_from_site(self,url):
-        pass
+class KoboSite(BookSite):
 
-    def find_matches_at_site(self,book_data):
-        pass
-
-    def convert_book_id_to_url(self,book_id):
-        pass
-
-    #------------ Utility Methods -------------
+    #------------ Override Utility Methods -------------
+    
     def titleParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        print(root)
         title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
         title = title_element.text
-        print(title)
         return title
 
     def subtitleParser(self,content):
@@ -38,7 +29,6 @@ class KoboSite:
         subtitle = ''
         if root.xpath(".//h2/span[@class='subtitle product-field']"):
             subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
-        print(subtitle)
         return subtitle
         
         
@@ -51,7 +41,6 @@ class KoboSite:
         authors = []
         for auth_element in author_elements:
             authors.append(auth_element.text)
-            print(auth_element.text)
         return authors
 
     def isbnParser(self, content):
@@ -63,8 +52,6 @@ class KoboSite:
         for isbn_tmp in isbn_elements:
             if isbn_tmp.text.strip()=='ISBN:':
                 isbn =isbn_tmp.xpath('./span')[0].text
-            
-        print(isbn)
         return isbn
 
     def formatParser(self, content):
@@ -74,27 +61,10 @@ class KoboSite:
         root = tree.getroot() 
         format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
         form = format_element.text.strip().split(' ')[0]
-        print(form)
         return form
         
-
-
-
-
-
-
-
-
-
     def imageParser(self, content):
         url =   self.imageUrlParser(content)
-        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
-        print("Image Function: " + url)
-        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
-        #new_url = "http:" + url
-        #image = Image.open(new_url)
-       # image.save("here.jpg")
-
         response = requests.get(url)
         image = Image.open(urllib.request.urlopen(url))
         image.save("here.jpg")
@@ -106,17 +76,7 @@ class KoboSite:
         root = tree.getroot()  
         imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
         imgUrl = "http:" + imgUrl_element
-        print(imgUrl)
         return imgUrl
-
-
-
-
-
-
-
-
-
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -125,7 +85,6 @@ class KoboSite:
         desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
         desc= etree.tostring(desc_elements, method='html', with_tail='False')
         # need to decide whther to take all or only the 1st p tag content
-        print(desc) 
         return desc
 
     def seriesParser(self, content):
@@ -140,7 +99,6 @@ class KoboSite:
 
         #Seperate series number from series title
         series_split = series.split('#')
-        print(series_split[0]) #volume is include in the series, find a way return both.
         return series_split[0]
 
 
@@ -161,7 +119,6 @@ class KoboSite:
             series_split = series.split('#')
             if len(series_split) > 1:
                 volume = series_split[1]
-        print(volume)
         return volume
 
   
@@ -171,18 +128,17 @@ class KoboSite:
         root = tree.getroot() 
         desc= root.xpath("//h2[@class='pricing-title']")[0].text
         sale_flag = 0 # 0 = Buy   1 = Pre-order
+        status = ""
         # Check for the words 'Buy' and 'Pre-Order
         desc_list = desc.split(' ')
         for word in desc_list:
             if word == 'Buy':
                 sale_flag = 0
-                print('Buy Now')
+                status = "Buy Now"
             if word == 'Pre-Order':
                 sale_flag = 1
-                print("Pre-Order")
-        return sale_flag
-
-        print(desc)
+                status = "Pre-order"
+        return status
 
 
     def extraParser(self, content):
@@ -190,7 +146,6 @@ class KoboSite:
 
 
 
-    
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
@@ -278,6 +233,8 @@ def fill_form(url):
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

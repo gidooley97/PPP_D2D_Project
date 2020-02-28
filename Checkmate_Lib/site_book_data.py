@@ -4,7 +4,7 @@ class SiteBookData:
         isbn_13, description, series, volume_number,subtitle, authors,
         book_id, site_slug, parse_status, url, content, ready_for_sale, extra):
         self.format=format
-        self.book_title=book_img
+        self.book_title=book_title
         self.book_img=book_img #need to figure how to store
         self.book_img_url= book_img_url
         self.isbn_13=isbn_13
@@ -20,3 +20,16 @@ class SiteBookData:
         self.content=content
         self.ready_for_sale=ready_for_sale
         self.extra=extra
+    
+    def print_all():
+        print("Format: " + self.format)
+        print("Title: " + self.book_title)
+        print("Authors: " + self.book_authors)
+        print("Series: " + self.series)
+        print("Volume:  " + self.volume)
+        print("ISBN: " + self.isbn_13)
+        print("Description: " + self.description)
+        print("Book Image URL: " + self.book_img_url)
+        print("Sale Status: " + self.ready_for_sale)
+
+
