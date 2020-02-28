@@ -36,12 +36,12 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        author_elements = root.xpath("//*[@class='contributor']") 
+        author_elements = root.xpath(".//span[@class='author']")
         print(author_elements)
         authors = []
         for auth_element in author_elements:
             authors.append(auth_element.text)
-        print(authors)
+            print(auth_element.text)
         return authors
 
     def isbnParser(self, content):
@@ -64,8 +64,8 @@ class ScribdSite:
         return form
         
 
-    def imageParser(content):
-        pass # need to figure out this part
+    def imageParserURL(content):
+        pass
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -100,7 +100,13 @@ class ScribdSite:
         pass
 
     def imageUrlParser(content):
-        pass
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        imageUrlParser_element = root.xpath("/html/head/link[5]/@href")
+        imageURL = imageUrlParser_element[0]
+        print(imageURL) 
+        return imageURL
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
@@ -115,15 +121,17 @@ class ScribdSite:
 
 
 def main():
-    url = "https://www.scribd.com/book/249308926/1984"
+    url = "https://www.scribd.com/book/205512285/A-Series-of-Unfortunate-Events-1-The-Bad-Beginning"
    # url = prompt("Enter a url");
     content = fetch(url)
     site = ScribdSite() 
-    site.titleParser(content)
+    #site.titleParser(content)
     site.authorsParser(content)
-    site.isbnParser(content)
-    site.formatParser(content)
-    site.descParser(content)
+    #site.isbnParser(content)
+    #site.formatParser(content)
+    #site.descParser(content)
+    site.imageUrlParser(content)
+
   
 def fetch(url):
     response = requests.get(url)
