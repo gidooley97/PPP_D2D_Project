@@ -81,17 +81,29 @@ class KoboSite:
 
         return cleantext
 
-    def seriesParser(content):
-        /html/body/div[3]/div/div/h6[2]/text()
+    def seriesParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()
+        series = root.xpath("/html/body/div[3]/div/div/h6[2]/text()")[0]
+        return series
 
-    def volumeParser(content):
-        /html/body/div[3]/div/div/h6[3]/text()
+    def volumeParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()
+        volume = root.xpath("/html/body/div[3]/div/div/h6[3]/text()")[0]
+        return volume
 
     def contentParser(content):
         pass
 
-    def saleReadyParser(content):
-        /html/body/div[3]/div/div/p[2]
+    def saleReadyParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()
+        saleReady = root.xpath("/html/body/div[3]/div/div/p[2]")[0]
+        return saleReady
 
     def extraParser(content):
         pass
@@ -123,6 +135,10 @@ def main():
     print(site.descParser(content))
     print(site.formatParser(content))
     print(site.subtitleParser(content))
+    print(site.seriesParser(content))
+    print(site.volumeParser(content))
+    print(site.saleReadyParser(content))
+
   
 def fetch(url):
     response = requests.get(url)
