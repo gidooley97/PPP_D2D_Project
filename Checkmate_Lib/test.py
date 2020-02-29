@@ -1,6 +1,9 @@
 #from kobo_parser import KoboSite
 from checkmate import BookSite
 from checkmate import get_book_site
+import requests
+from checkmate import match_percentage
+import urllib.request
 
 
 def parseAll(self, site, content):
@@ -31,13 +34,18 @@ def parseAll(self, site, content):
 
 
 def main():
-    slug = imput("Enter a site slug.")
+    slug = input("Enter a site slug.")
     site = get_book_site(slug)
-    url = input("Enter a url: ")
-    content = fetch(url)
+    url1 = input("Enter a url: ")
+    url2 = input("Enter a second url: ")
+
+    content1 = fetch(url1)
+    content2 = fetch(url2)
      
-    site_book_data = site.get_book_data_from_site(url)
-    site_book_data.print_all()
+    site_book_data1 = site.get_book_data_from_site(url1)
+    site_book_data2 = site.get_book_data_from_site(url2)
+    print("Matching Percentage: ")
+    print(match_percentage(site_book_data1,site_book_data2))
 
 
  #url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
