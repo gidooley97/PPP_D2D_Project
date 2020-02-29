@@ -12,47 +12,90 @@ import mechanize
 ############ KoboSite Class ################
 """parses the book data from kobo"""
 class KoboSite:
+    
     def __init__(self):
-        pass
-     
-     #returns list of site books
+        self.site_slug = "KB"
+        self.search_url="https://www.kobo.com/"
+        self.url_to_book_detail ="https://www.kobo.com/us/en/ebook/"#set to ebook bcs D2D deals with ebooks mainly
+        self.match_list=[]
+    #returns list of site books
     def get_book_data_from_site(self,url):
-        pass
+        content = fetch(url) #gets the book's page 
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        title = self.titleParser(root)
+        img_url = self.imageUrlParser(root)
+        img = self.imageParser(img_url)#use the img url to get image
+        isbn13= self.isbnParser(root)
+        desc = self.descParser(root)
+        frmt = self.formatParser(root)
+        series = self.seriesParser(root)
+        vol_num = self.volumeParser(root)
+        subtitle = self.subtitleParser(root)
+        authors = self.authorsParser(root)
+        site_slug = self.site_slug
+        content =content #html page content
+        url = url
+        book_id = self.book_id_parser(url)
+        parse_status =  self.get_parse_status(title,isbn13,desc,authors)
+        ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
+        extra = self.extraParser(root)
+        book_site_data = SiteBookData(frmt, title, img, img_url,isbn13,desc, series, 
+        vol_num, subtitle, authors,book_id, site_slug, parse_status, url, content,
+        ready_for_sale, extra)
+        return book_site_data
+
+        
 
     def find_matches_at_site(self,site_book_data):
-        url ="https://www.kobo.com/"
+        url =self.search_url
         br = mechanize.Browser()
-         
         br.set_handle_robots(False)
         br.open(url)  
         #selects the form to populate 
         br.select_form(class_="search-form")
+        search_txt =''
         #populate the field. You may need to check if this is actually working
-        br['query'] ="ccv"
-        #print(br['query'])
+        if site_book_data.book_title:
+            search_txt=site_book_data.book_title
+        elif site_book_data.isbn13:
+            search_txt= site_book_data.isbn_13
+        elif site_book_data.authors:
+            search_txt = site_book_data.authors[0]
+        if not search_txt:
+            return []
+        br['query'] =search_txt
+        
         #submit the form and get the returned page.
         res=br.submit()
-        self.get_book_data_from_page(res.read())
+        self.get_book_data_from_page(res.read(), site_book_data)
+        return self.match_list # for testing I get the first page
         while(True):
             try:
                 print("nextpage")
                 res=br.follow_link(text="Next")
-                self.get_book_data_from_page(res.read())
+                self.get_book_data_from_page(res.read(), site_book_data)
             except mechanize._mechanize.LinkNotFoundError:
                 print("Reached end of results")
+                return self.match_list
                 break
             
     #gets url and pass it to get_book_data_from_site to get books
-    def get_book_data_from_page(self, content):
+    def get_book_data_from_page(self, content, book_site_dat_1):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
         url_elements = root.xpath(".//p[@class='title product-field']/a/@href")
 
-        for url_el in url_elements:
+        for url in url_elements:
             #call function to get book data with url
-            #bookSiteData = self.get_book_data_from_site(url_el.text) 
-            print(url_el)
+            book_site_dat_tmp= self.get_book_data_from_site(url)
+            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+            book_data_score =tuple([score,book_site_dat_tmp])
+            #print('score', score)
+            #book_site_dat_tmp.print_all()
+            self.match_list.append(book_data_score)
         
                    
 
@@ -69,7 +112,7 @@ class KoboSite:
 
     # return url
     def convert_book_id_to_url(self,book_id):
-        pass
+        return self.url_to_book_detail+book_id
 
     #------------ Utility Methods -------------
 
@@ -109,21 +152,15 @@ class KoboSite:
 
 
 
+    
 
 
-
-    def titleParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
+    def titleParser(self, root):
         title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
         title = title_element.text
         return title
 
-    def subtitleParser(self,content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() 
+    def subtitleParser(self,root):
         subtitle = ''
         if root.xpath(".//h2/span[@class='subtitle product-field']"):
             subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
@@ -131,20 +168,14 @@ class KoboSite:
         
         
 
-    def authorsParser(self,content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
+    def authorsParser(self,root):
         author_elements = root.xpath("//span[@class='visible-contributors']/a[@class='contributor-name']")
         authors = []
         for auth_element in author_elements:
             authors.append(auth_element.text)
         return authors
 
-    def isbnParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() #prove that isbn_13 is always 3rd li/span item.
+    def isbnParser(self, root):
         isbn_elements = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")
         isbn=''
         for isbn_tmp in isbn_elements:
@@ -152,43 +183,36 @@ class KoboSite:
                 isbn =isbn_tmp.xpath('./span')[0].text
         return isbn
 
-    def formatParser(self, content):
+    def book_id_parser(self, url):
+        #book_id is the last part of the url
+        book_id  =url.split('/')[len(url.split('/'))-1] 
+        return book_id 
+        
+    def formatParser(self, root):
         #Kobo only has ebooks and audio books
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() 
         format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
         form = format_element.text.strip().split(' ')[0]
         return form
         
-    def imageParser(self, content):
-        url =   self.imageUrlParser(content)
-        response = requests.get(url)
+    def imageParser(self, url):
+        #response = requests.get(url)
         image = Image.open(urllib.request.urlopen(url))
         image.save("here.jpg")
+        return image
 
 
-    def imageUrlParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()  
+    def imageUrlParser(self, root): 
         imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
         imgUrl = "http:" + imgUrl_element
         return imgUrl
 
-    def descParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() 
+    def descParser(self, root):
         desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
-        desc= etree.tostring(desc_elements, method='html', with_tail='False')
+        #desc= etree.tostring(desc_elements, method='html', with_tail='False')
         # need to decide whther to take all or only the 1st p tag content
-        return desc
+        return ''
 
-    def seriesParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()  
+    def seriesParser(self, root):
         series_element = ''
         series = ''
         if root.xpath(".//span[@class='product-sequence-field']/a"):
@@ -199,13 +223,14 @@ class KoboSite:
         series_split = series.split('#')
         return series_split[0]
 
+    def get_parse_status(self,title, isbn13, desc, authors):
+         #determine parse_status checks if we have the most basic data about a book
+        if title and isbn13 and desc and authors:
+            return "UNSUCCESSFUL"
+        return "FULLY_PARSED"
 
 
-
-    def volumeParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()  
+    def volumeParser(self, root):
         series_element = ''
         volume = ''
         if root.xpath(".//span[@class='product-sequence-field']/a"):
@@ -220,10 +245,7 @@ class KoboSite:
         return volume
 
   
-    def saleReadyParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() 
+    def saleReadyParser(self, root):
         desc= root.xpath("//h2[@class='pricing-title']")[0].text
         sale_flag = 0 # 0 = Buy   1 = Pre-order
         status = ""
@@ -236,11 +258,12 @@ class KoboSite:
             if word == 'Pre-Order':
                 sale_flag = 1
                 status = "Pre-order"
+
         return status
 
 
-    def extraParser(self, content):
-        pass
+    def extraParser(self, root):
+        return {}
 
 
 
@@ -272,6 +295,7 @@ class KoboSite:
         print("Image Saved")
         site.imageParser(content)
 
+
    
    
     ############# End of Class #################
@@ -280,50 +304,20 @@ class KoboSite:
 
 def main():
 
-    url = "https://www.kobo.com"
-    #url = input("Enter a url: ")
-    #content = fetch(url)
-
-    #fill_form(url)
     site = KoboSite() 
-    site.find_matches_at_site(None)
-    #site.parseAll(site,content)
-    #site.titleParser(content)
-    #site.authorsParser(content)
-    #site.isbnParser(content)
-    #site.formatParser(content)
-    #site.descParser(content)
-    #site.subtitleParser(content)
-    #site.seriesParser(content)
-    #site.volumeParser(content)
-    #print("#################URL###################")
-   # site.imageUrlParser(content)
-   # print(##########)
-   # site.imageParser(content)
-    #site.saleReadyParser(content)
+    url="https://www.kobo.com/us/en/ebook/c-c-2"
+    book_site_data = site.get_book_data_from_site(url)
+    book_site_data.print_all()
+    myList = site.find_matches_at_site(book_site_data)
+    #Go throigh all the matches printing score and bookSiteData.
+    for book in myList:
+        print(str(book[0])+" \n")
+        book[1].print_all()
   
 def fetch(url):
     response = requests.get(url)
     #print(response.content)
     return response.content
-
-def fill_form(url):
-    #This funcrion navigates the search page 
-    br = mechanize.Browser()
-    br.set_handle_robots(False)
-    br.open(url)  
-    #selects the form to populate 
-    br.select_form(class_="search-form")
-    #populate the field. You may need to check if this is actually working
-    br['query'] ="lord of rings"
-    #print(br['query'])
-    #submit the form and get the returned page.
-    res=br.submit()
-    fileobj = open("page.html","wb")#saves the returned page to a file. 
-    #You can open and se the content
-    fileobj.write(res.read())
-    fileobj.close()
-    #print(res.content)  
 
 
 
