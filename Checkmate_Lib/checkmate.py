@@ -7,6 +7,8 @@ import urllib.request
 import io
 import mechanize
 import requests
+import math, operator
+from functools import reduce
 
 
 
@@ -92,11 +94,13 @@ class BookSite:
         def find_book_matches_at_site(self, book_data):
             pass
 
+
 ##################### End of Class ##############################
 
 
-def get_book_site(slug):
+def get_book_site(slug_cased):
     site  = ""
+    slug = slug_cased.upper()
     if slug == 'GO':
         #Google Books
         pass
@@ -113,6 +117,22 @@ def get_book_site(slug):
         pass
 
     return site
+
+    # Returns the root-mean square difference between the 2 provided images. 0 is an exact match
+    # https://snipplr.com/view/757/compare-two-pil-images-in-python Referenced
+def book_img_matcher(sitebook1, sitebook2):
+    #h1 = Image.open(sitebook1.book_img_url).histogram()
+    #h2 = Image.open(sitebook2.book_img_url).histogram()
+    image1 = Image.open(urllib.request.urlopen(sitebook1.book_img_url)).histogram()
+    image2 = Image.open(urllib.request.urlopen(sitebook2.book_img_url)).histogram()
+ 
+    rms = math.sqrt(reduce(operator.add,
+	map(lambda a,b: (a-b)**2, image1, image2))/len(image1)) 
+    return rms
+
+
+
+
 
    
  # match_percentage tkes 2 sitebookdata objects
@@ -148,30 +168,21 @@ def match_percentage(site_book1, site_book2):
         matching_points += 5
 
         # Compare author lists
-    if(len(site_book1.authors) == len(site_book2.authors)):
-        cmp_value = cmp(site_book1.authors,site_book2.authors) # 0 is a match
-        if(cmp_value == 0):
-            matching_points += 20
+    if set(site_book1.authors) == set(site_book2.authors):
+        matching_points += 20
 
             
     if(site_book1.ready_for_sale == site_book2.ready_for_sale):
         matching_points += 5
 
      # Allows a small margin of difference
-    if(book_img_matcher(site_book1.book_img, site_book2.book_img) <= 10):
-        matching_points + 5
+    if book_img_matcher(site_book1, site_book2) <= 10:
+        matching_points += 5
 
 
     return matching_points/1000
 
-    # Returns the root-mean square difference between the 2 provided images. 0 is an exact match
-    # https://snipplr.com/view/757/compare-two-pil-images-in-python Referenced
-    def book_img_matcher(sitebook1, sitebook2):
-        h1 = Image.open(sitebook1.book_img_url).histogram()
-        h2 = Image.open(sitebook2.book_img_url).histogram()
- 
-        rms = math.sqrt(reduce(operator.add,
-	    map(lambda a,b: (a-b)**2, h1, h2))/len(h1))
+   
 
 
 ######################################################################

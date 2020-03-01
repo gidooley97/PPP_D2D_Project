@@ -34,10 +34,13 @@ def parseAll(self, site, content):
 
 
 def main():
-    slug = input("Enter a site slug.")
+    #slug = input("Enter a site slug.")
+    slug = 'KO'
+    url1 = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
+    url2 = "https://www.kobo.com/us/en/ebook/the-select-2"
     site = get_book_site(slug)
-    url1 = input("Enter a url: ")
-    url2 = input("Enter a second url: ")
+    #url1 = input("Enter a url: ")
+    #url2 = input("Enter a second url: ")
 
     content1 = fetch(url1)
     content2 = fetch(url2)
