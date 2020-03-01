@@ -16,7 +16,8 @@ class ScribdSite:
         pass
 
     def convert_book_id_to_url(self,book_id):
-        pass
+        url = "https://www.scribd.com/book/"+book_id
+        return url
 
     #------------ Utility Methods -------------
     def titleParser(self, content):
@@ -64,8 +65,12 @@ class ScribdSite:
         return form
         
 
-    def imageParserURL(content):
-        pass
+    def imageParser(self, content):
+        url =   self.imageUrlParser(content)
+        print("Image Function: " + url)
+        response = requests.get(url)
+        image = Image.open(urllib.request.urlopen(url))
+        image.save("here.jpg")
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -76,22 +81,47 @@ class ScribdSite:
         print(desc) 
         return desc
 
-    def seriesParser(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()  
-        series ='' 
-        if root.xpath(""):
-            series = root.xpath("")[0].text    
-            series = series.strip().split('#')[0]
-        print(series) #volume is include in the series, find a way return both.
-        return series
-        
-    def volumeParser(content):
-        pass
+    def seriesParser(self, title):
+        for seriesCheck in title:
+            if seriesCheck.isdigit():
+                num = seriesCheck
 
-    def contentParser(content):
-        pass # we already have this
+        if title.find("series"):
+                title = "Series"            
+        
+        print(title+" #"+num)
+        return title
+
+        
+    def volumeParser(self, title):
+        for volumeCheck in title:
+            if volumeCheck.isdigit():
+                num = "#"+volumeCheck
+            else:
+                num = "None"
+
+        if title.find("volume"):
+            title = "Volume" 
+        else: 
+            title = "None"
+        
+        print(title+" "+num)
+        return title
+
+    def editionParser(self, title):
+        for editionCheck in title:
+            if editionCheck.isdigit():
+                num = editionCheck
+            else:
+                num = "None"
+
+        if title.find("edition"):
+            title = "Edition:" 
+        else: 
+            title = "None"
+        
+        print(title+" "+num)
+        return title
 
     def saleReadyParser(content):
         pass
@@ -99,7 +129,7 @@ class ScribdSite:
     def extraParser(content):
         pass
 
-    def imageUrlParser(content):
+    def imageUrlParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot() 
@@ -113,24 +143,24 @@ class ScribdSite:
     def parseAll(content, SiteBookData):
         pass
 
-    def tester(content):
-        print("Hello")
-   
     ############# End of Class #################
 
 
 
 def main():
     url = "https://www.scribd.com/book/205512285/A-Series-of-Unfortunate-Events-1-The-Bad-Beginning"
-   # url = prompt("Enter a url");
+    #url = prompt("Enter a url");
     content = fetch(url)
     site = ScribdSite() 
-    #site.titleParser(content)
+    title = site.titleParser(content)
     site.authorsParser(content)
     #site.isbnParser(content)
     #site.formatParser(content)
     #site.descParser(content)
+    #site.imageParser(content)
     site.imageUrlParser(content)
+    site.seriesParser(title)
+
 
   
 def fetch(url):
