@@ -4,9 +4,9 @@ from lxml import etree
 import requests
 import re
 
-############ KoboSite Class ################
-"""parses the book data from kobo"""
-class KoboSite:
+############ TestSite Class ################
+"""parses the book data from test bookstore"""
+class TestSite:
     def __init__(self):
         pass
      
@@ -17,7 +17,8 @@ class KoboSite:
         pass
 
     def convert_book_id_to_url(self,book_id):
-        pass
+        url = "http://127.0.0.1:8000/books/"+book_id
+        return url
 
     #------------ Utility Methods -------------
     def titleParser(self, content):
@@ -51,8 +52,7 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        isbn_element = root.xpath("/html/body/div[3]/div/div/h6[4]/text()")
-        isbn = isbn_element
+        isbn = root.xpath("/html/body/div[3]/div/div/h6[4]/text()")[0]
         return isbn
 
     def formatParser(self, content):
@@ -69,17 +69,20 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        desc_elements = root.xpath("/html/body/div[3]/div/div/p[@class='indent_this']/text()")
-        full_desc = ""
-        print(desc_elements)
-        for desc in desc_elements:
-            full_desc = full_desc+desc
-        if len(full_desc) == 0:
-            full_desc
-        cleanr = re.compile('<.*?>')
-        cleantext = re.sub(cleanr, '', full_desc)
+        try: 
+            desc_elements = root.xpath("/html/body/div[3]/div/div/p[@class='indent_this']/text()")[0]
+        except IndexError:
+            desc_elements = root.xpath("/html/body/div[3]/div/div/p/text()")
+            full_desc = ""
+            for desc in desc_elements:
+                full_desc = full_desc+desc
 
-        return cleantext
+            cleanr = re.compile('<.*?>')
+            cleantext = re.sub(cleanr, '', full_desc)
+            return cleantext
+        
+
+        return desc_elements
 
     def seriesParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -102,8 +105,15 @@ class KoboSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        saleReady = root.xpath("/html/body/div[3]/div/div/p[2]")[0]
+        saleReady = root.xpath("/html/body/div[3]/div/div/p[@style='color: red;' or @class='color: green;']/text()")[0]
         return saleReady
+
+    def priceParser(self, content):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()
+        price = root.xpath("/html/body/div[3]/div/div/h6[1]/text()")[0]
+        return price
 
     def extraParser(content):
         pass
@@ -114,7 +124,20 @@ class KoboSite:
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
     def parseAll(content, SiteBookData):
-        pass
+        url = "http://127.0.0.1:8000/books/30/"
+        #url = prompt("Enter a url");
+        content = fetch(url)
+        site = KoboSite() 
+        print(site.titleParser(content))
+        print(site.authorsParser(content))
+        print(site.isbnParser(content))
+        print(site.descParser(content))
+        print(site.formatParser(content))
+        print(site.subtitleParser(content))
+        print(site.seriesParser(content))
+        print(site.volumeParser(content))
+        print(site.saleReadyParser(content))
+        print(site.priceParser(content))
 
     def tester(content):
         print("Hello")
@@ -125,10 +148,10 @@ class KoboSite:
 
 
 def main():
-    url = "http://127.0.0.1:8000/books/4/"
+    url = "http://127.0.0.1:8000/books/30/"
     #url = prompt("Enter a url");
     content = fetch(url)
-    site = KoboSite() 
+    site = TestSite() 
     print(site.titleParser(content))
     print(site.authorsParser(content))
     print(site.isbnParser(content))
@@ -138,6 +161,7 @@ def main():
     print(site.seriesParser(content))
     print(site.volumeParser(content))
     print(site.saleReadyParser(content))
+    print(site.priceParser(content))
 
   
 def fetch(url):
