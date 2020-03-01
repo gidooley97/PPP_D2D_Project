@@ -1,7 +1,7 @@
 from site_book_data import SiteBookData
 import io
 from lxml import etree, html
-
+from PIL import Image
 import requests
 from io import BytesIO
 import urllib.request
@@ -78,7 +78,17 @@ class LivrariaSite:
         
 
     def imageParser(self, content):
-        pass # need to figure out this part
+        url =   self.imageUrlParser(content)
+        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
+        print("Image Function: " + url)
+        #url = "https://kbimages1-a.akamaihd.net/20f0c659-1d66-4f47-b034-219eb8f9a6a2/353/569/90/False/the-lion-the-witch-and-the-wardrobe-1.jpg"
+        #new_url = "http:" + url
+        #image = Image.open(new_url)
+       # image.save("here.jpg")
+
+        response = requests.get(url)
+        image = Image.open(urllib.request.urlopen(url))
+        image.save("here.jpg")
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
