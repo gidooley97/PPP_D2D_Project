@@ -36,20 +36,20 @@ def parseAll(self, site, content):
 def main():
     #slug = input("Enter a site slug.")
     slug = 'KO'
-    url1 = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
-    url2 = "https://www.kobo.com/us/en/ebook/the-select-2"
+    url1 = "https://www.kobo.com/us/en/ebook/the-last-thing-she-told-me-1"
+    #url2 = "https://www.kobo.com/us/en/ebook/the-select-2"
     site = get_book_site(slug)
     #url1 = input("Enter a url: ")
     #url2 = input("Enter a second url: ")
 
     content1 = fetch(url1)
-    content2 = fetch(url2)
+    #content2 = fetch(url2)
      
     site_book_data1 = site.get_book_data_from_site(url1)
-    site_book_data2 = site.get_book_data_from_site(url2)
-    print("Matching Percentage: ")
-    print(match_percentage(site_book_data1,site_book_data2))
-
+    #site_book_data2 = site.get_book_data_from_site(url2)
+    #print("Matching Percentage: ")
+    #print(match_percentage(site_book_data1,site_book_data2))
+    site_book_data1.print_all()
 
  #url = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
 

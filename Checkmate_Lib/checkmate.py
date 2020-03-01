@@ -178,6 +178,7 @@ def match_percentage(site_book1, site_book2):
      # Allows a small margin of difference
     if book_img_matcher(site_book1, site_book2) <= 10:
         matching_points += 5
+   
 
 
     return matching_points/1000
@@ -364,10 +365,15 @@ class KoboSite:
         return imgUrl
 
     def descParser(self, root):
-        desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
-        #desc= etree.tostring(desc_elements, method='html', with_tail='False')
-        # need to decide whther to take all or only the 1st p tag content
-        return ''
+        desc_string = ""
+        desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
+        print(len(desc_element_list))
+        for element in desc_element_list:
+            if(element.xpath("//p")):
+                if(isinstance(element.text,str)):
+                    desc_string += element.text
+
+        return desc_string
 
     def seriesParser(self, root):
         series_element = ''
@@ -375,6 +381,10 @@ class KoboSite:
         if root.xpath(".//span[@class='product-sequence-field']/a"):
             series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
             series = series_element.text
+
+ #for element in desc_element.xpath("//p"):
+        #desc_string += element.text
+
 
         #Seperate series number from series title
         series_split = series.split('#')
