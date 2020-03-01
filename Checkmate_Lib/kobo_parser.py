@@ -170,10 +170,12 @@ class KoboSite(BookSite):
         return imgUrl
 
     def descParser(self, root):
-        #desc_elements = root.xpath("//div[@class='synopsis-description']/p")[0]
-        #desc= etree.tostring(desc_elements, method='html', with_tail='False')
+        #gets the descriptions with all the tags included.
+        desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
         # need to decide whther to take all or only the 1st p tag content
-        return ''
+        xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')        
+        return str(xmlstr)
+        
 
     def seriesParser(self, root):
         series_element = ''
