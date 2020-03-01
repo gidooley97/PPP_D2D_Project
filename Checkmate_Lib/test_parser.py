@@ -88,14 +88,22 @@ class TestSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        series = root.xpath("/html/body/div[3]/div/div/h6[2]/text()")[0]
+        try: 
+            series = root.xpath("/html/body/div[3]/div/div/h6[2]/text()")[0]
+        except IndexError:
+            series = "no series"
+        
         return series
 
     def volumeParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        volume = root.xpath("/html/body/div[3]/div/div/h6[3]/text()")[0]
+        try: 
+            volume = root.xpath("/html/body/div[3]/div/div/h6[3]/text()")[0]
+        except IndexError:
+            volume = "no volume"
+        
         return volume
 
     def contentParser(content):
@@ -105,7 +113,7 @@ class TestSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        saleReady = root.xpath("/html/body/div[3]/div/div/p[@style='color: red;' or @class='color: green;']/text()")[0]
+        saleReady = root.xpath("/html/body/div[3]/div/div/p[@style='color: red;' or @style='color: green;']/text()")[0]
         return saleReady
 
     def priceParser(self, content):
@@ -148,20 +156,24 @@ class TestSite:
 
 
 def main():
-    url = "http://127.0.0.1:8000/books/30/"
-    #url = prompt("Enter a url");
-    content = fetch(url)
-    site = TestSite() 
-    print(site.titleParser(content))
-    print(site.authorsParser(content))
-    print(site.isbnParser(content))
-    print(site.descParser(content))
-    print(site.formatParser(content))
-    print(site.subtitleParser(content))
-    print(site.seriesParser(content))
-    print(site.volumeParser(content))
-    print(site.saleReadyParser(content))
-    print(site.priceParser(content))
+
+    for x in range(1,100):
+        
+        url = "http://127.0.0.1:8000/books/"+str(x)+"/"
+        #url = prompt("Enter a url");
+        content = fetch(url)
+        site = TestSite() 
+        print(site.titleParser(content))
+        print(site.authorsParser(content))
+        print(site.isbnParser(content))
+        print(site.descParser(content))
+        print(site.formatParser(content))
+        print(site.subtitleParser(content))
+        print(site.seriesParser(content))
+        print(site.volumeParser(content))
+        print(site.saleReadyParser(content))
+        print(site.priceParser(content))
+    
 
   
 def fetch(url):
