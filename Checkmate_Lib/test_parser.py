@@ -78,7 +78,7 @@ class TestSite:
                 full_desc = full_desc+desc
 
             cleanr = re.compile('<.*?>')
-            cleantext = re.sub(cleanr, '', full_desc)
+            cleantext = re.sub(cleanr, ' ', full_desc)
             return cleantext
         
 
@@ -157,22 +157,21 @@ class TestSite:
 
 def main():
 
-    for x in range(1,100):
         
-        url = "http://127.0.0.1:8000/books/"+str(x)+"/"
-        #url = prompt("Enter a url");
-        content = fetch(url)
-        site = TestSite() 
-        print(site.titleParser(content))
-        print(site.authorsParser(content))
-        print(site.isbnParser(content))
-        print(site.descParser(content))
-        print(site.formatParser(content))
-        print(site.subtitleParser(content))
-        print(site.seriesParser(content))
-        print(site.volumeParser(content))
-        print(site.saleReadyParser(content))
-        print(site.priceParser(content))
+    url = "http://127.0.0.1:8000/books/30/"
+    #url = prompt("Enter a url");
+    content = fetch(url)
+    site = TestSite() 
+    print(site.titleParser(content))
+    print(site.authorsParser(content))
+    print(site.isbnParser(content))
+    print(site.descParser(content))
+    print(site.formatParser(content))
+    print(site.subtitleParser(content))
+    print(site.seriesParser(content))
+    print(site.volumeParser(content))
+    print(site.saleReadyParser(content))
+    print(site.priceParser(content))
     
 
   
