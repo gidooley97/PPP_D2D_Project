@@ -1,7 +1,7 @@
 #import all site parser classes 
 
 from kobo_parser import KoboSite
-
+from livraria_parser import LivrariaSite
 
 
 
@@ -17,8 +17,8 @@ def get_book_site(slug_cased):
         #Test Bookstore
         pass
     elif slug == 'LC':
-        #Livraria Clutura
-        pass
+        site = LivrariaSite()
+        
     elif slug == 'SC':
         #Scribd
         pass

@@ -3,11 +3,11 @@ from checkmate import get_book_site #this is the only import we need to use the 
 #write tests 
 
 def main():
-    slug = 'KO'
+    slug = 'LC'
     book_site = get_book_site(slug)
    
-    url1 = "https://www.kobo.com/us/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
-    url2 = "https://www.kobo.com/us/en/ebook/lion-heart-4"
+    url1 = "https://www3.livrariacultura.com.br/a-fenda-2012668782/p"
+    url2 = "https://www3.livrariacultura.com.br/a-fenda-2012668782/p"
     print("\n\nUrl 1:")
     book_site_data = book_site.get_book_data_from_site(url1)
     book_site_data.print_all()
