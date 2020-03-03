@@ -2,6 +2,11 @@ from site_book_data import SiteBookData
 import io
 from lxml import etree
 import requests
+from PIL import Image
+import requests
+from io import BytesIO
+import urllib.request
+import re
 
 ############ Scribd Site Class ################
 """parses the book data from Scribd"""
@@ -10,11 +15,34 @@ class ScribdSite:
         pass
      
     def get_book_data_from_site(self,url):
-        pass
+        content = requests.get(url).content#gets the book's page 
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        title = self.titleParser(root)
+        img_url = self.imageUrlParser(root)
+        img = self.imageParser(img_url)#use the img url to get image
+        isbn13= self.isbnParser(root)
+        desc = self.descParser(root)
+        frmt = self.formatParser(root)
+        series = self.seriesParser(title)
+        vol_num = self.volumeParser(title)
+        subtitle = self.subtitleParser(root)
+        authors = self.authorsParser(root)
+        site_slug = self.site_slug
+        content = content #html page content
+        url = url
+        book_id = self.book_id_parser(url)
+        parse_status =  self.get_parse_status(title,isbn13,desc,authors)
+        ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
+        extra = self.extraParser(root)
+        book_site_data = SiteBookData(frmt, title, img, img_url,isbn13,desc, series, 
+        vol_num, subtitle, authors,book_id, site_slug, parse_status, url, content,
+        ready_for_sale, extra)
+        return book_site_data
 
     def find_matches_at_site(self,book_data):
-        #query is search?query='string'
-        return string
+        pass
 
     def convert_book_id_to_url(self,book_id):
         url = "https://www.scribd.com/book/"+book_id
@@ -25,7 +53,6 @@ class ScribdSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        print(root)
         title_element = root.xpath(".//h1[@class='document_title']")[0]
         title = title_element.text
         print(title)
@@ -66,12 +93,13 @@ class ScribdSite:
         return form
         
 
-    def imageParser(self, content):
-        url =   self.imageUrlParser(content)
-        print("Image Function: " + url)
-        response = requests.get(url)
-        image = Image.open(urllib.request.urlopen(url))
-        image.save("here.jpg")
+    def imageParser(self, url):
+        image = None
+        try:
+            image = Image.open(urllib.request.urlopen(url))
+        except:
+            print("error")
+        return image
 
     def descParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -83,50 +111,44 @@ class ScribdSite:
         return desc
 
     def seriesParser(self, title):
+        title = ""
+        num = ""
         for seriesCheck in title:
             if seriesCheck.isdigit():
-                num = seriesCheck
-
-        if title.find("series"):
-                title = "Series"            
-        
-        print(title+" #"+num)
-        return title
+                num = "#"+seriesCheck
+                if title.find("series"):
+                    title = "Series" 
+                else:
+                    num = ""
+            else:
+                num = ""
+        series = title+" "+num
+        print(series)
+        return series
 
         
     def volumeParser(self, title):
+        title = ""
+        num = ""
         for volumeCheck in title:
             if volumeCheck.isdigit():
                 num = "#"+volumeCheck
+                if title.find("volume"):
+                    title = "Volume" 
+                else: 
+                    title = ""
             else:
-                num = "None"
+                num = ""
 
-        if title.find("volume"):
-            title = "Volume" 
-        else: 
-            title = "None"
-        
-        print(title+" "+num)
-        return title
+        volume = title+" "+num
+        print(volume)
+        return volume
 
-    def editionParser(self, title):
-        for editionCheck in title:
-            if editionCheck.isdigit():
-                num = editionCheck
-            else:
-                num = "None"
-
-        if title.find("edition"):
-            title = "Edition:" 
-        else: 
-            title = "None"
-        
-        print(title+" "+num)
-        return title
-
-    def saleReadyParser(content):
-        pass
-
+    def saleReadyParser(self, content):
+        saleReady = "Avaliable"
+        print(saleReady)
+        return saleReady
+    
     def extraParser(content):
         pass
 
