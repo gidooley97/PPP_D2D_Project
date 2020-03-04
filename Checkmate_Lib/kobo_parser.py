@@ -8,7 +8,7 @@ from io import BytesIO
 import urllib.request
 from bookSite import BookSite
 import mechanize
-
+from bs4 import BeautifulSoup
 
 ############ KoboSite Class ################
 """parses the book data from kobo"""
@@ -173,8 +173,9 @@ class KoboSite(BookSite):
         #gets the descriptions with all the tags included.
         desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
         # need to decide whther to take all or only the 1st p tag content
-        xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')        
-        return str(xmlstr)
+        xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
+        desc = BeautifulSoup(xmlstr,features="lxml")     
+        return desc.get_text()
         
 
     def seriesParser(self, root):
