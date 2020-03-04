@@ -25,9 +25,6 @@ class SiteBookData:
 
 
 
-
-
-
     def __init__(self, formt, book_title,book_img, book_img_url,
         isbn_13, description, series, volume_number,subtitle, authors,
         book_id, site_slug, parse_status, url, content, ready_for_sale, extra):
@@ -53,6 +50,7 @@ class SiteBookData:
 
 
     def print_all(self):
+        print("Slug: " + self.site_slug)
         print("Format: " + self.format)
         print("Title: " + self.book_title)
         print("Authors: " + ','.join(self.authors))
