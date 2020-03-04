@@ -8,6 +8,7 @@ import urllib.request
 import requests
 import lxml.html
 import mechanize
+import re
 
 ############ KoboSite Class ################
 
@@ -121,8 +122,11 @@ class LivrariaSite:
     def authorsParser(self,root):
         author_elements = root.xpath("//td[@class='value-field Colaborador']/text()")
         authors = []
+        
         for auth_element in author_elements:
-            authors.append(auth_element)
+            if auth_element.startswith('Autor:'):
+                auth_element=re.sub('Autor:', '', auth_element)
+                authors.append(auth_element)
         return authors
 
 
