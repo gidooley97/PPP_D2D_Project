@@ -17,7 +17,14 @@ def main():
         book[1].print_all()
 
 
-   
+def printMenu():
+    print("C -  Create SBD to Search with")
+    print("E -  Edit SBD")
+    print("S -  Search")
+    print("E - Exit")
+
+
+    
 
 if __name__ == "__main__":
     main()
