@@ -72,7 +72,7 @@ class KoboSite(BookSite):
         #submit the form and get the returned page.
         res=br.submit()
         self.__get_book_data_from_page(res.read(), site_book_data)
-        return self.match_list # for testing I get the first page results only
+        return self.match_list.sort(key = score, reverse = False) # for testing I get the first page results only
         while(True):
             try:
                 print("nextpage")
