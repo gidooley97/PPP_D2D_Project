@@ -11,7 +11,7 @@ class SiteBookData:
         self.series=""
         self.volume=""
         self.subtitle=""
-        self.authors=""
+        self.authors=[]
         self.book_id= ""
         self.site_slug=""
         self.parse_status=""
@@ -53,7 +53,9 @@ class SiteBookData:
         print("Slug: " + self.site_slug)
         print("Format: " + self.format)
         print("Title: " + self.book_title)
-        print("Authors: " + ','.join(self.authors))
+        print("Authors: ")
+        for a in self.authors:
+            print(a)
         print("Series: " + self.series)
         print("Volume:  " + self.volume)
         print("ISBN: " + self.isbn_13)

@@ -27,12 +27,12 @@ def printSbdMenu():
 # Print menu of Site Book Data Attributes to 
 # edit or create
 def printAttrMenu():
-    print("T -   Title")
-    print("I -   ISBN -13")
-    print("S -   Series")
-    print("A -   Author") # You can add multiple, just one at a time
-    print("S -   Subtitle")
-    print("B -   Back")
+    print("T  -   Title")
+    print("I  -   ISBN -13")
+    print("S  -   Series")
+    print("A  -   Author") # You can add multiple, just one at a time
+    print("ST -   Subtitle")
+    print("B  -   Back")
 
 ############################# End of Print Methods ###################
 
@@ -147,16 +147,23 @@ def sbdEditHandler(searchSbd):
         series = input("Input Series.   ")
         searchSbd.series = series
     elif(option == 'A'):
-        author_choice  = input( "Would you like to add on author ('A'), or replace the existing authors ('R')?  ")
+        author_choice  = input( "Would you like to add on author ('A'), or replace the existing authors ('R')?  ").upper()
         # Add author to current author list
         if author_choice == 'A':
             name = input("Input authors name.   ")
-            searchSbd.authors = searchSbd.authors.append(name)
+            if(len(searchSbd.authors) == 0 ):
+                searchSbd.authors = [name]
+            else:
+                searchSbd.authors = searchSbd.authors.append(name)
         # Replace author
         if author_choice == 'R':
+            name = input("Input authors name.   ")
             searchSbd.authors = [] # Empty list
             searchSbd.authors = searchSbd.authors.append(name)
 
+    elif(option =='ST'):
+        subtitle = input("Input Subtitle.   ")
+        searchSbd.subtitle = subtitle
     elif(option == 'B'):
         return searchSbd
     else:
@@ -193,7 +200,7 @@ if __name__ == "__main__":
     main()
 
 
-L
+
 
 
 
