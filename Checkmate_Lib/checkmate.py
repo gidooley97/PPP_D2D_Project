@@ -2,6 +2,8 @@
 
 from kobo_parser import KoboSite
 from livraria_parser import LivrariaSite
+from PPP_D2D_Project.Checkmate_Lib.test_parser import TestSite
+
 
 
 
@@ -14,8 +16,7 @@ def get_book_site(slug_cased):
     elif slug == 'KO':
         site = KoboSite() 
     elif slug == 'TB':
-        #Test Bookstore
-        pass
+        site = TestSite()
     elif slug == 'LC':
         site = LivrariaSite()
         
