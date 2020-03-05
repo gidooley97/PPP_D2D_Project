@@ -12,18 +12,19 @@ class TestSite:
      
     def get_book_data_from_site(self,url):
         content = fetch(url)
-        title = titleParser(content)
-        author = authorsParser(content)
-        subtitle = subtitleParser(content)
-        isbn = isbnParser(content)
-        frmt = formatParser(content)
-        description = descParser(content)
-        series = seriesParser(content)
-        volume = volumeParser(content)
-        sale_ready = saleReadyParser(content)
-        price = priceParser(content)
-        return SiteBookData(content=content, title=title, author=author, subtitle=subtitle, isbn=isbn, format=frmt,
+        title = self.titleParser(content)
+        author = self.authorsParser(content)
+        subtitle = self.subtitleParser(content)
+        isbn = self.isbnParser(content)
+        frmt = self.formatParser(content)
+        description = self.descParser(content)
+        series = self.seriesParser(content)
+        volume = self.volumeParser(content)
+        sale_ready = self.saleReadyParser(content)
+        price = self.priceParser(content)
+        siteBookData = SiteBookData(content=content, book_title=title, authors=author, subtitle=subtitle, isbn_13=isbn, format=frmt,
          description=description, series=series, volume=volume, ready_for_sale=sale_ready, price=price)
+        return siteBookData
 
         
 
@@ -152,7 +153,6 @@ class TestSite:
         #url = prompt("Enter a url");
         content = fetch(url)
         site = TestSite() 
-        bookData = site.get_book_data_from_site(url)
         print(site.titleParser(content))
         print(site.authorsParser(content))
         print(site.isbnParser(content))
@@ -174,21 +174,14 @@ class TestSite:
 
 def main():
 
-        
     url = "http://127.0.0.1:8000/books/30/"
-    #url = prompt("Enter a url");
+    BookSite = TestSite()
     content = fetch(url)
-    site = TestSite() 
-    print(site.titleParser(content))
-    print(site.authorsParser(content))
-    print(site.isbnParser(content))
-    print(site.descParser(content))
-    print(site.formatParser(content))
-    print(site.subtitleParser(content))
-    print(site.seriesParser(content))
-    print(site.volumeParser(content))
-    print(site.saleReadyParser(content))
-    print(site.priceParser(content))
+    #print(BookSite.formatParser(content))
+    #BookSite.parseAll(content)
+    BookSite.get_book_data_from_site(url).print_all()
+    
+    
     
 
   
