@@ -65,12 +65,14 @@ class LivrariaSite(BookSite):
         while(True):
             print('Page',page)
             content= requests.get(url+"#"+str(page)).content
+
             parser = etree.HTMLParser(remove_pis=True)
             tree = etree.parse(io.BytesIO(content), parser)
             root = tree.getroot()
           
             self.__get_book_data_from_page(content, site_book_data)
-            if not root.xpath(".//div[@class='pager top']/ul[@class='pages']/li[@class='next']"):
+            if root.xpath(".//ul[@class='pages']/li[@class='next pgEmpty']"):
+                print("done!")
                 break
             page+=1
         
@@ -85,7 +87,7 @@ class LivrariaSite(BookSite):
 
         for url in url_elements:
             #call function to get book data with url
-            print('url', url)
+            #print('url', url)
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
@@ -166,14 +168,11 @@ class LivrariaSite(BookSite):
             image = Image.open(urllib.request.urlopen(url))
         except:
             pass
-        #image.save("here.jpg")
         return image
 
     def descParser(self, root):
         try:
             desc_elements = root.xpath("//td[@class='value-field Sinopse']")[0].text
-            #desc= etree.tostring(desc_elements, method='html', with_tail='False')
-            # need to decide whther to take all or only the 1st p tag content
             desc=desc_elements
         except:
             desc =''
@@ -183,8 +182,6 @@ class LivrariaSite(BookSite):
     def saleReadyParser(self, root): 
         status = ""
         # Check for the words 'Buy' and 'Pre-Order
-        
-
         return status
 
     def imageUrlParser(self, root):  
@@ -198,38 +195,6 @@ class LivrariaSite(BookSite):
     ############# End of Class #################
 
 
-
-#def main():
- #   url = "https://www3.livrariacultura.com.br/sapiens-2011667923/p"
-   # url = prompt("Enter a url");
-  #  content = fetch(url)
-    
-    #site = LivrariaSite() 
-    #site.titleParser(content)
-    #site.authorsParser(content)
-    #site.isbnParser(content)
-    #site.formatParser(content)
-    #site.descParser(content)
-    #site.subtitleParser(content)
-    #site.seriesParser(content)
-    #site.volumeParser(content)
-    #site.imageUrlParser(content)
-    #site.saleReadyParser(content)
-  
-#def fetch(url):
- #   response = requests.get(url)
-  #  return response.content
-    
-
-
-
-
-
-
-
-
-#if __name__ == "__main__":
- #   main()
 
 
 
