@@ -6,10 +6,10 @@ def main():
     slug = 'LC'
     book_site = get_book_site(slug)
    
-    #url1 = "https://www.kobo.com/us/en/ebook/lord-8"
+    url1 = "https://www3.livrariacultura.com.br/a-fenda-2012668782/p"
     url2 = "https://www3.livrariacultura.com.br/a-fenda-2012668782/p"
     print("\n\nUrl 1:")
-    book_site_data = book_site.get_book_data_from_site(url2)
+    book_site_data = book_site.get_book_data_from_site(url1)
     book_site_data.print_all()
     matches = book_site.find_book_matches_at_site(book_site_data)
     for book in matches:
@@ -17,14 +17,13 @@ def main():
         book[1].print_all()
 
 
-def printMenu():
-    print("C -  Create SBD to Search with")
-    print("E -  Edit SBD")
-    print("S -  Search")
-    print("E - Exit")
-
-
-    
+    print("\n\nUrl 2:")
+    book_site_data = book_site.get_book_data_from_site(url2)
+    book_site_data.print_all()
+    matches = book_site.find_book_matches_at_site(book_site_data)
+    for book in matches:
+        print("score", str(book[0]))
+        book[1].print_all()
 
 if __name__ == "__main__":
     main()

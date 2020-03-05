@@ -8,7 +8,7 @@ from io import BytesIO
 import urllib.request
 from bookSite import BookSite
 import mechanize
-from bs4 import BeautifulSoup
+
 
 ############ KoboSite Class ################
 """parses the book data from kobo"""
@@ -115,43 +115,31 @@ class KoboSite(BookSite):
     #content specific parser methods 
 
     def titleParser(self, root):
-        try:
-            title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
-            title = title_element.text
-        except:
-            title = "F" # Fail
+        title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
+        title = title_element.text
         return title
 
     def subtitleParser(self,root):
         subtitle = ''
-        try:
-            if root.xpath(".//h2/span[@class='subtitle product-field']"):
-                subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
-        except:
-            subtitle = "F" # Fail
+        if root.xpath(".//h2/span[@class='subtitle product-field']"):
+            subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
         return subtitle
         
         
 
     def authorsParser(self,root):
-        try: 
-            author_elements = root.xpath("//span[@class='visible-contributors']/a[@class='contributor-name']")
-            authors = []
-            for auth_element in author_elements:
-                authors.append(auth_element.text)
-        except:
-            authors = "F" #Fail
+        author_elements = root.xpath("//span[@class='visible-contributors']/a[@class='contributor-name']")
+        authors = []
+        for auth_element in author_elements:
+            authors.append(auth_element.text)
         return authors
 
     def isbnParser(self, root):
-        try:
-            isbn_elements = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")
-            isbn=''
-            for isbn_tmp in isbn_elements:
-                if isbn_tmp.text.strip()=='ISBN:':
-                    isbn =isbn_tmp.xpath('./span')[0].text
-        except:
-            isbn = 'F' #Fail
+        isbn_elements = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")
+        isbn=''
+        for isbn_tmp in isbn_elements:
+            if isbn_tmp.text.strip()=='ISBN:':
+                isbn =isbn_tmp.xpath('./span')[0].text
         return isbn
 
     def book_id_parser(self, url):
@@ -161,12 +149,9 @@ class KoboSite(BookSite):
         
     def formatParser(self, root):
         #Kobo only has ebooks and audio books
-        try: 
-            format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
-            format = format_element.text.strip().split(' ')[0]
-        except:
-            format = 'F'
-        return format
+        format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
+        form = format_element.text.strip().split(' ')[0]
+        return form
         
     def imageParser(self, url):
         #response = requests.get(url)
@@ -174,43 +159,33 @@ class KoboSite(BookSite):
         try:
             image = Image.open(urllib.request.urlopen(url))
         except:
-            return 'F' #Fail
+            pass
         #image.save("here.jpg")
         return image
 
 
     def imageUrlParser(self, root): 
-        try:
-            imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
-            imgUrl = "http:" + imgUrl_element
-        except:
-            imgUrl = 'F'
+        imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
+        imgUrl = "http:" + imgUrl_element
         return imgUrl
 
     def descParser(self, root):
         #gets the descriptions with all the tags included.
-        try:
-            desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
-            # need to decide whther to take all or only the 1st p tag content
-            xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
-            desc = BeautifulSoup(xmlstr,features="lxml") 
-        except:
-            desc = 'F'    
-        return desc.get_text()
+        desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
+        # need to decide whther to take all or only the 1st p tag content
+        xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')        
+        return str(xmlstr)
         
 
     def seriesParser(self, root):
         series_element = ''
         series = ''
-        try:
-            if root.xpath(".//span[@class='product-sequence-field']/a"):
-                series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
-                series = series_element.text
+        if root.xpath(".//span[@class='product-sequence-field']/a"):
+            series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
+            series = series_element.text
 
-            #Seperate series number from series title
-            series_split = series.split('#')
-        except:
-            return 'F'
+        #Seperate series number from series title
+        series_split = series.split('#')
         return series_split[0]
 
     def get_parse_status(self,title, isbn13, desc, authors):
@@ -223,38 +198,31 @@ class KoboSite(BookSite):
     def volumeParser(self, root):
         series_element = ''
         volume = ''
-        try:
-
-            if root.xpath(".//span[@class='product-sequence-field']/a"):
-                series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
-                series = series_element.text
+        if root.xpath(".//span[@class='product-sequence-field']/a"):
+            series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
+            series = series_element.text
+        
+            #Seperate series number from series title
             
-                #Seperate series number from series title
-                
-                series_split = series.split('#')
-                if len(series_split) > 1:
-                    volume = series_split[1]
-        except:
-            volume = 'F'
+            series_split = series.split('#')
+            if len(series_split) > 1:
+                volume = series_split[1]
         return volume
 
   
     def saleReadyParser(self, root):
-        try:
-            desc= root.xpath("//h2[@class='pricing-title']")[0].text
-            sale_flag = 0 # 0 = Buy   1 = Pre-order
-            status = ""
-            # Check for the words 'Buy' and 'Pre-Order
-            desc_list = desc.split(' ')
-            for word in desc_list:
-                if word == 'Buy':
-                    sale_flag = 0
-                    status = "Buy Now"
-                if word == 'Pre-Order':
-                    sale_flag = 1
-                    status = "Pre-order"
-        except:
-            status = 'F'
+        desc= root.xpath("//h2[@class='pricing-title']")[0].text
+        sale_flag = 0 # 0 = Buy   1 = Pre-order
+        status = ""
+        # Check for the words 'Buy' and 'Pre-Order
+        desc_list = desc.split(' ')
+        for word in desc_list:
+            if word == 'Buy':
+                sale_flag = 0
+                status = "Buy Now"
+            if word == 'Pre-Order':
+                sale_flag = 1
+                status = "Pre-order"
 
         return status
 

@@ -11,24 +11,10 @@ class TestSite:
         pass
      
     def get_book_data_from_site(self,url):
-        content = fetch(url)
-        title = titleParser(content)
-        author = authorsParser(content)
-        subtitle = subtitleParser(content)
-        isbn = isbnParser(content)
-        frmt = formatParser(content)
-        description = descParser(content)
-        series = seriesParser(content)
-        volume = volumeParser(content)
-        sale_ready = saleReadyParser(content)
-        price = priceParser(content)
-        return SiteBookData(content=content, title=title, author=author, subtitle=subtitle, isbn=isbn, format=frmt,
-         description=description, series=series, volume=volume, ready_for_sale=sale_ready, price=price)
-
-        
+        pass
 
     def find_matches_at_site(self,book_data):
-        return 
+        pass
 
     def convert_book_id_to_url(self,book_id):
         url = "http://127.0.0.1:8000/books/"+book_id
@@ -120,10 +106,8 @@ class TestSite:
         
         return volume
 
-    def contentParser(self, url):
-        content = fetch(url)
-        return content
-        
+    def contentParser(content):
+        pass
 
     def saleReadyParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -147,12 +131,11 @@ class TestSite:
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
-    def parseAll(self, url):
+    def parseAll(content, SiteBookData):
         url = "http://127.0.0.1:8000/books/30/"
         #url = prompt("Enter a url");
         content = fetch(url)
-        site = TestSite() 
-        bookData = site.get_book_data_from_site(url)
+        site = KoboSite() 
         print(site.titleParser(content))
         print(site.authorsParser(content))
         print(site.isbnParser(content))
