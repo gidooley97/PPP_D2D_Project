@@ -1,6 +1,6 @@
 
 class SiteBookData:
-
+    '''
     def __init__():
         self.format=""
         self.book_title=""
@@ -11,7 +11,7 @@ class SiteBookData:
         self.series=""
         self.volume=""
         self.subtitle=""
-        self.authors=""
+        self.authors=[]
         self.book_id= ""
         self.site_slug=""
         self.parse_status=""
@@ -19,7 +19,7 @@ class SiteBookData:
         self.content=""
         self.ready_for_sale=""
         self.extra=""
-      
+     
 
     def __init__(self, formt, book_title, book_img, book_img_url,
         isbn_13, description, series, volume_number,subtitle, authors,
@@ -41,54 +41,57 @@ class SiteBookData:
         self.content=content
         self.ready_for_sale=ready_for_sale
         self.extra=extra
-    
+        '''
     def __init__(self,**kwargs):
-        if 'format' in kwargs.items():
+        if 'format' in kwargs:
             self.format = kwargs['format']
-        if 'book_title' in kwargs.items():
+        if 'book_title' in kwargs:
             self.book_title = kwargs['book_title']
-        if 'book_img' in kwargs.items():
+        if 'book_img' in kwargs:
             self.book_img = kwargs['book_img']
-        if 'isbn_13' in kwargs.items():
+        if 'isbn_13' in kwargs:
             self.isbn_13 = kwargs['isbn_13']
-        if 'description' in kwargs.items():
+        if 'description' in kwargs:
             self.description = kwargs['description']
-        if 'series' in kwargs.items():
+        if 'series' in kwargs:
             self.series = kwargs['series']
-        if 'volume' in kwargs.items():
+        if 'volume' in kwargs:
             self.volume = kwargs['volume']
-        if 'subtitle' in kwargs.items():
+        if 'subtitle' in kwargs:
             self.subtitle = kwargs['subtitle']
-        if 'authors' in kwargs.items():
+        if 'authors' in kwargs:
             self.authors = kwargs['authors']
-        if 'book_id' in kwargs.items():
+        if 'book_id' in kwargs:
             self.book_id = kwargs['book_id']
-        if 'site_slug' in kwargs.items():
+        if 'site_slug' in kwargs:
             self.site_slug = kwargs['site_slug']
-        if 'parse_status' in kwargs.items():
+        if 'parse_status' in kwargs:
             self.parse_status = kwargs['parse_status']
-        if 'url' in kwargs.items():
-            self.url = kwargs['url']
-        if 'content' in kwargs.items():
+        if 'book_img_url' in kwargs:
+            self.book_img_url = kwargs['book_img_url']
+        if 'content' in kwargs:
             self.content = kwargs['content']   
-        if 'ready_for_sale' in kwargs.items():
+        if 'ready_for_sale' in kwargs:
             self.ready_for_sale = kwargs['ready_for_sale']
-        if 'format' in kwargs.items():
+        if 'format' in kwargs:
             self.format = kwargs['format'] 
-        if 'price' in kwargs.items():
+        if 'price' in kwargs:
             self.price = kwargs['price'] 
-        if 'url' in kwargs.items():
+        if 'url' in kwargs:
             self.url = kwargs['url'] 
 
     def print_all(self):
-        print("Format: " + self.format)
-        print("Title: " + self.book_title)
-        print("Authors: " + ','.join(self.authors))
-        print("Series: " + self.series)
-        print("Volume:  " + self.volume)
-        print("ISBN: " + self.isbn_13)
-        print("Description: " + self.description)
-        print("Book Image URL: " + self.book_img_url)
-        print("Sale Status: " + self.ready_for_sale)
+        try:
+            print("Format: " + self.format)
+            print("Title: " + self.book_title)
+            print("Authors: " + ','.join(self.authors))
+            print("Series: " + self.series)
+            print("Volume:  " + self.volume)
+            print("ISBN: " + self.isbn_13)
+            print("Description: " + self.description)
+            print("Book Image URL: " + self.book_img_url)
+            print("Sale Status: " + self.ready_for_sale)
+        except AttributeError:
+            print("something wasn't there")
 
 
