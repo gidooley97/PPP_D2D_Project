@@ -67,8 +67,8 @@ class SiteBookData:
             self.site_slug = kwargs['site_slug']
         if 'parse_status' in kwargs:
             self.parse_status = kwargs['parse_status']
-        if 'url' in kwargs:
-            self.url = kwargs['url']
+        if 'book_img_url' in kwargs:
+            self.book_img_url = kwargs['book_img_url']
         if 'content' in kwargs:
             self.content = kwargs['content']   
         if 'ready_for_sale' in kwargs:
