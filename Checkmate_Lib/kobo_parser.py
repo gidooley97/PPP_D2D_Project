@@ -42,9 +42,9 @@ class KoboSite(BookSite):
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
         ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
         extra = self.extraParser(root)
-        book_site_data = SiteBookData(frmt, title, img, img_url,isbn13,desc, series, 
-        vol_num, subtitle, authors,book_id, site_slug, parse_status, url, content,
-        ready_for_sale, extra)
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
         
@@ -72,7 +72,7 @@ class KoboSite(BookSite):
         #submit the form and get the returned page.
         res=br.submit()
         self.__get_book_data_from_page(res.read(), site_book_data)
-        return self.match_list.sort(key = score, reverse = False) # for testing I get the first page results only
+        return self.match_list # for testing I get the first page results only
         while(True):
             try:
                 print("nextpage")

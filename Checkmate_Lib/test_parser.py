@@ -11,10 +11,25 @@ class TestSite:
         pass
      
     def get_book_data_from_site(self,url):
-        pass
+        content = fetch(url)
+        title = self.titleParser(content)
+        author = self.authorsParser(content)
+        subtitle = self.subtitleParser(content)
+        isbn = self.isbnParser(content)
+        frmt = self.formatParser(content)
+        description = self.descParser(content)
+        series = self.seriesParser(content)
+        volume = self.volumeParser(content)
+        sale_ready = self.saleReadyParser(content)
+        price = self.priceParser(content)
+        siteBookData = SiteBookData(content=content, book_title=title, authors=author, subtitle=subtitle, isbn_13=isbn, format=frmt,
+         description=description, series=series, volume=volume, ready_for_sale=sale_ready, price=price)
+        return siteBookData
+
+        
 
     def find_matches_at_site(self,book_data):
-        pass
+        return 
 
     def convert_book_id_to_url(self,book_id):
         url = "http://127.0.0.1:8000/books/"+book_id
@@ -106,8 +121,10 @@ class TestSite:
         
         return volume
 
-    def contentParser(content):
-        pass
+    def contentParser(self, url):
+        content = fetch(url)
+        return content
+        
 
     def saleReadyParser(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -131,11 +148,11 @@ class TestSite:
 
     #parseAll parses all data, prints it, and 
     #stores it in a SiteBookData Object
-    def parseAll(content, SiteBookData):
+    def parseAll(self, url):
         url = "http://127.0.0.1:8000/books/30/"
         #url = prompt("Enter a url");
         content = fetch(url)
-        site = KoboSite() 
+        site = TestSite() 
         print(site.titleParser(content))
         print(site.authorsParser(content))
         print(site.isbnParser(content))
@@ -157,21 +174,14 @@ class TestSite:
 
 def main():
 
-        
     url = "http://127.0.0.1:8000/books/30/"
-    #url = prompt("Enter a url");
+    BookSite = TestSite()
     content = fetch(url)
-    site = TestSite() 
-    print(site.titleParser(content))
-    print(site.authorsParser(content))
-    print(site.isbnParser(content))
-    print(site.descParser(content))
-    print(site.formatParser(content))
-    print(site.subtitleParser(content))
-    print(site.seriesParser(content))
-    print(site.volumeParser(content))
-    print(site.saleReadyParser(content))
-    print(site.priceParser(content))
+    #print(BookSite.formatParser(content))
+    #BookSite.parseAll(content)
+    BookSite.get_book_data_from_site(url).print_all()
+    
+    
     
 
   

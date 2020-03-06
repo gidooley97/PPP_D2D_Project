@@ -10,14 +10,15 @@ import lxml.html
 import mechanize
 from bookSite import BookSite
 import re
+import json
 
 ############ KoboSite Class ################
 
 class LivrariaSite(BookSite):
     def __init__(self):
         self.site_slug = "LC"
-        self.search_url="https://www3.livrariacultura.com.br/busca/ebooks" # to only return only ebooks
-        self.url_to_book_detail = "https://www3.livrariacultura.com.br/ebooks"
+        self.search_url="https://www3.livrariacultura.com.br/ebooks/busca" # to only return only ebooks
+        self.url_to_book_detail = "https://www3.livrariacultura.com.br/"
         self.match_list=[] 
     def get_book_data_from_site(self,url):
         content = requests.get(url).content#gets the book's page 
@@ -41,9 +42,9 @@ class LivrariaSite(BookSite):
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
         ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
         extra = self.extraParser(root)
-        book_site_data = SiteBookData(frmt, title, img, img_url,isbn13,desc, series, 
-        vol_num, subtitle, authors,book_id, site_slug, parse_status, url, content,
-        ready_for_sale, extra)
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
     def find_book_matches_at_site(self,site_book_data):
@@ -65,12 +66,15 @@ class LivrariaSite(BookSite):
         while(True):
             print('Page',page)
             content= requests.get(url+"#"+str(page)).content
+
             parser = etree.HTMLParser(remove_pis=True)
             tree = etree.parse(io.BytesIO(content), parser)
             root = tree.getroot()
           
             self.__get_book_data_from_page(content, site_book_data)
-            if not root.xpath(".//div[@class='pager top']/ul[@class='pages']/li[@class='next']"):
+            if not root.xpath(".//ul[@class='pages']/li[@class='next']"):
+                print('done')
+                return self.match_list
                 break
             page+=1
         
@@ -85,14 +89,14 @@ class LivrariaSite(BookSite):
 
         for url in url_elements:
             #call function to get book data with url
-            print('url', url)
+            #print('url', url)
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
             self.match_list.append(book_data_score)
 
     def convert_book_id_to_url(self,book_id):
-        return self.url_to_book_detail+book_id
+        return self.url_to_book_detail+book_id+'/p'
 
     def match_percentage(self, site_book1, site_book2):
         return super().match_percentage(site_book1,site_book2)
@@ -120,11 +124,15 @@ class LivrariaSite(BookSite):
     def authorsParser(self,root):
         author_elements = root.xpath("//td[@class='value-field Colaborador']/text()")
         authors = []
-        
         for auth_element in author_elements:
-            if auth_element.startswith('Autor:'):
+            if auth_element.startswith('Autor:') | auth_element.startswith('Autores:') | auth_element.startswith('Tradutor:') | auth_element.startswith('Leitor/Narrador:'):
                 auth_element=re.sub('Autor:', '', auth_element)
+                auth_element=re.sub('Autores:', '', auth_element)
+                auth_element=re.sub('Tradutor:', '', auth_element)
+                auth_element=re.sub('Leitor/Narrador:', '', auth_element)
                 authors.append(auth_element)
+            else:
+                authors.append("No authors")
         return authors
 
 
@@ -166,24 +174,27 @@ class LivrariaSite(BookSite):
             image = Image.open(urllib.request.urlopen(url))
         except:
             pass
-        #image.save("here.jpg")
         return image
 
     def descParser(self, root):
         try:
             desc_elements = root.xpath("//td[@class='value-field Sinopse']")[0].text
-            #desc= etree.tostring(desc_elements, method='html', with_tail='False')
-            # need to decide whther to take all or only the 1st p tag content
             desc=desc_elements
         except:
             desc =''
         return desc
 
 
-    def saleReadyParser(self, root): 
-        status = ""
-        # Check for the words 'Buy' and 'Pre-Order
-        
+    def saleReadyParser(self, root):
+        try:
+            sale_flag = 0 # 0 = For Sale   1 = Not For Sale
+            status = "For Sale"
+            checker = root.xpath("//script")[208]
+            print(checker)
+            # sale_flag = 1
+            status='Not For Sale'
+        except:
+            status = 'F'
 
         return status
 
@@ -198,38 +209,6 @@ class LivrariaSite(BookSite):
     ############# End of Class #################
 
 
-
-#def main():
- #   url = "https://www3.livrariacultura.com.br/sapiens-2011667923/p"
-   # url = prompt("Enter a url");
-  #  content = fetch(url)
-    
-    #site = LivrariaSite() 
-    #site.titleParser(content)
-    #site.authorsParser(content)
-    #site.isbnParser(content)
-    #site.formatParser(content)
-    #site.descParser(content)
-    #site.subtitleParser(content)
-    #site.seriesParser(content)
-    #site.volumeParser(content)
-    #site.imageUrlParser(content)
-    #site.saleReadyParser(content)
-  
-#def fetch(url):
- #   response = requests.get(url)
-  #  return response.content
-    
-
-
-
-
-
-
-
-
-#if __name__ == "__main__":
- #   main()
 
 
 
