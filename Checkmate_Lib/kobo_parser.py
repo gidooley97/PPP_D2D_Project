@@ -42,8 +42,8 @@ class KoboSite(BookSite):
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
         ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
         extra = self.extraParser(root)
-        book_site_data = SiteBookData(format=frmt, title=title, img=img, img_url=img_url,isbn=isbn13, description=desc, series=series, 
-        volume=vol_num, subtitle=subtitle, author=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
         ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
