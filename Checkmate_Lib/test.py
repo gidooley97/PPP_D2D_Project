@@ -55,7 +55,7 @@ def sbdMenuHandler(searchSbd):
                 if(slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
                     print("Invalid slug. Try Again.")
 
-            searchSbd = SiteBookData('','','','','','','','','','','','','','','','','')
+            searchSbd = SiteBookData()
             searchSbd.site_slug = slug
                 
             searchSbd = sbdEditHandler(searchSbd) # Replace existing SBD
@@ -178,7 +178,7 @@ def sbdEditHandler(searchSbd):
 def driver():
     print ("Welcome to Professonal Python Pro's Checkmate Library!")
     option = "" # Holds value that user inputs as option
-    searchSbd = SiteBookData('','','','','','','','','','','','','','','','','') # Site Book Data Object used to search with
+    searchSbd = SiteBookData() # Site Book Data Object used to search with
 
     while option != 'E': # Exit on 'E'
         printMenu()
