@@ -2,7 +2,7 @@
 
 from kobo_parser import KoboSite
 from livraria_parser import LivrariaSite
-from PPP_D2D_Project.Checkmate_Lib.test_parser import TestSite
+from test_parser import TestSite
 
 
 
