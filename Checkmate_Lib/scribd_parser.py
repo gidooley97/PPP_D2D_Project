@@ -8,13 +8,13 @@ from io import BytesIO
 import urllib.request
 from bookSite import BookSite
 import mechanize
-
+import json
 ############ Scribd Site Class ################
 """parses the book data from Scribd"""
-class ScribdSite:
+class ScribdSite(BookSite):
     def __init__(self):
         self.site_slug = "SC"
-        self.search_url = "https://www.scribd.com"
+        self.search_url = "https://www.scribd.com/search?content_type=books&page=1&query=&language=1"
         self.url_to_book_detail ="https://www.scribd.com/book"#set to ebook bcs D2D deals with ebooks mainly
         self.match_list=[]
      
@@ -40,8 +40,9 @@ class ScribdSite:
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
         ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
         extra = self.extraParser(root)
-        book_site_data = SiteBookData(content=content, book_title=title, authors=authors, isbn_13=isbn13, format=frmt,
-         description=desc, series=series, volume=vol_num, ready_for_sale=ready_for_sale)
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
     def find_matches_at_site(self,site_book_data):
@@ -54,42 +55,43 @@ class ScribdSite:
             search_txt = site_book_data.authors[0]
         if not search_txt:
             return []
-
-        payload ={'ft':search_txt, 'originalText':search_txt}
-        content = requests.get(self.search_url,params=payload).content
-        url =  requests.get(self.search_url,params=payload).url
-        self.__get_book_data_from_page(content,site_book_data)
-        page=1
-        while(True):
-            print('Page',page)
-            content= requests.get(url+"#"+str(page)).content
-
-            parser = etree.HTMLParser(remove_pis=True)
-            tree = etree.parse(io.BytesIO(content), parser)
-            root = tree.getroot()
-          
-            self.__get_book_data_from_page(content, site_book_data)
-            if root.xpath(".//nav[@aria-label='Pagination']"):
-                if root.xpath(".//nav[@aria-label='Pagination']/ul/li[6]/a"):
-                    print("done!")
-                    break
-                else:
-                    page+=1
-            else:
-                print("done!")
-                break
-        
+        url =self.search_url
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+        br.open(url)  
+        br.select_form(class_="search_form")#selects form
+        br['query']=search_txt #fills the input field
+        print(br['query'])
+        res=br.submit()
+        content=res.read()
+        urls=self.get_urls_js(content)
+        #print(content)
+        for r in urls:
+            print(r)#just fo debugging
+        self.__get_book_data_from_page(urls,site_book_data)        
         return self.match_list
-
-    def __get_book_data_from_page(self, content, book_site_dat_1):
+    #gets the resuts as a json from the javascript of the results page 
+    #and returns a list of direct urls to books 
+    def get_urls_js(self,content):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        url_elements = root.xpath(".//div[@class='list_anchor_container']/a/@href")
+        dom_txt = root.xpath(".//script")[21].text
+        tmp_txt = dom_txt.split('{"documents":')[1].split(']')[0]
+        #print('{"results":'+tmp_txt+"]}")
+        my_json = json.loads('{"results":'+tmp_txt+"]}")
+        #only getting results for books
+        results = my_json['results']
+        urls = []
+        for r in results:
+            urls.append(r['book_preview_url'])
+        return urls
 
-        for url in url_elements:
+    #passed urls and returns the bookDataSite objects with their scores
+    def __get_book_data_from_page(self, urls, book_site_dat_1):
+        for url in urls:
             #call function to get book data with url
-            #print('url', url)
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
@@ -153,7 +155,7 @@ class ScribdSite:
         num = ""
         for seriesCheck in title:
             if seriesCheck.isdigit():
-                num = "#"+seriesCheck
+                num = seriesCheck
                 if title.find("series"):
                     title = "Series" 
                 else:
@@ -206,14 +208,15 @@ class ScribdSite:
 
 
 def main():
-    url = "https://www.scribd.com/book/163638327"
+    url = "https://www.scribd.com/book/205512285/A-Series-of-Unfortunate-Events-1-The-Bad-Beginning"
     content = fetch(url)
     site = ScribdSite() 
-    
+    title = site.titleParser(content)
+    site.seriesParser(title)
     book = site.get_book_data_from_site(url)
     matches = site.find_matches_at_site(book)
     for x in matches:
-        x.print_all()
+        x[1].print_all()
         
     
 
