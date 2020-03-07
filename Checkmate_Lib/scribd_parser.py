@@ -127,28 +127,23 @@ class ScribdSite(BookSite):
 
     def authorsParser(self,root):
         author_elements = root.xpath(".//a[contains(@href,'https://www.scribd.com/author')]")
-        print(author_elements)
         authors = []
         for auth_element in author_elements:
             authors.append(auth_element.text)
-            print(auth_element.text)
         return authors
 
     def isbnParser(self, root):
         isbn_element = root.xpath("/html/head/meta[18]/@content")
         isbn = isbn_element[0]
-        print(isbn)
         return isbn
 
     def book_id_parser(self, url): 
         book_id = url.split('/')[len(url.split('/'))-2]
-        print(book_id)
         return book_id
 
     def formatParser(self, root):
         format_element = root.xpath("/html/head/meta[13]/@content")
         form = format_element[0]
-        print(form)
         return form
         
 
@@ -162,47 +157,34 @@ class ScribdSite(BookSite):
 
     def descParser(self, root):
         desc_elements = root.xpath("/html/head/meta[16]/@content")
-        desc = desc_elements
-        print(desc) 
+        desc = desc_elements[0]
         return str(desc)
 
     def seriesParser(self, title):
-        title = ""
-        num = ""
-        for seriesCheck in title:
-            if seriesCheck.isdigit():
-                num = "#"+seriesCheck
-                if title.find("series"):
-                    title = "Series" 
-                else:
-                    num = ""
-            else:
-                num = ""
-        series = title+" "+num
-        print(series)
+        series = ""
+        try:
+            for ser in title:
+              if ser.isdigit() and ("Series" in title or "series" in title):
+                series = ser
+                return series
+        except:
+            series - "None"
         return series
 
         
     def volumeParser(self, title):
-        title = ""
-        num = ""
-        for volumeCheck in title:
-            if volumeCheck.isdigit():
-                num = "#"+volumeCheck
-                if title.find("volume"):
-                    title = "Volume" 
-                else: 
-                    title = ""
-            else:
-                num = ""
-
-        volume = title+" "+num
-        print(volume)
+        volume = ""
+        try:
+            for vol in title:
+                if vol.isdigit() and ("Volume" in title or "volume" in title):
+                    volume = vol
+                    return volume
+        except:
+            volume = "None"
         return volume
 
     def saleReadyParser(self, root):
         saleReady = "Avaliable"
-        print(saleReady)
         return saleReady
     
     def extraParser(self,root):
@@ -218,16 +200,18 @@ class ScribdSite(BookSite):
         #determine parse_status checks if we have the most basic data about a book
         if title and isbn13 and desc and authors:
             return "UNSUCCESSFUL"
+        if title or isbn13 or desc or authors:
+            return "PARTIALLY PARSED"
         return "FULLY_PARSED"
 
   ############# End of Class #################
 
 
 def main():
-    url = "https://www.scribd.com/book/190969296/Lord-of-the-Flies"
+    url = "https://www.scribd.com/book/205512285/A-Series-of-Unfortunate-Events-1-The-Bad-Beginning"
     content = fetch(url)
     site = ScribdSite() 
-    
+    #site.seriesParser("A Series of Unfortunate Events #5: The Austere Academy")
     book = site.get_book_data_from_site(url)
     matches = site.find_matches_at_site(book)
     # for x in matches:
