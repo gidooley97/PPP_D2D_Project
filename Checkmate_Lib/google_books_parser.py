@@ -23,6 +23,7 @@ class GoogleBooks:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
+        frmt = self.format_parser(root)
         title = self.titleParser(root)
         img_url = self.imageUrlParser(root)
         img = self.imageParser(img_url)
@@ -37,7 +38,9 @@ class GoogleBooks:
         parse_status = self.get_parse_status(title, isbn13, desc, authors)
         ready_for_sale = self.sales_flag_parser(root)
         extra = self.extraParser(root)
-        book_site_data = SiteBookData("format", title, img, img_url, isbn13, desc, series, "None", subtitle, authors, "None", site_slug, parse_status, url, content, ready_for_sale, extra)
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=None, subtitle=subtitle, authors=authors, book_id=None, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
     def find_book_matches_at_site(self, site_book_data):
