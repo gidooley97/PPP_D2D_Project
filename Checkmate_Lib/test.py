@@ -135,7 +135,7 @@ def driver():
 
     while option != 'X': # Exit on 'E'
         printMenu()
-        option =  input( "Please select an option.  ").upper()
+        option =  input( "Please select an option:  ").upper()
         
         if option == 'C': # Create new SBD
             # Get slug from user
@@ -162,7 +162,7 @@ def driver():
         elif option == 'X':
             exit()
         else:
-            print("Invalid Option. Try Again.")
+            print("Invalid Option. Try Again: ")
 
 if __name__ == "__main__":
     main()

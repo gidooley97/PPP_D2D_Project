@@ -4,6 +4,7 @@ from kobo_parser import KoboSite
 from livraria_parser import LivrariaSite
 from google_books_parser import GoogleBooks
 from test_parser import TestSite
+from scribd_parser import ScribdSite
 
 
 def get_book_site(slug_cased):
@@ -19,7 +20,7 @@ def get_book_site(slug_cased):
         site = LivrariaSite()  
     elif slug == 'SC':
         site = ScribdSite()
-        pass
+        
 
     return site
 
