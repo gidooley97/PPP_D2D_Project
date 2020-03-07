@@ -48,8 +48,8 @@ class KoboSite(BookSite):
         return book_site_data
 
         
-
-    def find_book_matches_at_site(self,site_book_data):
+    #gets 2 pages by default for testing purposes
+    def find_book_matches_at_site(self,site_book_data, pages=2):
         url =self.search_url
         print("url:", url)
         br = mechanize.Browser()
@@ -68,18 +68,17 @@ class KoboSite(BookSite):
         if not search_txt:
             return []
         br['query'] =search_txt
-        
+        self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        self.__get_book_data_from_page(res.read(), site_book_data)
-        return self.match_list # for testing I get the first page results only
-        while(True):
+        self.__get_book_data_from_page(res.read(), site_book_data)#get page 1 of results
+        #return self.match_list # for testing I get the first page results only
+        page=2
+        while(page <=pages):#limit the results we will get
             try:
-                print("nextpage")
                 res=br.follow_link(text="Next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
-            except mechanize._mechanize.LinkNotFoundError:
-                print("Reached end of results")
+            except mechanize._mechanize.LinkNotFoundError:#end of results
                 return self.match_list
             
     #gets url and pass it to get_book_data_from_site to get books
@@ -90,12 +89,9 @@ class KoboSite(BookSite):
         url_elements = root.xpath(".//p[@class='title product-field']/a/@href")
 
         for url in url_elements:
-            #call function to get book data with url
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
-            #print('score', score)
-            #book_site_dat_tmp.print_all()
             self.match_list.append(book_data_score)
         
                    
