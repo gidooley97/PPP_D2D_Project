@@ -92,6 +92,7 @@ class KoboSite(BookSite):
 
         for url in url_elements:
             book_site_dat_tmp= self.get_book_data_from_site(url)
+            book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
             self.match_list.append(book_data_score)
