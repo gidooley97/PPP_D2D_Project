@@ -1,16 +1,19 @@
 from site_book_data import SiteBookData
+from bookSite import BookSite
 import io
 from lxml import etree
 import requests
 import re
+import mechanize
 
 ############ TestSite Class ################
 """parses the book data from test bookstore"""
-class TestSite:
+class TestSite(BookSite):
     def __init__(self):
         self.site_slug = "TB"
         self.search_url = "http://127.0.0.1:8000/books/search/"
         self.url_to_book_detail ="http://127.0.0.1:8000/books/"
+        self.match_list = []
      
     def get_book_data_from_site(self,url):
         content = fetch(url)
@@ -30,7 +33,7 @@ class TestSite:
 
         
 
-    def find_matches_at_site(self,book_data):
+    def find_matches_at_site(self,site_book_data):
         url =self.search_url
         print("url:", url)
         br = mechanize.Browser()
@@ -48,7 +51,7 @@ class TestSite:
             search_txt = site_book_data.authors[0]
         if not search_txt:
             return []
-        br['query'] =search_txt
+        br['s_bar'] =search_txt
         
         #submit the form and get the returned page.
         res=br.submit()
@@ -72,7 +75,8 @@ class TestSite:
 
         for url in url_elements:
             #call function to get book data with url
-            url = "http://127.0.0.1:8000/books/" + url
+            url = "http://127.0.0.1:8000" + url
+            print(url)
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
@@ -232,6 +236,7 @@ def main():
     #print(BookSite.formatParser(content))
     #BookSite.parseAll(content)
     BookSite.get_book_data_from_site(url).print_all()
+    print(BookSite.find_matches_at_site(BookSite.get_book_data_from_site(url)))
 
     
     
