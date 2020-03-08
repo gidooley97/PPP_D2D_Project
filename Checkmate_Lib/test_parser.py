@@ -68,7 +68,7 @@ class TestSite:
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        url_elements = root.xpath(".//p[@class='title product-field']/a/@href")
+        url_elements = root.xpath(".//button[@class='button button2 text-right']/a/@href")
 
         for url in url_elements:
             #call function to get book data with url
@@ -82,6 +82,9 @@ class TestSite:
     def convert_book_id_to_url(self,book_id):
         url = self.url+book_id
         return url
+
+    def match_percentage(self, site_book1, site_book2):
+        return super().match_percentage(site_book1,site_book2)
 
     #------------ Utility Methods -------------
     def titleParser(self, content):
@@ -228,6 +231,7 @@ def main():
     #print(BookSite.formatParser(content))
     #BookSite.parseAll(content)
     BookSite.get_book_data_from_site(url).print_all()
+
     
     
     
