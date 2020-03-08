@@ -78,8 +78,10 @@ class KoboSite(BookSite):
             try:
                 res=br.follow_link(text="Next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
+                page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
-                return self.match_list
+                break
+        return self.match_list
             
     #gets url and pass it to get_book_data_from_site to get books
     def __get_book_data_from_page(self, content, book_site_dat_1):
