@@ -17,7 +17,7 @@ import json
 class LivrariaSite(BookSite):
     def __init__(self):
         self.site_slug = "LC"
-        self.search_url="https://www3.livrariacultura.com.br/ebooks/busca" # to only return only ebooks
+        self.search_url="https://www3.livrariacultura.com.br/ebooks/" # to only return only ebooks
         self.url_to_book_detail = "https://www3.livrariacultura.com.br/"
         self.match_list=[] 
     def get_book_data_from_site(self,url):
@@ -47,7 +47,9 @@ class LivrariaSite(BookSite):
         ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
-    def find_book_matches_at_site(self,site_book_data):
+    def find_book_matches_at_site(self,site_book_data,pages=2):
+        #to get the max results set pages to None. 
+        # Set to 2 for testing purposes
         search_txt =''
         if site_book_data.book_title:
             search_txt=site_book_data.book_title
@@ -57,27 +59,21 @@ class LivrariaSite(BookSite):
             search_txt = site_book_data.authors[0]
         if not search_txt:
             return []
-
-        payload ={'ft':search_txt, 'originalText':search_txt}
-        content = requests.get(self.search_url,params=payload).content
-        url =  requests.get(self.search_url,params=payload).url
-        self.__get_book_data_from_page(content,site_book_data)
-        page=2
-        while(True):
-            print('Page',page)
-            content= requests.get(url+"#"+str(page)).content
-
-            parser = etree.HTMLParser(remove_pis=True)
-            tree = etree.parse(io.BytesIO(content), parser)
-            root = tree.getroot()
-          
-            self.__get_book_data_from_page(content, site_book_data)
-            if not root.xpath(".//ul[@class='pages']/li[@class='next']"):
-                print('done')
-                return self.match_list
-                break
-            page+=1
+        self.match_list =[]
+        #this site is hard to go to the next page. We used the PS param t specify how many search 
+        #results we want to see on one page. The max is 96 
+        print("search", search_txt)
         
+        if not pages:
+            results = 96 #Max
+        else:
+            results= pages*24
+        url = self.search_url +search_txt+"?PS="+str(results)
+
+        content = requests.get(url).content
+        #print(content)
+        self.__get_book_data_from_page(content,site_book_data)
+               
         return self.match_list
         
 
@@ -88,8 +84,6 @@ class LivrariaSite(BookSite):
         url_elements = root.xpath(".//h2[@class='prateleiraProduto__informacao__nome']/a/@href")
 
         for url in url_elements:
-            #call function to get book data with url
-            #print('url', url)
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
@@ -210,12 +204,16 @@ class LivrariaSite(BookSite):
 
 
 
+def main():
+    url = "https://www3.livrariacultura.com.br/lord-of-sin-2012813055/p"
+    site = LivrariaSite() 
+    #site.seriesParser("A Series of Unfortunate Events #5: The Austere Academy")
+    book = site.get_book_data_from_site(url)
+    matches = site.find_book_matches_at_site(book)
+    for x in matches:
+         x[1].print_all()
 
 
 
 
-
-
-
-
-
+main()

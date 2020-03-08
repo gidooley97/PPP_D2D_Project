@@ -45,7 +45,7 @@ class ScribdSite(BookSite):
         ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
-    def find_matches_at_site(self,site_book_data, pages = 2):
+    def find_book_matches_at_site(self,site_book_data, pages = 2):
         self.match_list=[]
         search_txt =''
         if site_book_data.book_title:
@@ -213,7 +213,7 @@ def main():
     site = ScribdSite() 
     #site.seriesParser("A Series of Unfortunate Events #5: The Austere Academy")
     book = site.get_book_data_from_site(url)
-    matches = site.find_matches_at_site(book)
+    matches = site.find_book_matches_at_site(book)
     # for x in matches:
     #     x[1].print_all()
         
