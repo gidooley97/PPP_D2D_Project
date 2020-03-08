@@ -204,16 +204,3 @@ class LivrariaSite(BookSite):
 
 
 
-def main():
-    url = "https://www3.livrariacultura.com.br/lord-of-sin-2012813055/p"
-    site = LivrariaSite() 
-    #site.seriesParser("A Series of Unfortunate Events #5: The Austere Academy")
-    book = site.get_book_data_from_site(url)
-    matches = site.find_book_matches_at_site(book)
-    for x in matches:
-         x[1].print_all()
-
-
-
-
-main()
