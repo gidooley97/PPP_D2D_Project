@@ -72,6 +72,7 @@ class TestSite:
 
         for url in url_elements:
             #call function to get book data with url
+            url = "http://127.0.0.1:8000/books/" + url
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
