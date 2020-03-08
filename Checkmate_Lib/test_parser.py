@@ -8,7 +8,9 @@ import re
 """parses the book data from test bookstore"""
 class TestSite:
     def __init__(self):
-        pass
+        self.site_slug = "TB"
+        self.search_url = "http://127.0.0.1:8000/books/search/"
+        self.url_to_book_detail ="http://127.0.0.1:8000/books/"
      
     def get_book_data_from_site(self,url):
         content = fetch(url)
@@ -29,10 +31,56 @@ class TestSite:
         
 
     def find_matches_at_site(self,book_data):
+        url =self.search_url
+        print("url:", url)
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.open(url)  
+        #selects the form to populate 
+        br.select_form(class_="search-form")
+        search_txt =''
+        #populate the field. You may need to check if this is actually working
+        if site_book_data.book_title:
+            search_txt=site_book_data.book_title
+        elif site_book_data.isbn13:
+            search_txt= site_book_data.isbn_13
+        elif site_book_data.authors:
+            search_txt = site_book_data.authors[0]
+        if not search_txt:
+            return []
+        br['query'] =search_txt
+        
+        #submit the form and get the returned page.
+        res=br.submit()
+        self.__get_book_data_from_page(res.read(), site_book_data)
+        #return self.match_list # for testing I get the first page results only
+        while(True):
+            try:
+                print("nextpage")
+                res=br.follow_link(text="Next")
+                self.__get_book_data_from_page(res.read(), site_book_data)
+            except mechanize._mechanize.LinkNotFoundError:
+                print("Reached end of results")
+                return self.match_list
         return 
 
+    def __get_book_data_from_page(self, content, book_site_dat_1):
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot()
+        url_elements = root.xpath(".//p[@class='title product-field']/a/@href")
+
+        for url in url_elements:
+            #call function to get book data with url
+            book_site_dat_tmp= self.get_book_data_from_site(url)
+            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+            book_data_score =tuple([score,book_site_dat_tmp])
+            #print('score', score)
+            #book_site_dat_tmp.print_all()
+            self.match_list.append(book_data_score)
+
     def convert_book_id_to_url(self,book_id):
-        url = "http://127.0.0.1:8000/books/"+book_id
+        url = self.url+book_id
         return url
 
     #------------ Utility Methods -------------
@@ -77,7 +125,7 @@ class TestSite:
         format_type = root.xpath("/html/body/div[3]/div/div/h6[6]/text()")[0]
         return format_type
 
-    def imageParser(content):
+    def imageParser(self):
         pass
 
     def descParser(self, content):
@@ -140,10 +188,10 @@ class TestSite:
         price = root.xpath("/html/body/div[3]/div/div/h6[1]/text()")[0]
         return price
 
-    def extraParser(content):
+    def extraParser(self):
         pass
 
-    def imageUrlParser(content):
+    def imageUrlParser(self):
         pass
 
     #parseAll parses all data, prints it, and 
@@ -164,7 +212,7 @@ class TestSite:
         print(site.saleReadyParser(content))
         print(site.priceParser(content))
 
-    def tester(content):
+    def tester(self, content):
         print("Hello")
    
 
