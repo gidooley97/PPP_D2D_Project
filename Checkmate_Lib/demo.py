@@ -4,9 +4,9 @@ from site_book_data import SiteBookData
 # Load a sitebook data object from a url. Then searches for 
 # site matches using the book.
 def run_demo():
-    slug = 'TB' # Declare slug for site to search
+    slug = 'KO' # Declare slug for site to search
     book_site = get_book_site(slug) # seed Book Site object with slug
-    url = "http://127.0.0.1:8000/5000/"
+    url = "https://www.kobo.com/ca/en/ebook/the-lion-the-witch-and-the-wardrobe-1"
     book_site_data = book_site.get_book_data_from_site(url) # Parse data from site
     book_site_data.site_slug = slug
     matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches

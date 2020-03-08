@@ -14,7 +14,7 @@ import re
 class GoogleBooks:
     def __init__(self):
         self.site_slug = "GB"
-        self.search_url = "https://books.google.com/"
+        self.search_url = "https://www.books.google.com/"
         self.url_to_book_detail = "https://www.books.google.com/book?vid=ISBN"
         self.match_list = []
 
@@ -43,12 +43,12 @@ class GoogleBooks:
         ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
-    def find_book_matches_at_site(self, site_book_data, pages=2):
+    def find_book_matches_at_site(self, site_book_data):
         url = self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.open(url)
-        br.select_form(id_="oc-search-form")
+        br.select_form(id_="oc-search-input")
         search_txt = ''
         if site_book_data.book_title:
             search_txt=site_book_data.book_title
@@ -58,19 +58,19 @@ class GoogleBooks:
             search_txt = site_book_data.authors[0]
         if not search_txt:
             return []
-        br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-        br['q'] = search_txt
+        br['query'] = search_txt
+
         res = br.submit()
         self.__get_book_data_from_page(res.read(), site_book_data)
-        page=2
-        while(page <= pages):
+        return self.match_list
+        while(True):
             try:
+                print("nextpage")
                 res = br.follow_link(text="Next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
-                page+=1
             except mechanize._mechanize.LinkNotFoundError:
-                break
-        return self.match_list
+                print("Reached end of results")
+                return self.match_list
 
     def __get_book_data_from_page(self, content, book_site_dat_1):
         parser = etree.HTMLParser(remove_pis=True)

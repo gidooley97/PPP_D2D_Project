@@ -1,10 +1,10 @@
 from site_book_data import SiteBookData
+from bookSite import BookSite
 import io
 from lxml import etree
 import requests
 import re
 import mechanize
-from bookSite import BookSite
 ############ TestSite Class ################
 """parses the book data from test bookstore"""
 class TestSite(BookSite):
@@ -50,8 +50,8 @@ class TestSite(BookSite):
             search_txt = site_book_data.authors[0]
         if not search_txt:
             return []
-        br['s_bar'] ='lord'
-        print(br['s_bar'])
+        br['s_bar'] =search_txt
+        
         #submit the form and get the returned page.
         res=br.submit()
         self.__get_book_data_from_page(res.read(), site_book_data)
@@ -203,3 +203,24 @@ class TestSite(BookSite):
 
 
 
+def main():
+
+    url = "http://127.0.0.1:8000/books/30/"
+    BookSite = TestSite()
+    content = fetch(url)
+    #print(BookSite.formatParser(content))
+    #BookSite.parseAll(content)
+    BookSite.get_book_data_from_site(url).print_all()
+    print(BookSite.find_matches_at_site(BookSite.get_book_data_from_site(url)))
+
+    
+    
+    
+
+  
+def fetch(url):
+    response = requests.get(url)
+    return response.content
+
+if __name__ == "__main__":
+    main()
