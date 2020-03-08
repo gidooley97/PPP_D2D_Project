@@ -78,8 +78,10 @@ class KoboSite(BookSite):
             try:
                 res=br.follow_link(text="Next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
+                page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
-                return self.match_list
+                break
+        return self.match_list
             
     #gets url and pass it to get_book_data_from_site to get books
     def __get_book_data_from_page(self, content, book_site_dat_1):
@@ -90,6 +92,7 @@ class KoboSite(BookSite):
 
         for url in url_elements:
             book_site_dat_tmp= self.get_book_data_from_site(url)
+            book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
             self.match_list.append(book_data_score)

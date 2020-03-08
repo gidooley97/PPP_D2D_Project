@@ -81,7 +81,6 @@ class ScribdSite(BookSite):
         dom_txt = root.xpath(".//script")[21].text
         tmp_txt = dom_txt.split('"page_count":')[1].split(',')[0]
         page_count=int(tmp_txt)
-        print('pages',page_count)
         return page_count
     #gets the resuts as a json from the javascript of the results page 
     #and returns a list of direct urls to books 
@@ -207,23 +206,3 @@ class ScribdSite(BookSite):
   ############# End of Class #################
 
 
-def main():
-    url = "https://www.scribd.com/book/205512285/A-Series-of-Unfortunate-Events-1-The-Bad-Beginning"
-    content = fetch(url)
-    site = ScribdSite() 
-    #site.seriesParser("A Series of Unfortunate Events #5: The Austere Academy")
-    book = site.get_book_data_from_site(url)
-    matches = site.find_book_matches_at_site(book)
-    # for x in matches:
-    #     x[1].print_all()
-        
-    
-
-  
-def fetch(url):
-    response = requests.get(url)
-    return response.content
-
-
-if __name__ == "__main__":
-    main()
