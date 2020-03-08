@@ -49,13 +49,13 @@ def searchHandler(searchSbd):
 
     if searchSbd.book_title != '':
         valid_attr_count += 1
-    if searchSbd.isbn_13 != '':
+    elif searchSbd.isbn_13 != '':
         valid_attr_count += 1
-    if searchSbd.series != '':
+    elif searchSbd.series != '':
         valid_attr_count += 1
-    if searchSbd.authors != '':
+    elif searchSbd.authors != '':
         valid_attr_count += 1
-    if searchSbd.subtitle != '':
+    elif searchSbd.subtitle != '':
         valid_attr_count += 1
     
     if (valid_attr_count > 0): # Launch Search after ensuring there is a slug
@@ -167,23 +167,4 @@ def driver():
 if __name__ == "__main__":
     main()
 
-
-
-
-
-
-
-
-  # slug = 'LC'
-    # book_site = get_book_site(slug)
-   
-    # #url1 = "https://www.kobo.com/us/en/ebook/lord-8"
-    # url2 = "https://www3.livrariacultura.com.br/a-fenda-2012668782/p"
-    # print("\n\nUrl 1:")
-    # book_site_data = book_site.get_book_data_from_site(url2)
-    # book_site_data.print_all()
-    # matches = book_site.find_book_matches_at_site(book_site_data)
-    # for book in matches:
-    #     print("score", str(book[0]))
-    #     book[1].print_all()
 
