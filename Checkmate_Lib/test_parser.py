@@ -5,7 +5,6 @@ from lxml import etree
 import requests
 import re
 import mechanize
-
 ############ TestSite Class ################
 """parses the book data from test bookstore"""
 class TestSite(BookSite):
@@ -13,10 +12,10 @@ class TestSite(BookSite):
         self.site_slug = "TB"
         self.search_url = "http://127.0.0.1:8000/books/search/"
         self.url_to_book_detail ="http://127.0.0.1:8000/books/"
-        self.match_list = []
+        self.match_list=[]
      
     def get_book_data_from_site(self,url):
-        content = fetch(url)
+        content = requests.get(url).content
         title = self.titleParser(content)
         author = self.authorsParser(content)
         subtitle = self.subtitleParser(content)
@@ -33,9 +32,9 @@ class TestSite(BookSite):
 
         
 
-    def find_matches_at_site(self,site_book_data):
+    def find_book_matches_at_site(self,site_book_data, pages=2):
         url =self.search_url
-        print("url:", url)
+        #print("url:", url)
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.open(url)  
@@ -56,16 +55,18 @@ class TestSite(BookSite):
         #submit the form and get the returned page.
         res=br.submit()
         self.__get_book_data_from_page(res.read(), site_book_data)
+        page=1
         #return self.match_list # for testing I get the first page results only
-        while(True):
+        while(page<=pages):
             try:
-                print("nextpage")
-                res=br.follow_link(text="Next")
+                #print("nextpage")
+                res=br.follow_link(text="next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
+                page+=1
             except mechanize._mechanize.LinkNotFoundError:
-                print("Reached end of results")
-                return self.match_list
-        return 
+                #print("Reached end of results")
+                break
+        return self.match_list
 
     def __get_book_data_from_page(self, content, book_site_dat_1):
         parser = etree.HTMLParser(remove_pis=True)
@@ -75,8 +76,7 @@ class TestSite(BookSite):
 
         for url in url_elements:
             #call function to get book data with url
-            url = "http://127.0.0.1:8000" + url
-            print(url)
+            url='http://127.0.0.1:8000'+url
             book_site_dat_tmp= self.get_book_data_from_site(url)
             score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
             book_data_score =tuple([score,book_site_dat_tmp])
@@ -85,7 +85,7 @@ class TestSite(BookSite):
             self.match_list.append(book_data_score)
 
     def convert_book_id_to_url(self,book_id):
-        url = self.url+book_id
+        url = self.url_to_book_detail+book_id
         return url
 
     def match_percentage(self, site_book1, site_book2):
@@ -176,10 +176,6 @@ class TestSite(BookSite):
             volume = "no volume"
         
         return volume
-
-    def contentParser(self, url):
-        content = fetch(url)
-        return content
         
 
     def saleReadyParser(self, content):
@@ -202,27 +198,6 @@ class TestSite(BookSite):
     def imageUrlParser(self):
         pass
 
-    #parseAll parses all data, prints it, and 
-    #stores it in a SiteBookData Object
-    def parseAll(self, url):
-        url = "http://127.0.0.1:8000/books/30/"
-        #url = prompt("Enter a url");
-        content = fetch(url)
-        site = TestSite() 
-        print(site.titleParser(content))
-        print(site.authorsParser(content))
-        print(site.isbnParser(content))
-        print(site.descParser(content))
-        print(site.formatParser(content))
-        print(site.subtitleParser(content))
-        print(site.seriesParser(content))
-        print(site.volumeParser(content))
-        print(site.saleReadyParser(content))
-        print(site.priceParser(content))
-
-    def tester(self, content):
-        print("Hello")
-   
 
 ############# End of Class #################
 
