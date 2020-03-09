@@ -34,7 +34,6 @@ class TestSite(BookSite):
 
     def find_book_matches_at_site(self,site_book_data, pages=2):
         url =self.search_url
-        #print("url:", url)
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.open(url)  
@@ -59,16 +58,39 @@ class TestSite(BookSite):
         #return self.match_list # for testing I get the first page results only
         while(page<=pages):
             try:
-                #print("nextpage")
                 res=br.follow_link(text="next")
                 self.__get_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:
-                #print("Reached end of results")
+                break
+        return self.match_list
+    def find_book_matches_by_attr_at_site(self,search_txt, pages=2):
+        url =self.search_url
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.open(url)  
+        #selects the form to populate 
+        br.select_form(class_="search-form")
+        if search_txt =='':    
+            return []
+
+        br['s_bar'] =search_txt
+        
+        #submit the form and get the returned page.
+        res=br.submit()
+        self.__get_book_data_from_page(res.read(), None,False)
+        page=1
+        #return self.match_list # for testing I get the first page results only
+        while(page<=pages):
+            try:
+                res=br.follow_link(text="next")
+                self.__get_book_data_from_page(res.read(), None, False)
+                page+=1
+            except mechanize._mechanize.LinkNotFoundError:
                 break
         return self.match_list
 
-    def __get_book_data_from_page(self, content, book_site_dat_1):
+    def __get_book_data_from_page(self, content, book_site_dat_1, is_match=True):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
@@ -78,11 +100,12 @@ class TestSite(BookSite):
             #call function to get book data with url
             url='http://127.0.0.1:8000'+url
             book_site_dat_tmp= self.get_book_data_from_site(url)
-            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-            book_data_score =tuple([score,book_site_dat_tmp])
-            #print('score', score)
-            #book_site_dat_tmp.print_all()
-            self.match_list.append(book_data_score)
+            if is_match:
+                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+                book_data_score =tuple([score,book_site_dat_tmp])
+                self.match_list.append(book_data_score)
+            else:
+                self.match_list.append(book_site_dat_tmp)
 
     def convert_book_id_to_url(self,book_id):
         url = self.url_to_book_detail+book_id

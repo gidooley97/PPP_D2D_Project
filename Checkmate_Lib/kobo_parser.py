@@ -47,11 +47,35 @@ class KoboSite(BookSite):
         ready_for_sale=ready_for_sale, extra=extra)
         return book_site_data
 
-        
-    #gets 2 pages by default for testing purposes
+    
+    def find_book_matches_by_attr_at_site(self, search_txt,pages=2):
+        url =self.search_url
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.open(url)  
+        #selects the form to populate 
+        br.select_form(class_="search-form")
+        if search_txt =='':
+            return []
+        br['query'] =search_txt
+        self.match_list=[]
+        #submit the form and get the returned page.
+        res=br.submit()
+        self.__get_book_data_from_page(res.read(), None, False)#get page 1 of results
+        #return self.match_list # for testing I get the first page results only
+        page=2
+        while(page <=pages):#limit the results we will get
+            try:
+                res=br.follow_link(text="Next")
+                self.__get_book_data_from_page(res.read(), None, False)
+                page+=1
+            except mechanize._mechanize.LinkNotFoundError:#end of results
+                break
+        return self.match_list
+    #gets 2 pages by default for testing purposes.
+    # returns a list of tuples of score and bookDataSite
     def find_book_matches_at_site(self,site_book_data, pages=2):
         url =self.search_url
-        print("url:", url)
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.open(url)  
@@ -84,7 +108,7 @@ class KoboSite(BookSite):
         return self.match_list
             
     #gets url and pass it to get_book_data_from_site to get books
-    def __get_book_data_from_page(self, content, book_site_dat_1):
+    def __get_book_data_from_page(self, content,  book_site_dat_1,is_match=True):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
@@ -92,10 +116,13 @@ class KoboSite(BookSite):
 
         for url in url_elements:
             book_site_dat_tmp= self.get_book_data_from_site(url)
-            book_site_dat_tmp.print_all()
-            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-            book_data_score =tuple([score,book_site_dat_tmp])
-            self.match_list.append(book_data_score)
+            #book_site_dat_tmp.print_all()
+            if is_match:
+                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+                book_data_score =tuple([score,book_site_dat_tmp])
+                self.match_list.append(book_data_score)
+            else:
+                self.match_list.append(book_site_dat_tmp)
         
                    
 

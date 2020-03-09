@@ -62,7 +62,7 @@ class LivrariaSite(BookSite):
         self.match_list =[]
         #this site is hard to go to the next page. We used the PS param t specify how many search 
         #results we want to see on one page. The max is 96 
-        print("search", search_txt)
+        
         
         if not pages:
             results = 96 #Max
@@ -76,8 +76,29 @@ class LivrariaSite(BookSite):
                
         return self.match_list
         
+    def find_book_matches_by_attr_at_site(self,search_txt,pages=2):
+        #to get the max results set pages to None. 
+        # Set to 2 for testing purposes
+        if search_txt =='':
+            return []
+        self.match_list =[]
+        #this site is hard to go to the next page. We used the PS param t specify how many search 
+        #results we want to see on one page. The max is 96, min is 24 books per page
+        
+        
+        if not pages:
+            results = 96 #Max
+        else:
+            results= pages*24
+        url = self.search_url +search_txt+"?PS="+str(results)
 
-    def __get_book_data_from_page(self, content, book_site_dat_1):
+        content = requests.get(url).content
+        #print(content)
+        self.__get_book_data_from_page(content,None, False)
+               
+        return self.match_list
+        
+    def __get_book_data_from_page(self, content, book_site_dat_1, is_match=True):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
@@ -85,9 +106,12 @@ class LivrariaSite(BookSite):
 
         for url in url_elements:
             book_site_dat_tmp= self.get_book_data_from_site(url)
-            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-            book_data_score =tuple([score,book_site_dat_tmp])
-            self.match_list.append(book_data_score)
+            if is_match:
+                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+                book_data_score =tuple([score,book_site_dat_tmp])
+                self.match_list.append(book_data_score)
+            else:
+                self.match_list.append(book_site_dat_tmp)
 
     def convert_book_id_to_url(self,book_id):
         return self.url_to_book_detail+book_id+'/p'

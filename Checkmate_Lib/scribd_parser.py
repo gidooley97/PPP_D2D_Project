@@ -68,11 +68,26 @@ class ScribdSite(BookSite):
             content = requests.get(self.search_url,params=payload).content
             urls=self.get_urls_js(content)
             page+=1
-        for r in urls:
-            print(r)#just fo debugging
         self.__get_book_data_from_page(urls,site_book_data)        
         return self.match_list
-
+    def find_book_matches_by_attr_at_site(self,search_txt, pages = 2):
+        self.match_list=[]
+        if search_txt =='':
+            return []
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+        page =1
+        url=self.search_url+'?content_type=books&page=1&language=1&query='+search_txt
+        content = br.open(url).read() 
+        page_count = self.get_page_count_from_js(content)#gets page count
+        while page <= pages and page <= page_count:  #for testing we want to get a few pages
+            payload ={'content_type':'books', 'language':'1', 'page':page, 'query':search_txt}
+            content = requests.get(self.search_url,params=payload).content
+            urls=self.get_urls_js(content)
+            page+=1
+        self.__get_book_data_from_page(urls,None,False)        
+        return self.match_list
     #parse the javascript code and gets the page count
     def get_page_count_from_js(self, content):
         parser = etree.HTMLParser(remove_pis=True)
@@ -88,25 +103,38 @@ class ScribdSite(BookSite):
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
         root = tree.getroot()
-        dom_txt = root.xpath(".//script")[21].text
-        tmp_txt = dom_txt.split('{"documents":')[1].split(']')[0]
-        #print('{"results":'+tmp_txt+"]}")
-        my_json = json.loads('{"results":'+tmp_txt+"]}")
-        #only getting results for books
-        results = my_json['results']
-        urls = []
-        for r in results:
-            urls.append(r['book_preview_url'])
+        try:    
+            dom_txt = root.xpath(".//script")[21].text
+
+            tmp_txt = dom_txt.split('"results":{"books":{"content":{"documents":')[1].split(']')[0]
+        
+            #print('{"results":'+tmp_txt+"]}")//"results":{"books":{"content":{"documents":
+            un_parsed_json='{"results":'+tmp_txt+']}'
+            #m=json.dumps(un_parsed_json)
+            my_json = json.loads(un_parsed_json)
+        
+            #only getting results for books
+        
+            results = my_json["results"]
+        
+            urls = []
+            for r in results:
+                urls.append(r["book_preview_url"])
+        except:
+            return []
         return urls
 
     #passed urls and returns the bookDataSite objects with their scores
-    def __get_book_data_from_page(self, urls, book_site_dat_1):
+    def __get_book_data_from_page(self, urls, book_site_dat_1, is_match=True):
         for url in urls:
             #call function to get book data with url
             book_site_dat_tmp= self.get_book_data_from_site(url)
-            score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-            book_data_score =tuple([score,book_site_dat_tmp])
-            self.match_list.append(book_data_score)
+            if is_match:
+                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
+                book_data_score =tuple([score,book_site_dat_tmp])
+                self.match_list.append(book_data_score)
+            else:
+                self.match_list.append(book_site_dat_tmp)
 
     def convert_book_id_to_url(self,book_id):
         url = "https://www.scribd.com/book/"+book_id
@@ -192,7 +220,6 @@ class ScribdSite(BookSite):
     def imageUrlParser(self, root):
         imageUrlParser_element = root.xpath("/html/head/link[5]/@href")
         imageURL = imageUrlParser_element[0]
-        print(imageURL) 
         return imageURL
 
     def get_parse_status(self,title, isbn13, desc, authors):
