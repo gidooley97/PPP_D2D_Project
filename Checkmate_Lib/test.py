@@ -1,6 +1,6 @@
 from checkmate import get_book_site #this is the only import we need to use the library
 from site_book_data import SiteBookData
-from demo import run_demo
+from demo import *
 
 #write tests 
 
@@ -154,7 +154,16 @@ def driver():
         elif option == 'V': # View contents of current SBD
             searchSbd.print_all()
         elif option == 'L': # Loads complete SBD form a site
-            run_demo()
+            if slug == 'KO':
+                KO_demo()
+            elif slug == 'GO':
+                GO_demo()
+            elif slug == 'TB':
+                TB_demo()
+            elif slug == 'LC':
+                LC_demo()
+            elif slug == 'SC':
+                SC_demo()
         elif option == 'S':
             value =  searchHandler(searchSbd)
             if  value == 'F':

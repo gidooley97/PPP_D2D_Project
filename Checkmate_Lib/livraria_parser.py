@@ -206,11 +206,11 @@ class LivrariaSite(BookSite):
     def saleReadyParser(self, root):
         try:
             sale_flag = 0 # 0 = For Sale   1 = Not For Sale
-            status = "For Sale"
-            checker = root.xpath("//script")[208]
-            print(checker)
+            status = "Buy Now"
+            #if root.xpath("//script")[208]
+            
             # sale_flag = 1
-            status='Not For Sale'
+            #status='Not For Sale'
         except:
             status = 'F'
 
