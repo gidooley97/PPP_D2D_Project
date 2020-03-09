@@ -43,6 +43,24 @@ class SiteBookData:
         self.extra=extra
         '''
     def __init__(self,**kwargs):
+        self.format=""
+        self.book_title=""
+        self.book_img="" 
+        self.book_img_url= ""
+        self.isbn_13=""
+        self.description=""
+        self.series=""
+        self.volume=""
+        self.subtitle=""
+        self.authors=[]
+        self.book_id= ""
+        self.site_slug=""
+        self.parse_status=""
+        self.url=""
+        self.content=""
+        self.ready_for_sale=""
+        self.extra=""
+
         if 'format' in kwargs:
             self.format = kwargs['format']
         if 'book_title' in kwargs:
