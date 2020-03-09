@@ -20,6 +20,7 @@ def run_demo():
         book_site_data = book_site.get_book_data_from_site(url) # Parse data from site
         book_site_data.site_slug = slug
         matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches
+        matches.sort(key = lambda x: x[0],reverse=False)
         for book in matches:
             print("=======================================================================================")
             print("Score: ", str(book[0]))
