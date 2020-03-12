@@ -2,6 +2,8 @@
 This is the repository for Profession Python Pros D2D Project.
 This repo has two folders of interest inside of the ppp_proj folder.
 
+Use the master branch to see the full project thus far.
+
 The PPP_Test_Bookstore folder contains the Django site for the Test Book Store.
 The manage.py file is in the nested test_bookstore file.
 
