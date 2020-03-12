@@ -106,7 +106,8 @@ class SiteBookData:
             print("Series: " + self.series)
             print("Volume:  " + self.volume)
             print("ISBN: " + self.isbn_13)
-            print("Description: " + self.description)
+            if self.description:
+                print("Description: " + self.description)
             print("Book Image URL: " + self.book_img_url)
             print("Sale Status: " + self.ready_for_sale)
         except AttributeError:

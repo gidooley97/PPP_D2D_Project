@@ -8,7 +8,7 @@ def run_demo():
     slug = 'TB' # Declare slug for site to search
     book_site = get_book_site(slug) # seed Book Site object with slug
     if search_with_attr:
-        attribute="a"
+        attribute="Rory MacDonnell"
         matches= book_site.find_book_matches_by_attr_at_site(attribute)
         for book in matches:
             print("=======================================================================================")

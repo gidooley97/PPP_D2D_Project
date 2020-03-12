@@ -10,7 +10,7 @@ from scribd_parser import ScribdSite
 def get_book_site(slug_cased):
     site  = None
     slug = slug_cased.upper()
-    if slug == 'GO':
+    if slug == 'GB':
         site = GoogleBooks()
     elif slug == 'KO':
         site = KoboSite() 
