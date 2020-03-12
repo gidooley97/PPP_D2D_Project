@@ -201,7 +201,6 @@ class KoboSite(BookSite):
             image = Image.open(urllib.request.urlopen(url))
         except:
             return 'F' #Fail
-        #image.save("here.jpg")
         return image
 
 

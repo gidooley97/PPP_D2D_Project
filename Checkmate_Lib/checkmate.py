@@ -1,10 +1,10 @@
 #import all site parser classes 
 
-from kobo_parser import KoboSite
-from livraria_parser import LivrariaSite
-from google_books_parser import GoogleBooks
-from test_parser import TestSite
-from scribd_parser import ScribdSite
+from parsers.kobo_parser import KoboSite
+from parsers.livraria_parser import LivrariaSite
+from parsers.google_books_parser import GoogleBooks
+from parsers.test_parser import TestSite
+from parsers.scribd_parser import ScribdSite
 
 
 def get_book_site(slug_cased):

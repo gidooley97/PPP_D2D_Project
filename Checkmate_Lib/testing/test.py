@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 from checkmate import get_book_site #this is the only import we need to use the library
 from site_book_data import SiteBookData
 from demo import *
@@ -132,7 +134,7 @@ def driver():
     print ("Welcome to Professonal Python Pro's Checkmate Library!")
     option = "" # Holds value that user inputs as option
     searchSbd = SiteBookData() # Site Book Data Object used to search with
-
+   
     while option != 'X': # Exit on 'E'
         printMenu()
         option =  input( "Please select an option:  ").upper()

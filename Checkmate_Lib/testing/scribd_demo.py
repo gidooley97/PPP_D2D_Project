@@ -1,4 +1,4 @@
-from checkmate import get_book_site #this is the only import we need to use the library
+from ../checkmate import get_book_site #this is the only import we need to use the library
 from site_book_data import SiteBookData
 
 # Load a sitebook data object from a url. Then searches for 
