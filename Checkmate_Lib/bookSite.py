@@ -10,7 +10,6 @@ from PIL import Image
 import requests
 from io import BytesIO
 import urllib.request
-from bookSite import BookSite
 import mechanize
 from bs4 import BeautifulSoup
 
@@ -29,8 +28,34 @@ class BookSite:
     #Given a direct link to a book page at a site,
     #parse it and return the SiteBookData of the info
     def get_book_data_from_site(self, url):
-       get_root(url)
+
+        content = requests.get(url).content#gets the book's page 
+        parser = etree.HTMLParser(remove_pis=True)
+        tree = etree.parse(io.BytesIO(content), parser)
+        root = tree.getroot() 
+        title = self.titleParser(root)
+        img_url = self.imageUrlParser(root)
+        img = self.imageParser(img_url)#use the img url to get image
+        isbn13= self.isbnParser(root)
+        desc = self.descParser(root)
+        frmt = self.formatParser(root)
+        series = self.seriesParser(root)
+        vol_num = self.volumeParser(root)
+        subtitle = self.subtitleParser(root)
+        authors = self.authorsParser(root)
+        site_slug = self.site_slug
+        content =content #html page content
+        url = url
+        #book_id = self.book_id_parser(url)
+        book_id = ''
+        parse_status =  self.get_parse_status(title,isbn13,desc,authors)
+        ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
+        extra = self.extraParser(root)
+        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
+        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
+        ready_for_sale=ready_for_sale, extra=extra)
         
+        return book_site_data
 
 
         #str -> str
@@ -45,8 +70,8 @@ class BookSite:
         try:
             title_element = root.xpath("path")[0]
             title = title_element.text
-    except:
-        title = "F" # Fail
+        except:
+            title = "F" # Fail
         return title
 
         
@@ -138,7 +163,7 @@ class BookSite:
         return series_split[0]
 
     def volumeParser(self, root):
-        path = get_volume_path()
+        path = self.get_volume_path()
         series_element = ''
         volume = ''
         try:
@@ -198,6 +223,8 @@ class BookSite:
     def get_volume_path():
         pass
     
+
+
 
     #SiteBookData -> List[Tuple[SiteBookData, float]]
     #Given a SiteBookData, search for the book at the `book_site` site and provide a list of 
