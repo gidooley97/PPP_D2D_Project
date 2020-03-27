@@ -15,37 +15,42 @@ from bs4 import BeautifulSoup
 class KoboSite(BookSite):
     
     def __init__(self):
-        self.site_slug = "KB"
+        super().__init__()
         self.search_url="https://www.kobo.com/"
         self.url_to_book_detail ="https://www.kobo.com/us/en/ebook/"#set to ebook bcs D2D deals with ebooks mainly
-        self.match_list=[] 
-    #returns list of site books
-    # def get_book_data_from_site(self,url):
-    #     content = requests.get(url).content#gets the book's page 
-    #     parser = etree.HTMLParser(remove_pis=True)
-    #     tree = etree.parse(io.BytesIO(content), parser)
-    #     root = tree.getroot() 
-    #     title = self.titleParser(root)
-    #     img_url = self.imageUrlParser(root)
-    #     img = self.imageParser(img_url)#use the img url to get image
-    #     isbn13= self.isbnParser(root)
-    #     desc = self.descParser(root)
-    #     frmt = self.formatParser(root)
-    #     series = self.seriesParser(root)
-    #     vol_num = self.volumeParser(root)
-    #     subtitle = self.subtitleParser(root)
-    #     authors = self.authorsParser(root)
-    #     site_slug = self.site_slug
-    #     content =content #html page content
-    #     url = url
-    #     book_id = self.book_id_parser(url)
-    #     parse_status =  self.get_parse_status(title,isbn13,desc,authors)
-    #     ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
-    #     extra = self.extraParser(root)
-    #     book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
-    #     volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
-    #     ready_for_sale=ready_for_sale, extra=extra)
-    #     return book_site_data
+        
+    """
+    returns the volume number of  the book.
+
+    Args:
+        root-- root of the tree.
+    """
+    def volumeParser(self, root):
+        path = self.get_volume_path()
+        series_element = ''
+        volume = ''
+        try:
+            if root.xpath(path):
+                #Seperate series number from series title
+                
+                series_split = series.split('#')
+                if len(series_split) > 1:
+                    volume = series_split[1]
+        except:
+            volume = None
+        return volume
+    """
+    str -> SiteBookData
+
+    Given a direct link to a book page at a site,
+    parse it and return the SiteBookData of the info.
+    args:
+        url: direct url to a book.
+    return:
+        book_site_data: a SiteBookData object
+    """
+    def get_book_data_from_site(self,url):
+        return super().get_book_data_from_site(url)
 
     
     def find_book_matches_by_attr_at_site(self, search_txt,pages=2):
@@ -61,19 +66,30 @@ class KoboSite(BookSite):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        self.__get_book_data_from_page(res.read(), None, False)#get page 1 of results
+        self.get_search_book_data_from_page(res.read(), None, False)#get page 1 of results
         #return self.match_list # for testing I get the first page results only
         page=2
         while(page <=pages):#limit the results we will get
             try:
                 res=br.follow_link(text="Next")
-                self.__get_book_data_from_page(res.read(), None, False)
+                self.get_search_book_data_from_page(res.read(), None, False)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
         return self.match_list
-    #gets 2 pages by default for testing purposes.
-    # returns a list of tuples of score and bookDataSite
+
+    """
+    SiteBookData -> List[Tuple[SiteBookData, float]]
+    
+    Given a SiteBookData, search for the book at the `book_site` site and provide a list of 
+    likely matches paired with how good of a match it is (1.0 is an exact match). 
+    This should take into account all the info we have about a book, including the cover.
+    Different for every site. To be overriden by every site.
+    params:
+        book_data: a  bookSiteData.
+    returns:
+        match:List[Tuple[SiteBookData, float]]
+    """
     def find_book_matches_at_site(self,site_book_data, pages=2):
         url =self.search_url
         br = mechanize.Browser()
@@ -95,173 +111,43 @@ class KoboSite(BookSite):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        self.__get_book_data_from_page(res.read(), site_book_data)#get page 1 of results
+        super().get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
         #return self.match_list # for testing I get the first page results only
         page=2
-        while(page <=pages):#limit the results we will get
+        while page <=pages:#limit the results we will get
             try:
                 res=br.follow_link(text="Next")
-                self.__get_book_data_from_page(res.read(), site_book_data)
+                super().get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
         return self.match_list
             
-    #gets url and pass it to get_book_data_from_site to get books
-    def __get_book_data_from_page(self, content,  book_site_dat_1,is_match=True):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
-        url_elements = root.xpath(".//p[@class='title product-field']/a/@href")
+   
+    """
+    returns the xpath taht helps to get urls.
 
-        for url in url_elements:
-            book_site_dat_tmp= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
-            if is_match:
-                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-                book_data_score =tuple([score,book_site_dat_tmp])
-                self.match_list.append(book_data_score)
-            else:
-                self.match_list.append(book_site_dat_tmp)
-        
-                   
+    params:
+        None
+    return:
+        xpath: xpath
+
+    """
+    def get_search_urls_after_search_path(self):
+        return  ".//p[@class='title product-field']/a/@href"
 
 
-    # return url
+    """
+    Given a book_id, return the direct url for the book.
+
+    To be overriden by all sites.
+    params:
+        book_id: the book unique identifier.
+    return:
+        url:direct url to the book. 
+    """
     def convert_book_id_to_url(self,book_id):
         return self.url_to_book_detail+book_id
-
- 
-    #calls the match_percentage function in the super class
-    # def match_percentage(self, site_book1, site_book2):
-    #     return super().match_percentage(site_book1,site_book2)
-
-
-
-    #content specific parser methods 
-
-    # def titleParser(self, root):
-    #     try:
-    #         title_element = root.xpath(".//h1/span[@class='title product-field']")[0]
-    #         title = title_element.text
-    #     except:
-    #         title = "F" # Fail
-    #     return title
-
-    # def subtitleParser(self,root):
-    #     subtitle = ''
-    #     try:
-    #         if root.xpath(".//h2/span[@class='subtitle product-field']"):
-    #             subtitle = root.xpath(".//h2/span[@class='subtitle product-field']")[0].text
-    #     except:
-    #         subtitle = "F" # Fail
-    #     return subtitle
-        
-        
-
-    # def authorsParser(self,root):
-    #     try: 
-    #         author_elements = root.xpath("//span[@class='visible-contributors']/a[@class='contributor-name']")
-    #         authors = []
-    #         for auth_element in author_elements:
-    #             authors.append(auth_element.text)
-    #     except:
-    #         authors = "F" #Fail
-    #     return authors
-
-    # def isbnParser(self, root):
-    #     try:
-    #         isbn_elements = root.xpath("//div[@class='bookitem-secondary-metadata']/ul/li")
-    #         isbn=''
-    #         for isbn_tmp in isbn_elements:
-    #             if isbn_tmp.text.strip()=='ISBN:':
-    #                 isbn =isbn_tmp.xpath('./span')[0].text
-    #     except:
-    #         isbn = 'F' #Fail
-    #     return isbn
-
-    # def book_id_parser(self, url):
-    #     #book_id is the last part of the url
-    #     book_id  =url.split('/')[len(url.split('/'))-1] 
-    #     return book_id 
-        
-    # def formatParser(self, root):
-    #     #Kobo only has ebooks and audio books
-    #     try: 
-    #         format_element = root.xpath("//div[@class='bookitem-secondary-metadata']/h2")[0]
-    #         format = format_element.text.strip().split(' ')[0]
-    #     except:
-    #         format = 'F'
-    #     return format
-        
-    # def imageParser(self, url):
-    #     #response = requests.get(url)
-    #     image =None
-    #     try:
-    #         image = Image.open(urllib.request.urlopen(url))
-    #     except:
-    #         return 'F' #Fail
-    #     return image
-
-
-    # def imageUrlParser(self, root): 
-    #     try:
-    #         imgUrl_element = root.xpath("//img[@class='cover-image  notranslate_alt']/@src")[0] 
-    #         imgUrl = "http:" + imgUrl_element
-    #     except:
-    #         imgUrl = 'F'
-    #     return imgUrl
-
-    # def descParser(self, root):
-    #     #gets the descriptions with all the tags included.
-    #     try:
-    #         desc_element_list = root.xpath("//div[@class='synopsis-description']")[0]
-    #         # need to decide whther to take all or only the 1st p tag content
-    #         xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
-    #         desc = BeautifulSoup(xmlstr,features="lxml") 
-    #     except:
-    #         desc = 'F'    
-    #     return desc.get_text()
-        
-
-    # def seriesParser(self, root):
-    #     series_element = ''
-    #     series = ''
-    #     try:
-    #         if root.xpath(".//span[@class='product-sequence-field']/a"):
-    #             series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
-    #             series = series_element.text
-
-    #         #Seperate series number from series title
-    #         series_split = series.split('#')
-    #     except:
-    #         return 'F'
-    #     return series_split[0]
-
-    # def get_parse_status(self,title, isbn13, desc, authors):
-    #      #determine parse_status checks if we have the most basic data about a book
-    #     if title and isbn13 and desc and authors:
-    #         return "UNSUCCESSFUL"
-    #     return "FULLY_PARSED"
-
-
-    # def volumeParser(self, root):
-    #     series_element = ''
-    #     volume = ''
-    #     try:
-
-    #         if root.xpath(".//span[@class='product-sequence-field']/a"):
-    #             series_element = root.xpath(".//span[@class='product-sequence-field']/a")[0] 
-    #             series = series_element.text
-            
-    #             #Seperate series number from series title
-                
-    #             series_split = series.split('#')
-    #             if len(series_split) > 1:
-    #                 volume = series_split[1]
-    #     except:
-    #         volume = 'F'
-    #     return volume
 
     def get_title_path(self):
         return ".//h1/span[@class='title product-field']"
@@ -289,34 +175,6 @@ class KoboSite(BookSite):
 
     def get_volume_path(self):
         return ".//span[@class='product-sequence-field']/a"
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     def saleReadyParser(self, root):

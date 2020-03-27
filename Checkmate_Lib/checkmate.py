@@ -10,15 +10,15 @@ from parsers.scribd_parser import ScribdSite
 def get_book_site(slug_cased):
     site  = None
     slug = slug_cased.upper()
-    if slug == 'GB':
+    if slug == GoogleBooks().site_slug:
         site = GoogleBooks()
-    elif slug == 'KO':
+    elif slug == KoboSite().site_slug:
         site = KoboSite() 
-    elif slug == 'TB':
+    elif slug == TestSite().site_slug:
         site = TestSite()
-    elif slug == 'LC':
+    elif slug == LivrariaSite().site_slug:
         site = LivrariaSite()  
-    elif slug == 'SC':
+    elif slug == ScribdSite().site_slug:
         site = ScribdSite()
         
 
