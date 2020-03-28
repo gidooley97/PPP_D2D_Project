@@ -1,65 +1,33 @@
 
-class SiteBookData:
-    '''
-    def __init__():
-        self.format=""
-        self.book_title=""
-        self.book_img="" 
-        self.book_img_url= ""
-        self.isbn_13=""
-        self.description=""
-        self.series=""
-        self.volume=""
-        self.subtitle=""
-        self.authors=[]
-        self.book_id= ""
-        self.site_slug=""
-        self.parse_status=""
-        self.url=""
-        self.content=""
-        self.ready_for_sale=""
-        self.extra=""
-     
 
-    def __init__(self, formt, book_title, book_img, book_img_url,
-        isbn_13, description, series, volume_number,subtitle, authors,
-        book_id, site_slug, parse_status, url, content, ready_for_sale, extra):
-        self.format=formt
-        self.book_title=book_title
-        self.book_img=book_img #need to figure how to store
-        self.book_img_url= book_img_url
-        self.isbn_13=isbn_13
-        self.description=description
-        self.series=series
-        self.volume=volume_number
-        self.subtitle=subtitle
-        self.authors=authors
-        self.book_id= book_id
-        self.site_slug=site_slug
-        self.parse_status=parse_status
-        self.url=url
-        self.content=content
-        self.ready_for_sale=ready_for_sale
-        self.extra=extra
-        '''
+class SiteBookData:
+    """
+    initialiaze all attributes to None.
+
+    Helps us know if the info was was found or not. 
+    params:
+        None
+    return:
+        None
+    """
     def __init__(self,**kwargs):
-        self.format=""
-        self.book_title=""
-        self.book_img="" 
-        self.book_img_url= ""
-        self.isbn_13=""
-        self.description=""
-        self.series=""
-        self.volume=""
-        self.subtitle=""
+        self.format=None
+        self.book_title=None
+        self.book_img=None
+        self.book_img_url= None
+        self.isbn_13=None
+        self.description=None
+        self.series=None
+        self.volume=None
+        self.subtitle=None
         self.authors=[]
-        self.book_id= ""
-        self.site_slug=""
-        self.parse_status=""
-        self.url=""
-        self.content=""
-        self.ready_for_sale=""
-        self.extra=""
+        self.book_id= None
+        self.site_slug=None
+        self.parse_status=None
+        self.url=None
+        self.content=None
+        self.ready_for_sale=None
+        self.extra=None
 
         if 'format' in kwargs:
             self.format = kwargs['format']
@@ -97,20 +65,26 @@ class SiteBookData:
             self.price = kwargs['price'] 
         if 'url' in kwargs:
             self.url = kwargs['url'] 
+    """
+    prints fields of the book.
 
+    Helps in testing.
+    params:
+        None
+    return:
+        None
+    """
     def print_all(self):
-        try:
-            print("Format: " + self.format)
-            print("Title: " + self.book_title)
-            print("Authors: " + ','.join(self.authors))
-            print("Series: " + self.series)
-            print("Volume:  " + self.volume)
-            print("ISBN: " + self.isbn_13)
-            if self.description:
-                print("Description: " + self.description)
-            print("Book Image URL: " + self.book_img_url)
-            print("Sale Status: " + self.ready_for_sale)
-        except AttributeError:
-            print("something wasn't there")
+        print("Format: " , self.format if self.format!=None else 'Not found')
+        print("Title: " ,self.book_title if self.book_title !=None else 'Not found')
+        print("Authors: " , ','.join(self.authors) if self.authors else 'Not found')
+        print("Series: " , self.series if self.series !=None else 'Not found')
+        print("Volume:  ", self.volume if self.volume != None else 'Not found')
+        print("ISBN: " , self.isbn_13 if self.isbn_13 != None  else 'Not found')
+        print("Description: " , self.description if self.description !=None else 'Not found')
+        print("Book Image URL: " , self.book_img_url if self.book_img_url!=None else 'Not found')
+        print("Sale Status: ",  self.ready_for_sale if self.ready_for_sale!=None else 'Not found')
+        print("parse status: ", self.parse_status if self.parse_status else 'Not found')
+        print("Direct book Url: ", self.url if self.url else 'Not found')
 
 

@@ -246,6 +246,11 @@ class GoogleBooks(BookSite):
     def extraParser(self, root):
         return {}
 
+    def volumeParser(self, root):
+    #method to be overriden if necessary. 
+        return None
+
+        
     def get_parse_status(self, title, isbn13, desc, authors):
         if title and isbn13 and desc and authors:
             return "UNSUCCESSFUL"

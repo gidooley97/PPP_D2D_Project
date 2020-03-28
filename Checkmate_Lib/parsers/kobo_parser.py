@@ -16,6 +16,7 @@ class KoboSite(BookSite):
     
     def __init__(self):
         super().__init__()
+        self.site_slug='KO'
         self.search_url="https://www.kobo.com/"
         self.url_to_book_detail ="https://www.kobo.com/us/en/ebook/"#set to ebook bcs D2D deals with ebooks mainly
         
@@ -25,7 +26,7 @@ class KoboSite(BookSite):
     Args:
         root-- root of the tree.
     """
-    def volumeParser(self, root):
+    def volume_parser(self, root):
         path = self.get_volume_path()
         series_element = ''
         volume = ''
@@ -40,6 +41,29 @@ class KoboSite(BookSite):
             volume = None
         return volume
     """
+    gets the isbn field of the book.
+
+    this method overrides isbnParser in the base class
+    params:
+        root: root of the html etree
+    return:
+        isbn: isbn-13 of the book
+    """
+
+    def isbn_parser(self, root):
+        path = self.get_isbn_path()
+        try:
+            isbn_elements = root.xpath(path)
+            isbn=''
+            for isbn_tmp in isbn_elements:
+                if isbn_tmp.text.strip()=='ISBN:':
+                    isbn =isbn_tmp.xpath('./span')[0].text
+        except:
+            isbn = None#Fail
+        return isbn
+
+  
+    """
     str -> SiteBookData
 
     Given a direct link to a book page at a site,
@@ -53,77 +77,6 @@ class KoboSite(BookSite):
         return super().get_book_data_from_site(url)
 
     
-    def find_book_matches_by_attr_at_site(self, search_txt,pages=2):
-        url =self.search_url
-        br = mechanize.Browser()
-        br.set_handle_robots(False)
-        br.open(url)  
-        #selects the form to populate 
-        br.select_form(class_="search-form")
-        if search_txt =='':
-            return []
-        br['query'] =search_txt
-        self.match_list=[]
-        #submit the form and get the returned page.
-        res=br.submit()
-        self.get_search_book_data_from_page(res.read(), None, False)#get page 1 of results
-        #return self.match_list # for testing I get the first page results only
-        page=2
-        while(page <=pages):#limit the results we will get
-            try:
-                res=br.follow_link(text="Next")
-                self.get_search_book_data_from_page(res.read(), None, False)
-                page+=1
-            except mechanize._mechanize.LinkNotFoundError:#end of results
-                break
-        return self.match_list
-
-    """
-    SiteBookData -> List[Tuple[SiteBookData, float]]
-    
-    Given a SiteBookData, search for the book at the `book_site` site and provide a list of 
-    likely matches paired with how good of a match it is (1.0 is an exact match). 
-    This should take into account all the info we have about a book, including the cover.
-    Different for every site. To be overriden by every site.
-    params:
-        book_data: a  bookSiteData.
-    returns:
-        match:List[Tuple[SiteBookData, float]]
-    """
-    def find_book_matches_at_site(self,site_book_data, pages=2):
-        url =self.search_url
-        br = mechanize.Browser()
-        br.set_handle_robots(False)
-        br.open(url)  
-        #selects the form to populate 
-        br.select_form(class_="search-form")
-        search_txt =''
-        #populate the field. You may need to check if this is actually working
-        if site_book_data.book_title:
-            search_txt=site_book_data.book_title
-        elif site_book_data.isbn_13:
-            search_txt= site_book_data.isbn_13
-        elif site_book_data.authors:
-            search_txt = site_book_data.authors[0]
-        if not search_txt:
-            return []
-        br['query'] =search_txt
-        self.match_list=[]
-        #submit the form and get the returned page.
-        res=br.submit()
-        super().get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
-        #return self.match_list # for testing I get the first page results only
-        page=2
-        while page <=pages:#limit the results we will get
-            try:
-                res=br.follow_link(text="Next")
-                super().get_search_book_data_from_page(res.read(), site_book_data)
-                page+=1
-            except mechanize._mechanize.LinkNotFoundError:#end of results
-                break
-        return self.match_list
-            
-   
     """
     returns the xpath taht helps to get urls.
 
@@ -176,10 +129,13 @@ class KoboSite(BookSite):
     def get_volume_path(self):
         return ".//span[@class='product-sequence-field']/a"
 
+    def get_sale_ready_path(self):
+        return "//h2[@class='pricing-title']"
 
-    def saleReadyParser(self, root):
+    def sale_ready_parser(self, root):
+        xpath = self.get_sale_ready_path()
         try:
-            desc= root.xpath("//h2[@class='pricing-title']")[0].text
+            desc= root.xpath(xpath)[0].text
             sale_flag = 0 # 0 = Buy   1 = Pre-order
             status = ""
             # Check for the words 'Buy' and 'Pre-Order
@@ -192,7 +148,7 @@ class KoboSite(BookSite):
                     sale_flag = 1
                     status = "Pre-order"
         except:
-            status = 'F'
+            status = None
 
         return status
 

@@ -18,6 +18,7 @@ class BookSite(ABC):
     def __init__(self):
         self.match_list=[] #common to all sites
         self.site_slug=''
+        self.search_url=''
     """
     Given  a url or html content  returns root.
 
@@ -48,24 +49,23 @@ class BookSite(ABC):
     """
     def get_book_data_from_site(self, url):
         root = self.get_root(url) 
-        title = self.titleParser(root)
-        img_url = self.imageUrlParser(root)
-        img = self.imageParser(img_url)#use the img url to get image
-        isbn13= self.isbnParser(root)
-        desc = self.descParser(root)
-        frmt = self.formatParser(root)
-        series = self.seriesParser(root)
-        vol_num = self.volumeParser(root)
-        subtitle = self.subtitleParser(root)
-        authors = self.authorsParser(root)
+        title = self.title_parser(root)
+        img_url = self.image_url_parser(root)
+        img = self.image_parser(img_url)#use the img url to get image
+        isbn13= self.isbn_parser(root)
+        desc = self.desc_parser(root)
+        frmt = self.format_parser(root)
+        series = self.series_parser(root)
+        vol_num = self.volume_parser(root)
+        subtitle = self.subtitle_parser(root)
+        authors = self.authors_parser(root)
         site_slug = self.site_slug
         content = requests.get(url).content #html page content
         url = url
         book_id = self.book_id_parser(url)
-        #book_id = ''
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
-        ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
-        extra = self.extraParser(root)
+        ready_for_sale = self.sale_ready_parser(root) # figure out if 'pre-order' is considered ready for sale
+        extra = self.extra_parser(root)
         book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
         volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
         ready_for_sale=ready_for_sale, extra=extra)
@@ -74,7 +74,7 @@ class BookSite(ABC):
  
 
 ###############################################Utility Content Parser  Methods#########################################################################
-    def titleParser(self, root):
+    def title_parser(self, root):
         path = self.get_title_path()
         try:
             title_element = root.xpath(path)[0]
@@ -84,7 +84,7 @@ class BookSite(ABC):
         return title
 
         
-    def subtitleParser(self,root):
+    def subtitle_parser(self,root):
         subtitle = ''
         path = self.get_subtitle_path()
         try:
@@ -94,7 +94,7 @@ class BookSite(ABC):
             subtitle = None# Fail
         return subtitle
             
-    def authorsParser(self,root):
+    def authors_parser(self,root):
 
         path = self.get_authors_path()
         try: 
@@ -106,12 +106,16 @@ class BookSite(ABC):
             authors = None #Fail
         return authors
     
-    @abstractmethod
+    
     def book_id_parser(self, url):
-        #to be overriden
-        return None
+        try:
+            book_id  =url.split('/')[len(url.split('/'))-1] 
+        except:
+            book_id=None
+        return book_id 
+        
 
-    def isbnParser(self, root):
+    def isbn_parser(self, root):
         path = self.get_isbn_path()
         try: 
             isbn_element = root.xpath(path)[0]
@@ -120,7 +124,7 @@ class BookSite(ABC):
             isbn = None
         return isbn
 
-    def formatParser(self, root):
+    def format_parser(self, root):
         path = self.get_format_path()
         try: 
             format_element = root.xpath(path)[0]
@@ -129,7 +133,7 @@ class BookSite(ABC):
             format = None
         return format
 
-    def imageParser(self, url):
+    def image_parser(self, url):
         #response = requests.get(url)
         image =None
         try:
@@ -139,7 +143,7 @@ class BookSite(ABC):
         return image
 
 
-    def imageUrlParser(self, root):
+    def image_url_parser(self, root):
         path = self.get_img_url_path()
         try:
             imgUrl_element = root.xpath(path)[0] 
@@ -148,7 +152,7 @@ class BookSite(ABC):
             imgUrl = None
         return imgUrl
 
-    def descParser(self, root):
+    def desc_parser(self, root):
         path = self.get_desc_path()
         try:
             desc_element_list = root.xpath(path)[0]
@@ -159,7 +163,7 @@ class BookSite(ABC):
             desc = None    
         return desc.get_text()
 
-    def seriesParser(self, root):
+    def series_parser(self, root):
         path = self.get_series_path()
         series_element = ''
         series = ''
@@ -174,64 +178,85 @@ class BookSite(ABC):
             return None
         return series_split[0]
 
-   
-    def volumeParser(self, root):
+    @abstractmethod
+    def volume_parser(self, root):
     #method to be overriden if necessary. 
         return None
 
 
     # This is so different across parsers, we will leave this 
     # out of the master class
-    def saleReadyParser(self, root):
-        return ""
+    def sale_ready_parser(self, root):
+        xpath = self.get_sale_ready_path()
+        try:
+            sale_ready = root.xpath(xpath)[0]
+        except:
+            sale_ready= None
+        return sale_ready
 
-    def extraParser(self, root):
+    def extra_parser(self, root):
         return {}
   
     def get_parse_status(self,title, isbn13, desc, authors):
          #determine parse_status checks if we have the most basic data about a book
         if title and isbn13 and desc and authors:
-            return "UNSUCCESSFUL"
-        return "FULLY_PARSED"
+            return "FULLY PARSED"
+        if title or isbn13 or desc or authors:
+            return "PARTIALLY PARSED"
+        return "UNSUCCESSFUL"
 
               
 ####################################### Get XPath Functions ######################################
     """
     Return specific xpath.
 
+    These methods should be overriden. otherwise it won't work.
         params:
             None
         return:
             xpath-specific xpath(str) 
     """
+    @abstractmethod
     def get_search_urls_after_search_path(self):
         return ''
 
+    @abstractmethod
     def get_title_path(self):
         return ''
     
+    @abstractmethod
     def get_subtitle_path(self):
         return ''
     
+    @abstractmethod
     def get_authors_path(self):
         return ''
 
+    @abstractmethod
     def get_isbn_path(self):
         return ''
-
+    @abstractmethod
     def get_format_path(self):
         return ''
 
+    @abstractmethod
     def get_img_url_path(self):
         return ''
 
+    @abstractmethod
     def get_desc_path(self):
         return ''
 
+    @abstractmethod
     def get_series_path(self):
         return ''
 
+    @abstractmethod
     def get_volume_path(self):
+        return ''
+
+    @abstractmethod
+    def get_sale_ready_path(self):
         return ''
 ####################################################################################################################################
     """
@@ -240,48 +265,81 @@ class BookSite(ABC):
     Given a SiteBookData, search for the book at the `book_site` site and provide a list of 
     likely matches paired with how good of a match it is (1.0 is an exact match). 
     This should take into account all the info we have about a book, including the cover.
-    Different for every site. To be overriden by every site.
+    Works for kobo and Test Book store. To be overriden by some site site.
     params:
         book_data: a  bookSiteData.
     returns:
         match:List[Tuple[SiteBookData, float]]
     """
-    @abstractmethod
-    def find_book_matches_at_site(self, book_data):
-            pass
     
+    def find_book_matches_at_site(self, site_book_data, pages=2):
+        url =self.search_url
+        br = mechanize.Browser()
+        br.set_handle_robots(False)
+        br.open(url)  
+        #selects the form to populate 
+        br.select_form(class_="search-form")
+        search_txt =''
+        #populate the field. You may need to check if this is actually working
+        if site_book_data.book_title:
+            search_txt=site_book_data.book_title
+        elif site_book_data.isbn_13:
+            search_txt= site_book_data.isbn_13
+        elif site_book_data.authors:
+            search_txt = site_book_data.authors[0]
+        
+        print('search_txt', search_txt)
+        if not search_txt:
+            return []
+        if self.site_slug=='KO':
+            field_name= 'query'
+        else:
+            field_name ='s_bar'
+        br[field_name] =search_txt
+        self.match_list=[]
+        #submit the form and get the returned page.
+        res=br.submit()
+        self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
+        page=2
+        while page <=pages:#limit the results we will get
+            try:
+                res=br.follow_link(text="Next")
+                self.get_search_book_data_from_page(res.read(), site_book_data)
+                page+=1
+            except mechanize._mechanize.LinkNotFoundError:#end of results
+                break
+        return self.match_list
+
     """
     returns a list of tuple(score, book_data).
 
     Some parsers would need to override this method if necessary. For a single page of results, gets 
     urls and gets bookData from the the detail page of the book. 
+    Works mainly for Kobo and TestBookStore.
     params:
         content: html content of a given page
         book_site_data_original:bookSiteData object. can be null if searching using attr.
-        is_match: flag to tell if we are searching and comparing results to the given 
-                bookSiteData or we are searching with some attr. Defaulted to True.
+       
     return: 
         None: 
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original,is_match=True):
+    def get_search_book_data_from_page(self, content,  book_site_data_original):
         root = self.get_root(url=None, content=content)#force this method to work with content
         
         #expects a path that will help us get the urls
         url_elements = root.xpath(self.get_search_urls_after_search_path())
         
         for url in url_elements:
+            if self.site_slug == 'TB':
+                url='http://127.0.0.1:8000'+url
             book_site_data_new= self.get_book_data_from_site(url)
             #book_site_dat_tmp.print_all()
-            if is_match:
-                score = self.match_percentage(book_site_data_original, book_site_data_new) 
-                #find a way to only return books with a higher score
-                book_data_score =tuple([score,book_site_data_new])
-
-                self.match_list.append(book_data_score)
-            else:
-                self.match_list.append(book_site_data_new)
-        if is_match:
+            score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            book_data_score =tuple([score,book_site_data_new])
+            self.match_list.append(book_data_score)
             self.filter_results_by_score()
+
+    
 
     """
     match_percentage takes 2 sitebookdata objects and compares them.  
@@ -299,30 +357,30 @@ class BookSite(ABC):
     def match_percentage(self,site_book1, site_book2):
         matching_points = 0 # Keeps track of matching attributes
 
-        if(site_book1.book_title == site_book2.book_title):
+        if site_book1.book_title and site_book2.book_title and site_book1.book_title.strip().lower() == site_book2.book_title.strip().lower():
             matching_points += 200
 
-        if(site_book1.isbn_13 == site_book2.isbn_13):
+        if site_book1.isbn_13 and site_book2.isbn_13 and  site_book1.isbn_13.strip().lower() == site_book2.isbn_13.strip().lower():
             matching_points += 750
         
-        if(site_book1.description == site_book2.description):
+        if site_book1.description and site_book2.description and site_book1.description.strip().lower() == site_book2.description.strip().lower():
             matching_points += 5
         
-        if(site_book1.series== site_book2.series):
+        if site_book1.series and site_book2.series and site_book1.series.strip().lower() == site_book2.series.strip().lower():
             matching_points += 5
         
-        if(site_book1.volume == site_book2.volume):
+        if site_book1.volume and site_book2.volume and site_book1.volume.strip().lower() == site_book2.volume.strip().lower():
             matching_points += 5
         
-        if(site_book1.subtitle == site_book2.subtitle):
+        if site_book1.subtitle and site_book2.subtitle and site_book1.subtitle.strip().lower() == site_book2.subtitle.strip().lower():
             matching_points += 5
 
         # Compare author lists
-        if set(site_book1.authors) == set(site_book2.authors):
+        if site_book1.authors and site_book2.authors and set(site_book1.authors) == set(site_book2.authors):
             matching_points += 20
 
             
-        if(site_book1.ready_for_sale == site_book2.ready_for_sale):
+        if site_book1.ready_for_sale and site_book2.ready_for_sale and site_book1.ready_for_sale.strip().lower() == site_book2.ready_for_sale.strip().lower():
             matching_points += 5
 
         # Allows a small margin of difference
@@ -340,9 +398,10 @@ class BookSite(ABC):
         None
     """
     def filter_results_by_score(self):
-        myList=filter(lambda x: x[0]>=0.20,self.match_list)
+        #min score to the least points of our matches.
+        myList=list(filter(lambda x: x[0]>=0.005,self.match_list))
         self.match_list=myList
-        self.match_list.sort(key = lambda x: x[0],reverse=False)
+        self.match_list.sort(key = lambda x: x[0])
         
     """
     Utility function for image comparison. 
