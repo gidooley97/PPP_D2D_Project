@@ -127,12 +127,11 @@ class BookSite(ABC):
     def format_parser(self, root):
         path = self.get_format_path()
         try: 
-            format_element = root.xpath(path)[0]
-            format = format_element.text.strip().split(' ')[0]
+            format = root.xpath(path)[0].text
         except:
             format = None
         return format
-
+   
     def image_parser(self, url):
         #response = requests.get(url)
         image =None
@@ -146,12 +145,12 @@ class BookSite(ABC):
     def image_url_parser(self, root):
         path = self.get_img_url_path()
         try:
-            imgUrl_element = root.xpath(path)[0] 
-            imgUrl = "http:" + imgUrl_element
+            imageUrlParser_element = root.xpath(path)
+            imageURL = imageUrlParser_element[0].text
         except:
-            imgUrl = None
-        return imgUrl
-
+            imageURL = None
+        return imageURL
+   
     def desc_parser(self, root):
         path = self.get_desc_path()
         try:
@@ -176,7 +175,7 @@ class BookSite(ABC):
             return None
         return series_split[0]
 
-    @abstractmethod
+    
     def volume_parser(self, root):
     #method to be overriden if necessary. 
         return None
@@ -286,7 +285,6 @@ class BookSite(ABC):
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
         
-        print('search_txt', search_txt)
         if not search_txt:
             return []
         if self.site_slug=='KO':
@@ -399,7 +397,9 @@ class BookSite(ABC):
         #min score to the least points of our matches.
         myList=list(filter(lambda x: x[0]>=0.005,self.match_list))
         self.match_list=myList
-        self.match_list.sort(key = lambda x: x[0])
+        self.match_list.sort(key = lambda x: x[0],reverse=True)
+        if len(self.match_list)>5:
+            self.match_list=self.match_list[:5]
         
     """
     Utility function for image comparison. 

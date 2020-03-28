@@ -72,6 +72,26 @@ class KoboSite(BookSite):
         except:
             desc = None    
         return desc.get_text()
+    #override
+    def format_parser(self, root):
+        path = self.get_format_path()
+        try: 
+            format_element = root.xpath(path)[0]
+            format = format_element.text.strip().split(' ')[0]
+        except:
+            format = None
+        return format
+
+    #override
+    def image_url_parser(self, root):
+        path = self.get_img_url_path()
+        try:
+            imgUrl_element = root.xpath(path)[0] 
+            imgUrl = "http:" + imgUrl_element
+        except:
+            imgUrl = None
+        return imgUrl
+
   
     """
     str -> SiteBookData

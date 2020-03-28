@@ -87,16 +87,6 @@ class TestSite(BookSite):
             price=None
         return price
 
-    #override
-
-    def format_parser(self, root):
-        path = self.get_format_path()
-        try: 
-            format = root.xpath(path)[0]
-        except:
-            format = None
-        return format
-
 
     #override
     def extra_parser(self, root):
