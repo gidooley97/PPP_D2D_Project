@@ -155,13 +155,11 @@ class BookSite(ABC):
     def desc_parser(self, root):
         path = self.get_desc_path()
         try:
-            desc_element_list = root.xpath(path)[0]
-            # need to decide whther to take all or only the 1st p tag content
-            xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
-            desc = BeautifulSoup(xmlstr,features="lxml") 
+            desc_element = root.xpath(path)[0]
+            desc = desc_element.text
         except:
             desc = None    
-        return desc.get_text()
+        return desc
 
     def series_parser(self, root):
         path = self.get_series_path()
@@ -281,10 +279,10 @@ class BookSite(ABC):
         br.select_form(class_="search-form")
         search_txt =''
         #populate the field. You may need to check if this is actually working
-        if site_book_data.book_title:
-            search_txt=site_book_data.book_title
-        elif site_book_data.isbn_13:
+        if site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
+        elif site_book_data.book_title:
+            search_txt=site_book_data.book_title
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
         

@@ -88,3 +88,51 @@ class SiteBookData:
         print("Direct book Url: ", self.url if self.url else 'Not found')
 
 
+"""
+convert isbn10 to isbn13.
+
+1. take the 10 digit ISBN (10 digits)
+2. drop the last character (9 digits)
+3. tack on "978" to the front (12 digits)
+4. calculate a new check digit and tack it on to the end (13 digits)
+params:
+    isbn 10
+return:
+    isbn 13
+"""
+def isbn_10_to_isbn_13(isbn_10):
+    isbn_10 = isbn_10.strip()
+    if len(isbn_10)==13:
+        return isbn_10
+    if len(isbn_10)!=10 or not isbn_10.isdigit():
+        return None
+    x = isbn_10[:9]#remove 10th digits
+    y = '978'+x  # add '978'in front of the remaining 9  digits
+    total = 0
+    count =0
+    #loop through the digits.digits with odd digits are multiplied by 3 and even ones are multiplied by 1.
+    #sum all the results
+    for c in y: 
+        num =int(c)
+        if count % 2:
+            total +=num*3
+        else:
+            total+=num*1
+        count+=1
+
+    t = total%10 #get the modulus of the sum. 
+    t = abs(t-10) #finally, compute the absolute value of subtract the result from 10
+    y = y+str(t)  
+    return y
+
+    
+
+
+
+
+   
+
+
+
+
+
