@@ -56,7 +56,6 @@ class GoogleBooks(BookSite):
         br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
         res= br.open(url)      
         br.select_form(id="oc-search-form")
-        #print('form', br)
         search_txt = ''
         if site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
@@ -69,16 +68,11 @@ class GoogleBooks(BookSite):
         br['q'] = search_txt
 
         res = br.submit()
-        fileobj = open("page1.html","wb")#saves the returned page to a file. 
-        #You can open and se the content
         content = res.read()
-        fileobj.write(content)
-        fileobj.close()
         self.get_search_book_data_from_page(content,br, site_book_data)
         page=2
         offset =10
         while page<=pages:
-            print("nextpage")
             url = 'https://www.google.com/search?tbm=bks&q='+search_txt+'&start='+str(offset)
             res = br.open(url)
             #br.select_form(id="oc-search-form")
@@ -103,9 +97,7 @@ class GoogleBooks(BookSite):
     def get_search_book_data_from_page(self, content, br, book_site_data_original):
         root =super().get_root(url=None, content=content)
         url_elements = root.xpath('//a[@class="fuLhoc ZWRArf"]/@href')
-        print("urls", len(url_elements))
         for url in url_elements:
-            print('url',url)
             #book_site_dat_temp = self.get_book_data_from_site(url)
             book_site_dat_temp=self.navigate_to_view_ebook_page(br, url)
             if not book_site_dat_temp:
