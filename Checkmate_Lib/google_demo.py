@@ -1,5 +1,5 @@
 from checkmate import get_book_site #this is the only import we need to use the library
-
+import requests
 
 # Load a sitebook data object from a url. Then searches for 
 # site matches using the book.
@@ -19,15 +19,18 @@ def run_demo():
 
     else:
         book_site = get_book_site(slug) # seed Book Site object with slug
-        url = "https://www.google.com/books/edition/Harry_Potter_and_the_Cursed_Child_Parts/tcSMCwAAQBAJ?hl=en"
+        url = "https://www.google.com/books/edition/The_Lord/eyK309uZ9o8C?hl=en"
         book_site_data = book_site.get_book_data_from_site(url) # Parse data from site
         book_site_data.print_all()
         matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches
-        matches.sort(key = lambda x: x[0],reverse=False)
         for book in matches:
             print("=======================================================================================")
             print("Score: ", str(book[0]))
             book[1].print_all()
+        content = requests.get(url).content
+        fileobj = open("page1.html","wb")
+        fileobj.write(content)
+        fileobj.close()
 
 def main():
     run_demo()

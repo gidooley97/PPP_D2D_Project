@@ -65,6 +65,8 @@ class SiteBookData:
             self.price = kwargs['price'] 
         if 'url' in kwargs:
             self.url = kwargs['url'] 
+        if 'extra' in kwargs:
+            self.extra = kwargs['extra']
     """
     prints fields of the book.
 
@@ -86,7 +88,7 @@ class SiteBookData:
         print("Sale Status: ",  self.ready_for_sale if self.ready_for_sale!=None else 'Not found')
         print("parse status: ", self.parse_status if self.parse_status else 'Not found')
         print("Direct book Url: ", self.url if self.url else 'Not found')
-
+        print("Extra: ", self.extra if self.extra else 'Not found')
 
 """
 convert isbn10 to isbn13.

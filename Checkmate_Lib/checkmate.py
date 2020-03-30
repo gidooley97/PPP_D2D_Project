@@ -17,9 +17,9 @@ return:
 def get_book_site(slug_cased):
     site  = None
     slug = slug_cased.upper()
-    # if slug == GoogleBooks().site_slug:
-    #     site = GoogleBooks()
-    if slug == KoboSite().site_slug:
+    if slug == GoogleBooks().site_slug:
+        site = GoogleBooks()
+    elif slug == KoboSite().site_slug:
         site = KoboSite() 
     elif slug == TestSite().site_slug:
         site = TestSite()

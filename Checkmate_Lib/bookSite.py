@@ -44,11 +44,12 @@ class BookSite(ABC):
     parse it and return the SiteBookData of the info.
     args:
         url: direct url to a book.
+        content(optional): html content of page
     return:
         book_site_data: a SiteBookData object
     """
-    def get_book_data_from_site(self, url):
-        root = self.get_root(url) 
+    def get_book_data_from_site(self, url, content=None):
+        root = self.get_root(url,content) 
         title = self.title_parser(root)
         img_url = self.image_url_parser(root)
         img = self.image_parser(img_url)#use the img url to get image
@@ -60,7 +61,10 @@ class BookSite(ABC):
         subtitle = self.subtitle_parser(root)
         authors = self.authors_parser(root)
         site_slug = self.site_slug
-        content = requests.get(url).content #html page content
+        if url:
+            content = requests.get(url).content #html page content
+        else:
+            content = content
         url = url
         book_id = self.book_id_parser(url)
         parse_status =  self.get_parse_status(title,isbn13,desc,authors)
@@ -85,7 +89,7 @@ class BookSite(ABC):
 
         
     def subtitle_parser(self,root):
-        subtitle = ''
+        subtitle = None
         path = self.get_subtitle_path()
         try:
             if root.xpath(path):
@@ -394,6 +398,8 @@ class BookSite(ABC):
         None
     """
     def filter_results_by_score(self):
+        #Remove duplicates
+        self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
         myList=list(filter(lambda x: x[0]>=0.005,self.match_list))
         self.match_list=myList
