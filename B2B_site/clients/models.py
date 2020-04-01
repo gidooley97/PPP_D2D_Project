@@ -6,11 +6,20 @@ from django.utils.translation import ugettext_lazy as _
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    num_queries = models.IntegerField(default = 0)
+    query_data = models.CharField(max_length = 17)
 
-    def get_num_queries():
+    def get_num_queries_month(q_string,month):
+        query_values = q_string
+
         return num_queries
     
+    def get_num_queries_year(q_string, year):
+
+
+    def get_num_queries_ever(q_string):
+
+
+
     def inc_num_queries():
         num_queries += 1
 
