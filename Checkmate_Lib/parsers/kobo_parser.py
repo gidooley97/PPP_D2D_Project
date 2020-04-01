@@ -66,7 +66,6 @@ class KoboSite(BookSite):
         path = self.get_desc_path()
         try:
             desc_element_list = root.xpath(path)[0]
-            # need to decide whther to take all or only the 1st p tag content
             xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
             desc = BeautifulSoup(xmlstr,features="lxml") 
         except:

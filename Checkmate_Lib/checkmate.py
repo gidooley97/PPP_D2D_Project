@@ -5,6 +5,7 @@ from parsers.livraria_parser import LivrariaSite
 from parsers.google_books_parser import GoogleBooks
 from parsers.test_book_store_parser import TestSite
 from parsers.scribd_parser import ScribdSite
+from parsers.audiobook_parser import AudioBookSite
 
 """
 returns site parser.
@@ -27,6 +28,8 @@ def get_book_site(slug_cased):
         site = LivrariaSite()  
     elif slug == ScribdSite().site_slug:
         site = ScribdSite()
+    elif slug == AudioBookSite().site_slug:
+        site = AudioBookSite()
     return site
 
    

@@ -11,14 +11,13 @@ import requests
 from io import BytesIO
 import urllib.request
 import mechanize
-from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
 
 class BookSite(ABC):
     def __init__(self):
         self.match_list=[] #common to all sites
-        self.site_slug=''
-        self.search_url=''
+        self.site_slug=None
+        self.search_url=None
     """
     Given  a url or html content  returns root.
 
@@ -30,7 +29,7 @@ class BookSite(ABC):
         root:root of the html etree.
     """
     def get_root(self,url, content=None):
-        if url:
+        if url is not None:
             content = requests.get(url).content#gets the book's page 
         parser = etree.HTMLParser(remove_pis=True)
         tree = etree.parse(io.BytesIO(content), parser)
@@ -166,8 +165,8 @@ class BookSite(ABC):
 
     def series_parser(self, root):
         path = self.get_series_path()
-        series_element = ''
-        series = ''
+        series_element = None
+        series = None
         try:
             if root.xpath(path):
                 series_element = root.xpath(path)[0] 
@@ -219,46 +218,46 @@ class BookSite(ABC):
     """
     @abstractmethod
     def get_search_urls_after_search_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_title_path(self):
-        return ''
+        return None
     
     @abstractmethod
     def get_subtitle_path(self):
-        return ''
+        return None
     
     @abstractmethod
     def get_authors_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_isbn_path(self):
-        return ''
+        return None
     @abstractmethod
     def get_format_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_img_url_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_desc_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_series_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_volume_path(self):
-        return ''
+        return None
 
     @abstractmethod
     def get_sale_ready_path(self):
-        return ''
+        return None
 ####################################################################################################################################
     """
     SiteBookData -> List[Tuple[SiteBookData, float]]
@@ -280,7 +279,7 @@ class BookSite(ABC):
         br.open(url)  
         #selects the form to populate 
         br.select_form(class_="search-form")
-        search_txt =''
+        search_txt =None
         #populate the field. You may need to check if this is actually working
         if site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
