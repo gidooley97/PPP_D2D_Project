@@ -7,14 +7,23 @@ from django.utils.translation import ugettext_lazy as _
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    def query_handler(self, date):        
-        q_set =  Query_Manager.objects.all()
-        for q in q_set:
-            if date.date == q.get_date().date:
-                q.inc_num_queries
-            else:
-                new_qm = Query_Manager(last_date = date)
-                new_qm.inc_num_queries
+    def query_handler(self, date):  
+        try:#user made queries on this date
+            q_set = Query_Manager.objects.get(last_date = date)
+            q_set.inc_num_queries
+        except:
+            new_qm = Query_Manager(user=self.user,num_queries=1,last_date = date)
+        finally:
+            new_qm.save()
+        #DON'T DELETE!!
+        # q_set =  Query_Manager.objects.all()
+        # #This is also good but there is an easy way
+        # for q in q_set:
+        #     if date.date == q.get_date().date:
+        #         q.inc_num_queries
+        #     else:
+        #         new_qm = Query_Manager(last_date = date)
+        #         new_qm.inc_num_queries
 
 
 class Query_Manager(models.Model):
