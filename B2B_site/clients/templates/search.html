@@ -8,7 +8,6 @@
 <style> /* NEED TO CREATE FOLDER WITH ALL CSS OF THE PROJECT.
     /* Style the form - display items horizontally */
 .form-inline { 
-  display: flex;
   flex-flow: row wrap;
   align-items: center;
 }
@@ -19,11 +18,12 @@
 
 /* Style the input fields */
 .form-inline input {
-  vertical-align: middle;
+  vertical-align: left;
   margin: 5px 10px 5px 0;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ddd;
+  float: right;
 }
 
 /* Style the submit button */
@@ -32,14 +32,33 @@
   background-color: dodgerblue;
   border: 1px solid #ddd;
   color: white;
+  float: right;
 }
 
 .form-inline button:hover {
   background-color: royalblue;
 }
 
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
 /* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
-@media (max-width: 800px) {
+@media screen and (max-width: 800px) {
   .form-inline input {
     margin: 10px 0;
   }
@@ -47,6 +66,11 @@
   .form-inline {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .col-25, .col-75, input[type=submit] {
+    width: 100%;
+    margin-top: 0;
   }
 }
 
@@ -58,22 +82,50 @@
   <p>Option1: Search by using the title, author, isbn, and book url.(No need to fill out all the fields)</p>
   <p>Option2: Search by using Json.</p>
   <p>You can search by using either option 1 or option2, but not both.</p><br>
+  <div class = "container">
   <form class = 'form-inline' action="{% url 'search' %}" method="get"  >
-    <label for="s_bar1">Title:</label>
-    <input  name= "s_bar1"type="text" size="75%" >
-    <label for="s_bar2">Author:</label>
-    <input  name= "s_bar2" type="text"  size="75%" >
-    <label for="s_bar3">ISBN:</label>
-    <input  name= "s_bar3"  type="text"  size="75%" >
-    <label for="s_bar4">Book-Url:</label>
-    <input  name= "s_bar4" type="text"  size="75%" >
+    <div class = "row">
+    <div class = "col-25">
+      <label for="s_bar1">Title:</label>
+    </div>
+    <div class = "col-75">
+      <input  name= "s_bar1"type="text" size="75%" >
+    </div>
+    </div>
+    <div class = "row">
+    <div class = "col-25">
+      <label for="s_bar2">Author:</label>
+    </div>
+    <div class = "col-75">
+      <input  name= "s_bar2" type="text"  size="75%" >
+    </div>
+    </div>
+    <div class = "row">
+      <div class = "col-25">
+        <label for="s_bar1">ISBN:</label>
+      </div>
+      <div class = "col-75">
+        <input  name= "s_bar1"type="text" size="75%" >
+      </div>
+      </div>
+      <div class = "row">
+      <div class = "col-25">
+        <label for="s_bar2">Book URL:</label>
+      </div>
+      <div class = "col-75">
+        <input  name= "s_bar2" type="text"  size="75%" >
+      </div>
+      </div>
+    <div class = "row">
     <input type="submit" value="Search">
+    </div>
   </form>
 
   <form class = 'search-json' action="{% url 'search' %}" method="get" >
     <textarea id="myTextArea" cols=30 rows=15 placeholder="Search Json"></textarea>
     <input type="submit" value="Search" style = "padding: 1%; font-size:1.3em;">
 </form>
+</div>
 
   <h2>Search Results</h2 >
     <div class="col-sm-10 text-right">
