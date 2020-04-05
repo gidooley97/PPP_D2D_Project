@@ -20,28 +20,30 @@ def search(**kwargs):
     print('Blaise')
     search_with_attr=True
     print(kwargs)
-    if kwargs['url'] or  kwargs['book_title'] or kwargs['authors']  or kwargs['isbn_13']:
-        return  
+    # if not( kwargs['url'] and  kwargs['book_title'] and kwargs['authors']  and kwargs['isbn_13']):
+    #     return  
     if 'url' in kwargs:
         url = kwargs['url'] 
-        if url:
-            search_with_attr=False 
+        # if url is not None:
+        #     search_with_attr=False 
    #Change this to true to search by attribute
-    slug = 'GB'
+    slug = 'KO'
     if search_with_attr:
         bookSite = get_book_site(slug)
-        matches= bookSite.find_book_matches_at_site(kwargs)
+        book_site_data = SiteBookData(book_title=kwargs['book_title'])
+        matches= bookSite.find_book_matches_at_site(book_site_data)
         
         for book in matches:
             print("=======================================================================================")
-            book.print_all()
+            print("Score: ", str(book[0]))
+            book[1].print_all()
+
 
     else:
         book_site = get_book_site(slug) # seed Book Site object with slug
         print('url:',url)
         #url = "https://www.google.com/books/edition/Harry_Potter_and_the_Cursed_Child_Parts/tcSMCwAAQBAJ?hl=en"
         book_site_data = book_site.get_book_data_from_site(url) # Parse data from site
-        book_site_data.print_all()
         matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches
         for book in matches:
             print("=======================================================================================")
