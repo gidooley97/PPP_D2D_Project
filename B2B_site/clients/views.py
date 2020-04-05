@@ -19,6 +19,8 @@ from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
+from .models import Profile, Query_Manager
+from django.contrib.auth.models import Group
 
 
 #def index(request):
@@ -66,3 +68,6 @@ def SearchForm(request):
 
 	return render(request, 'search.html', {'form':form})
 
+def list_companies(request):
+    group_list = Group.objects.all()
+    return render(request, "company_list.html", {"group_list": group_list})
