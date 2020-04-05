@@ -42,7 +42,6 @@ def printAttrMenu():
 # search with, 'F' (Fail) is returned.  Else, the search 
 # is preformed, the results are displayed, and no value is returned.
 def searchHandler(searchSbd):
-    
     if searchSbd == '':
         print("No valid attributes to search with")
         return 'F'
@@ -135,14 +134,14 @@ def driver():
     print ("Welcome to Professonal Python Pro's Checkmate Library!")
     option = "" # Holds value that user inputs as option
     searchSbd = SiteBookData() # Site Book Data Object used to search with
-    slug = ''
+   
     while option != 'X': # Exit on 'E'
         printMenu()
         option =  input( "Please select an option:  ").upper()
         
         if option == 'C': # Create new SBD
-            slug = ''
             # Get slug from user
+            slug = ''
             while (slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
                 slug = input("Enter site slug.").upper()
                 if(slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):

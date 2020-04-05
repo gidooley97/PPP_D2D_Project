@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .search_checkmate import search
+
 from lxml import etree
 from django.db import models
 from django.db.models import Q
@@ -38,24 +38,15 @@ def detail(request, book_id):
 class SearchResultsView(ListView):
     #model = User
     template_name = 'search.html'
-    print("SearchResultsView")
     paginate_by = 20
+    
 
+    
     def get_queryset(self): 
         object_list = []
         title_list = []
         other_list = []
-        query = self.request.GET
-        title = query.get('title')
-        print(title)
-        authors = str(query.get('authors')).split(',')
-        print(authors)
-        isbn= query.get('isbn')
-        print(isbn)
-        book_url = query.get('book_url')
-        print(book_url)
-       
-        search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
+        #query = self.request.GET.get('s_bar')
         #if query is None:
             #query = "abcdefhijklmnopqrstuvwxyz"
         #title_list = Book.objects.filter(Q(title__icontains=query))
