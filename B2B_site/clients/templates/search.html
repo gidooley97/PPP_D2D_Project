@@ -89,7 +89,7 @@
       <label for="s_bar1">Title:</label>
     </div>
     <div class = "col-75">
-      <input  name= "s_bar1"type="text" size="75%" >
+      <input  name= "title"type="text" size="75%" >
     </div>
     </div>
     <div class = "row">
@@ -97,7 +97,7 @@
       <label for="s_bar2">Author:</label>
     </div>
     <div class = "col-75">
-      <input  name= "s_bar2" type="text"  size="75%" >
+      <input  name= "authors" type="text"  size="75%" >
     </div>
     </div>
     <div class = "row">
@@ -105,7 +105,7 @@
         <label for="s_bar1">ISBN:</label>
       </div>
       <div class = "col-75">
-        <input  name= "s_bar1"type="text" size="75%" >
+        <input  name= "isbn"type="text" size="75%" >
       </div>
       </div>
       <div class = "row">
@@ -113,7 +113,7 @@
         <label for="s_bar2">Book URL:</label>
       </div>
       <div class = "col-75">
-        <input  name= "s_bar2" type="text"  size="75%" >
+        <input  name= "book_url" type="text"  size="75%" >
       </div>
       </div>
     <div class = "row">
@@ -122,7 +122,7 @@
   </form>
 
   <form class = 'search-json' action="{% url 'search' %}" method="get" >
-    <textarea id="myTextArea" cols=30 rows=15 placeholder="Search Json"></textarea>
+    <textarea id="myTextArea" name="json_search" cols=30 rows=15 placeholder="Search Json"></textarea>
     <input type="submit" value="Search" style = "padding: 1%; font-size:1.3em;">
 </form>
 </div>
