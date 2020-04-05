@@ -49,6 +49,6 @@ def search(**kwargs):
             print("=======================================================================================")
             print("Score: ", str(book[0]))
             book[1].print_all()
-
+    return matches
 
 
