@@ -20,7 +20,7 @@
 }
 
 /* Style the input fields */
-.form-inline input {
+.form-inline input, .form-inline textarea {
   vertical-align: left;
   margin: 5px 10px 5px 0;
   padding: 10px;
@@ -42,7 +42,7 @@
   background-color: royalblue;
 }
 
-input[type="text"]:disabled {
+input[type="text"]:disabled, textarea:disabled {
   background: #dddddd;
 }
 
@@ -104,7 +104,7 @@ input[type="text"]:disabled {
       <label for="s_bar1">Title:</label>
     </div>
     <div class = "col-75">
-      <input class="text" name= "s_bar1" type="text" size="75%" >
+      <input  name= "title" class="text" type="text" size="75%" >
     </div>
     </div>
     <div class = "row">
@@ -112,7 +112,7 @@ input[type="text"]:disabled {
       <label for="s_bar2">Author:</label>
     </div>
     <div class = "col-75">
-      <input class= "text" name= "s_bar2" type="text"  size="75%">
+      <input  name= "authors"  class="text"  type="text"  size="75%" >
     </div>
     </div>
     <div class = "row">
@@ -120,7 +120,7 @@ input[type="text"]:disabled {
         <label for="s_bar1">ISBN:</label>
       </div>
       <div class = "col-75">
-        <input class="text" name= "s_bar1"type="text" size="75%" >
+        <input  name= "isbn" class="text" type="text" size="75%" >
       </div>
       </div>
       <div class = "row">
@@ -128,7 +128,7 @@ input[type="text"]:disabled {
         <label for="s_bar2">Book URL:</label>
       </div>
       <div class = "col-75">
-        <input class="text" name= "s_bar2" type="text"  size="75%" >
+        <input  name= "book_url"  class="text"  type="text"  size="75%" >
       </div>
       </div>
     <div class = "row">
@@ -138,13 +138,17 @@ input[type="text"]:disabled {
 
   <form class = 'form-inline' action="{% url 'search' %}" method="get" >
     <div class= "row">
-      <div class="col-75">
-    <textarea class="json" id="myTextArea" cols=30 rows=15 placeholder="Search Json" ></textarea>
-      </div>
       <div class="col-25">
-    <input class="json" type="submit" value="Search"  style = "padding: 1%; font-size:1.3em; bottom: 8px; right: 16px;">
+        <label>Json:</label>
+      </div>
+      <div class="col-75">
+        <textarea class="json" id="myTextArea" cols=76 rows=15 placeholder="Search Json" ></textarea>
+      </div>
     </div>
-    </div>
+  <div class= "row">
+    <input class="json" type="submit" value="Search"  style = "padding: 1%; bottom: 8px; right: 16px;">
+  </div>  
+    
 </form>
 <script type="text/javascript"> 
   $(document).ready(function() { 
