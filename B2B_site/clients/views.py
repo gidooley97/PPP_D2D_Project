@@ -72,3 +72,9 @@ def SearchForm(request):
 
 	return render(request, 'search.html', {'form':form})
 
+class logoutView(TemplateView):
+    template_name = 'registration/logged_out.html'
+
+class loginView(TemplateView):
+    template_name = 'registration/login.html'
+
