@@ -1,5 +1,6 @@
 {% extends "base_generic.html" %}
 
+
 {% block content %}
 
 {% load static %}
@@ -168,56 +169,58 @@ input[type="text"]:disabled, textarea:disabled {
   }); 
 </script>
 </div>
+    <h2>Search Results</h2 >
+      <div class="col-sm-10 text-right">
 
-  <h2>Search Results</h2 >
-    <div class="col-sm-10 text-right">
+        {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+        </div>
+  </div>
+    <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
 
-      {% if is_paginated %}
-      <div class="pagination">
-          <span class="page-links">
-              {% if page_obj.has_previous %}
-                  <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-              {% endif %}
-              <span class="page-current">
-                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-              </span>
-              {% if page_obj.has_next %}
-                  <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-              {% endif %}
+    {% for book in object_list %}
+      <li>
+        <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
+        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
+      </li>
+    {% endfor %}
+    </ul> 
+    
+  <div class="col-sm-10 text-right">
+
+  {% if is_paginated %}
+  <div class="pagination pull ">
+      <span class="page-links">
+          {% if page_obj.has_previous %}
+              <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
+          {% endif %}
+          <span class="page-current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
           </span>
-      </div>
-      {% endif %}
-      </div>
-</div>
-  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
+          {% if page_obj.has_next %}
+              <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
+          {% endif %}
+      </span>
+  </div>
+  {% endif %}
 
-  {% for book in object_list %}
-    <li>
-      <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
-      <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
-    </li>
-  {% endfor %}
-  </ul> 
-  
-<div class="col-sm-10 text-right">
 
-{% if is_paginated %}
-<div class="pagination pull ">
-    <span class="page-links">
-        {% if page_obj.has_previous %}
-            <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-        <span class="page-current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-        {% endif %}
-    </span>
-</div>
-{% endif %}
 
 {% endblock %}
+
 </div>
 
 </body>

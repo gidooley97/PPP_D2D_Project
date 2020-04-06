@@ -8,9 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from .search_checkmate import search
 from lxml import etree
 from django.db import models
@@ -19,13 +17,17 @@ from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+#@login_required(login_url='/accounts/login/')
 #def index(request):
     #profiles = Profile.objects.all()
     #print(request)
     #return render(request, 'index.html', {'users': users})
 
+@login_required(login_url='/accounts/login/')
 def detail(request, book_id):
     try:
         book = Book.objects.get(pk=book_id)
@@ -34,8 +36,7 @@ def detail(request, book_id):
 
     return render(request, 'detail.html', {'book': book})
 
-
-class SearchResultsView(ListView):
+class SearchResultsView(LoginRequiredMixin, ListView):
     #model = User
     template_name = 'search.html'
     print("SearchResultsView")
@@ -69,6 +70,7 @@ class SearchResultsView(ListView):
         #    object_list.append(x)
         return object_list
 
+@login_required(login_url='/accounts/login/')
 def SearchForm(request):
 	#creating a new form
 	form = SignupForm()
