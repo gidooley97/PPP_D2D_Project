@@ -2,9 +2,12 @@
 
 import os
 import sys
+from pathlib import Path
+
 
 #a hacky way of getting around the problem of importing modules.
-dir_of_interest = '/home/blaise/Desktop/Python_projects/PPP_D2D_Project/Checkmate_Lib'
+root= str(Path(__file__).resolve().parents[2])
+dir_of_interest = root+'/Checkmate_Lib'
 modules = {}
 sys.path.append(dir_of_interest)
 for module in os.listdir(dir_of_interest):
