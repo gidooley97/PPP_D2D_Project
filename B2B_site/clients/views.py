@@ -60,6 +60,8 @@ class SearchResultsView(APIView):
         print(isbn)
         book_url = query.get('book_url')
         print(book_url)
+        if title is None:
+            title="Lord" ##Change this value. if you want to search by a differnt book title.
         object_list=search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
         print(object_list)        
         serializer = SiteBookDataSerializer(object_list, many=True)
