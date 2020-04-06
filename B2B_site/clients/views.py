@@ -19,8 +19,9 @@ from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
-
-
+from .serializers import SiteBookDataSerializer
+from rest_framework.response import Response 
+from rest_framework.views import APIView 
 #def index(request):
     #profiles = Profile.objects.all()
     #print(request)
@@ -35,16 +36,21 @@ def detail(request, book_id):
     return render(request, 'detail.html', {'book': book})
 
 
-class SearchResultsView(ListView):
-    #model = User
-    template_name = 'search.html'
-    print("SearchResultsView")
-    paginate_by = 20
+"""
+This API calls the checkmate search module that uses the checkmate library to search for a given book.
 
-    def get_queryset(self): 
-        object_list = []
-        title_list = []
-        other_list = []
+Params:
+    None
+Return:
+    JSON: serialized json of book matches.
+"""
+class SearchResultsView(APIView):
+    
+    print("SearchResultsView")
+    
+    def get(self,request): 
+        book_matches = []#only a list of book matches no scores for now.
+        print('request Meth:', request.method)
         query = self.request.GET
         title = query.get('title')
         print(title)
@@ -54,20 +60,11 @@ class SearchResultsView(ListView):
         print(isbn)
         book_url = query.get('book_url')
         print(book_url)
-       
-        search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
-        #if query is None:
-            #query = "abcdefhijklmnopqrstuvwxyz"
-        #title_list = Book.objects.filter(Q(title__icontains=query))
-        #other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
-        #    | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
-        #    | Q(sale_flag__icontains=query))
+        object_list=search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
+        print(object_list)        
+        serializer = SiteBookDataSerializer(object_list, many=True)
+        return Response({"books":serializer.data})
 
-        #for x in title_list:
-        #    object_list.append(x)
-        #for x in other_list:
-        #    object_list.append(x)
-        return object_list
 
 def SearchForm(request):
 	#creating a new form

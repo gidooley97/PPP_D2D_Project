@@ -3,9 +3,9 @@
 import os
 import sys
 
+#a hacky way of getting around the problem of importing modules.
 dir_of_interest = '/home/blaise/Desktop/Python_projects/PPP_D2D_Project/Checkmate_Lib'
 modules = {}
-
 sys.path.append(dir_of_interest)
 for module in os.listdir(dir_of_interest):
     if '.py' in module and '.pyc' not in module:
@@ -16,8 +16,10 @@ get_book_site = modules['checkmate'].get_book_site
 SiteBookData = modules['site_book_data'].SiteBookData
 
 
+
+
+
 def search(**kwargs):
-    print('Blaise')
     search_with_attr=True
     print(kwargs)
     # if not( kwargs['url'] and  kwargs['book_title'] and kwargs['authors']  and kwargs['isbn_13']):
@@ -35,8 +37,8 @@ def search(**kwargs):
         
         for book in matches:
             print("=======================================================================================")
-            print("Score: ", str(book[0]))
-            book[1].print_all()
+            #print("Score: ", str(book[0]))
+            #book[1].print_all()
 
 
     else:
@@ -49,6 +51,6 @@ def search(**kwargs):
             print("=======================================================================================")
             print("Score: ", str(book[0]))
             book[1].print_all()
-    return matches
+    return list(map(lambda x:x[1],matches))#for now to remove the score.
 
 
