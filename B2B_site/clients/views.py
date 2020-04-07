@@ -83,8 +83,8 @@ def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
-def company_report(request):
-    return render(request, "company_report.html")
+#def company_report(request):
+ #   return render(request, "company_report.html")
 
 class logoutView(TemplateView):
     template_name = 'registration/logged_out.html'
@@ -92,7 +92,7 @@ class logoutView(TemplateView):
 class loginView(TemplateView):
     template_name = 'registration/login.html'
 
-def list_users(request):
+def list_users(request):                    #This is the Report Page
     group_list = Group.objects.all()
     user_list = User.objects.all()
     return render(request, "activity.html", {"group_list": group_list})
