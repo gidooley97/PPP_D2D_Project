@@ -19,9 +19,12 @@ from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
+from .models import Profile, Query_Manager
+from django.contrib.auth.models import Gro
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
+
 #def index(request):
     #profiles = Profile.objects.all()
     #print(request)
@@ -74,9 +77,15 @@ def SearchForm(request):
 
 	return render(request, 'search.html', {'form':form})
 
+
+def list_companies(request):
+    group_list = Group.objects.all()
+    return render(request, "company_list.html", {"group_list": group_list})
+
 class logoutView(TemplateView):
     template_name = 'registration/logged_out.html'
 
 class loginView(TemplateView):
     template_name = 'registration/login.html'
+
 
