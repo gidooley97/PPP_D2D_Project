@@ -20,7 +20,7 @@ from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
 from .models import Profile, Query_Manager
-from django.contrib.auth.models import Gro
+from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
@@ -81,6 +81,9 @@ def SearchForm(request):
 def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
+
+def company_report(request):
+    return render(request, "company_report.html")
 
 class logoutView(TemplateView):
     template_name = 'registration/logged_out.html'

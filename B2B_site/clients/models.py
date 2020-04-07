@@ -3,8 +3,16 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType 
+
+
+
 
 class Profile(models.Model):
+
+
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def query_handler(self, date):  
@@ -48,3 +56,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+    
