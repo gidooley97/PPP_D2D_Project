@@ -10,7 +10,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from .search_checkmate import search
 from lxml import etree
 from django.db import models
@@ -20,7 +21,7 @@ from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
 from .models import Profile, Query_Manager
-from django.contrib.auth.models import Gro
+#from django.contrib.auth.models import Gro
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
@@ -87,5 +88,10 @@ class logoutView(TemplateView):
 
 class loginView(TemplateView):
     template_name = 'registration/login.html'
+
+def list_users(request):
+    group_list = Group.objects.all()
+    user_list = User.objects.all()
+    return render(request, "activity.html", {"group_list": group_list})
 
 
