@@ -17,33 +17,20 @@ class ScribdSite(BookSite):
         self.search_url = "https://www.scribd.com/search"
         self.url_to_book_detail ="https://www.scribd.com/book"#set to ebook bcs D2D deals with ebooks mainly
         self.match_list=[]
-     
+    """
+    str -> SiteBookData
+
+    Given a direct link to a book page at a site,
+    parse it and return the SiteBookData of the info.
+    args:
+        url: direct url to a book.
+    return:
+        book_site_data: a SiteBookData object
+    """
     def get_book_data_from_site(self,url):
-        content = requests.get(url).content#gets the book's page 
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot() 
-        title = self.titleParser(root)
-        img_url = self.imageUrlParser(root)
-        img = self.imageParser(img_url)#use the img url to get image
-        isbn13= self.isbnParser(root)
-        desc = self.descParser(root)
-        frmt = self.formatParser(root)
-        series = self.seriesParser(title)
-        vol_num = self.volumeParser(title)
-        subtitle = self.subtitleParser(root)
-        authors = self.authorsParser(root)
-        site_slug = self.site_slug
-        content = content #html page content
-        url = url
-        book_id = self.book_id_parser(url)
-        parse_status =  self.get_parse_status(title,isbn13,desc,authors)
-        ready_for_sale = self.saleReadyParser(root) # figure out if 'pre-order' is considered ready for sale
-        extra = self.extraParser(root)
-        book_site_data = SiteBookData(format=frmt, book_title=title, book_img= img, book_img_url=img_url, isbn_13=isbn13, description=desc, series=series, 
-        volume=vol_num, subtitle=subtitle, authors=authors, book_id=book_id, site_slug=site_slug, parse_status=parse_status, url=url, content=content,
-        ready_for_sale=ready_for_sale, extra=extra)
-        return book_site_data
+       return super().get_book_data_from_site(url)
+
+    
 
     def find_book_matches_at_site(self,site_book_data, pages = 2):
         self.match_list=[]
@@ -62,47 +49,42 @@ class ScribdSite(BookSite):
         page =1
         url=self.search_url+'?content_type=books&page=1&language=1&query='+search_txt
         content = br.open(url).read() 
-        page_count = self.get_page_count_from_js(content)#gets page count
+        page_count = self.get_page_count_from_js(content)#gets number of pages of results
         while page <= pages and page <= page_count:  #for testing we want to get a few pages
             payload ={'content_type':'books', 'language':'1', 'page':page, 'query':search_txt}
             content = requests.get(self.search_url,params=payload).content
             urls=self.get_urls_js(content)
             page+=1
-        self.__get_book_data_from_page(urls,site_book_data)        
+        self.get_search_book_data_from_page(urls,site_book_data)        
         return self.match_list
-    def find_book_matches_by_attr_at_site(self,search_txt, pages = 2):
-        self.match_list=[]
-        if search_txt =='':
-            return []
-        br = mechanize.Browser()
-        br.set_handle_robots(False)
-        br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-        page =1
-        url=self.search_url+'?content_type=books&page=1&language=1&query='+search_txt
-        content = br.open(url).read() 
-        page_count = self.get_page_count_from_js(content)#gets page count
-        while page <= pages and page <= page_count:  #for testing we want to get a few pages
-            payload ={'content_type':'books', 'language':'1', 'page':page, 'query':search_txt}
-            content = requests.get(self.search_url,params=payload).content
-            urls=self.get_urls_js(content)
-            page+=1
-        self.__get_book_data_from_page(urls,None,False)        
-        return self.match_list
-    #parse the javascript code and gets the page count
+
+##################################### Find Matches util methods #################################
+    """
+    parse the javascript code and returns how many pages of results are there.
+
+    This method parses javascript content of the page to get this info.
+    params:
+        content: html page of results
+    return:
+        page_count:number of pages of results
+    """
     def get_page_count_from_js(self, content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
+        root = super().get_root(url=None, content=content)#given html content returns the root
         dom_txt = root.xpath(".//script")[21].text
         tmp_txt = dom_txt.split('"page_count":')[1].split(',')[0]
         page_count=int(tmp_txt)
         return page_count
-    #gets the resuts as a json from the javascript of the results page 
-    #and returns a list of direct urls to books 
+    
+    """
+    gets the resuts as a json from the json in the javascript of the results page 
+        
+    params: 
+        content: results page content
+    return:
+        urls: direct urls to book detail pages 
+    """ 
     def get_urls_js(self,content):
-        parser = etree.HTMLParser(remove_pis=True)
-        tree = etree.parse(io.BytesIO(content), parser)
-        root = tree.getroot()
+        root = super().get_root(url=None, content=content)
         try:    
             dom_txt = root.xpath(".//script")[21].text
 
@@ -124,112 +106,135 @@ class ScribdSite(BookSite):
             return []
         return urls
 
+    
     #passed urls and returns the bookDataSite objects with their scores
-    def __get_book_data_from_page(self, urls, book_site_dat_1, is_match=True):
+    def get_search_book_data_from_page(self, urls, book_site_data_original):
         for url in urls:
             #call function to get book data with url
-            book_site_dat_tmp= self.get_book_data_from_site(url)
-            if is_match:
-                score = self.match_percentage(book_site_dat_1, book_site_dat_tmp) 
-                book_data_score =tuple([score,book_site_dat_tmp])
-                self.match_list.append(book_data_score)
-            else:
-                self.match_list.append(book_site_dat_tmp)
+            book_site_data_new= self.get_book_data_from_site(url)
+            #book_site_dat_tmp.print_all()
+            score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            book_data_score =tuple([score,book_site_data_new])
+            self.match_list.append(book_data_score)
+            self.filter_results_by_score()
 
+    
     def convert_book_id_to_url(self,book_id):
         url = "https://www.scribd.com/book/"+book_id
         return url
 
-    def match_percentage(self, site_book1, site_book2):
-        return super().match_percentage(site_book1,site_book2)
+    
+#---------------------------------------- Utility Methods ---------------------------------------
+    
+    #override
+    def subtitle_parser(self,root):
+        return None
 
-    #------------ Utility Methods -------------
-    def titleParser(self, root):
-        title_element = root.xpath(".//h1[@class='document_title']")[0]
-        title = title_element.text
-        return title
-
-    def subtitleParser(self,root):
-        pass
-
-    def authorsParser(self,root):
-        author_elements = root.xpath(".//a[contains(@href,'https://www.scribd.com/author')]")
-        authors = []
-        for auth_element in author_elements:
-            authors.append(auth_element.text)
-        return authors
-
-    def isbnParser(self, root):
-        isbn_element = root.xpath("/html/head/meta[18]/@content")
-        isbn = isbn_element[0]
-        return isbn
-
+    #override
     def book_id_parser(self, url): 
-        book_id = url.split('/')[len(url.split('/'))-2]
+        try:
+            book_id = url.split('/')[len(url.split('/'))-2]
+        except:
+            return None
         return book_id
 
-    def formatParser(self, root):
-        format_element = root.xpath("/html/head/meta[13]/@content")
-        form = format_element[0]
-        return form
-        
-
-    def imageParser(self, url):
-        image = None
-        try:
-            image = Image.open(urllib.request.urlopen(url))
+    #verride
+    def isbn_parser(self, root):
+        path = self.get_isbn_path()
+        try: 
+            isbn_element = root.xpath(path)[0]
+            isbn = isbn_element
         except:
-            print("error")
-        return image
+            isbn = None
+        return isbn
 
-    def descParser(self, root):
-        desc_elements = root.xpath("/html/head/meta[16]/@content")
-        desc = desc_elements[0]
-        return str(desc)
+    #override
+    def image_url_parser(self, root):
+        path = self.get_img_url_path()
+        try:
+            imageUrlParser_element = root.xpath(path)
+            imageURL = imageUrlParser_element[0]
+        except:
+            imageURL = None
+        return imageURL
 
-    def seriesParser(self, title):
-        series = ""
+    #override
+    def series_parser(self, title):
+        series = None
         try:
             for ser in title:
               if ser.isdigit() and ("Series" in title or "series" in title):
                 series = ser
                 return series
         except:
-            series - "None"
+            series = None
         return series
 
-        
-    def volumeParser(self, title):
-        volume = ""
+    #override
+    def volume_parser(self, title):
+        volume = None
         try:
             for vol in title:
                 if vol.isdigit() and ("Volume" in title or "volume" in title):
                     volume = vol
                     return volume
         except:
-            volume = "None"
+            volume = None
         return volume
+    #override
+    def desc_parser(self, root):
+        path = self.get_desc_path()
+        try:
+            desc_element = root.xpath(path)[0]
+            desc = desc_element
+        except:
+            desc = None    
+        return desc
 
-    def saleReadyParser(self, root):
-        saleReady = "Avaliable"
+    #override
+    def format_parser(self, root):
+        path = self.get_format_path()
+        try: 
+            format = root.xpath(path)[0]
+        except:
+            format = None
+        return format
+    #override
+    def sale_ready_parser(self, root):
+        saleReady = "Avalaible"
         return saleReady
     
-    def extraParser(self,root):
-        pass
+   
 
-    def imageUrlParser(self, root):
-        imageUrlParser_element = root.xpath("/html/head/link[5]/@href")
-        imageURL = imageUrlParser_element[0]
-        return imageURL
+#######################################Get XPath Functions####################
+    def get_title_path(self):
+        return ".//h1[@class='document_title']"
+    
+    def get_subtitle_path(self):
+        return None
+    
+    def get_authors_path(self):
+        return ".//a[contains(@href,'https://www.scribd.com/author')]"
 
-    def get_parse_status(self,title, isbn13, desc, authors):
-        #determine parse_status checks if we have the most basic data about a book
-        if title and isbn13 and desc and authors:
-            return "UNSUCCESSFUL"
-        if title or isbn13 or desc or authors:
-            return "PARTIALLY PARSED"
-        return "FULLY_PARSED"
+    def get_isbn_path(self):
+        return "/html/head/meta[18]/@content"
 
-  ############# End of Class #################
+    def get_format_path(self):
+        return "/html/head/meta[13]/@content"
 
+    def get_img_url_path(self):
+        return "/html/head/link[5]/@href"
 
+    def get_desc_path(self):
+        return "/html/head/meta[16]/@content"
+
+    def get_series_path(self):
+        return None   
+
+    def get_volume_path(self):
+        return None
+
+    def get_sale_ready_path(self):
+        return None
+    def get_search_urls_after_search_path(self):
+        return  None

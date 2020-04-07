@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
+from .search_checkmate import search
 from lxml import etree
 from django.db import models
 from django.db.models import Q
@@ -20,8 +20,10 @@ from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
 from .models import Profile, Query_Manager
-from django.contrib.auth.models import Group
-
+from django.contrib.auth.models import Gro
+from .serializers import SiteBookDataSerializer
+from rest_framework.response import Response 
+from rest_framework.views import APIView 
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -37,30 +39,37 @@ def detail(request, book_id):
     return render(request, 'detail.html', {'book': book})
 
 
-class SearchResultsView(ListView):
-    #model = User
-    template_name = 'search.html'
-    paginate_by = 20
-    
+"""
+This API calls the checkmate search module that uses the checkmate library to search for a given book.
 
+Params:
+    None
+Return:
+    JSON: serialized json of book matches.
+"""
+class SearchResultsView(APIView):
     
-    def get_queryset(self): 
-        object_list = []
-        title_list = []
-        other_list = []
-        #query = self.request.GET.get('s_bar')
-        #if query is None:
-            #query = "abcdefhijklmnopqrstuvwxyz"
-        #title_list = Book.objects.filter(Q(title__icontains=query))
-        #other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
-        #    | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
-        #    | Q(sale_flag__icontains=query))
+    print("SearchResultsView")
+    
+    def get(self,request): 
+        book_matches = []#only a list of book matches no scores for now.
+        print('request Meth:', request.method)
+        query = self.request.GET
+        title = query.get('title')
+        print(title)
+        authors = str(query.get('authors')).split(',')
+        print(authors)
+        isbn= query.get('isbn')
+        print(isbn)
+        book_url = query.get('book_url')
+        print(book_url)
+        if title is None:
+            title="Lord" ##Change this value. if you want to search by a differnt book title.
+        object_list=search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
+        print(object_list)        
+        serializer = SiteBookDataSerializer(object_list, many=True)
+        return Response({"books":serializer.data})
 
-        #for x in title_list:
-        #    object_list.append(x)
-        #for x in other_list:
-        #    object_list.append(x)
-        return object_list
 
 def SearchForm(request):
 	#creating a new form
@@ -68,6 +77,15 @@ def SearchForm(request):
 
 	return render(request, 'search.html', {'form':form})
 
+
 def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
+
+class logoutView(TemplateView):
+    template_name = 'registration/logged_out.html'
+
+class loginView(TemplateView):
+    template_name = 'registration/login.html'
+
+
