@@ -4,11 +4,11 @@ from site_book_data import SiteBookData
 # Load a sitebook data object from a url. Then searches for 
 # site matches using the book.
 def run_demo():
-    search_with_attr=False #Change this to true to search by attribute
+    search_with_attr=True#Change this to true to search by attribute
     slug = 'SC' # Declare slug for site to search
     book_site = get_book_site(slug) # seed Book Site object with slug
     if search_with_attr:
-        attribute="lord"
+        attribute="lord jim"
         book_site_data = SiteBookData(book_title=attribute)
         matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches
         matches.sort(key = lambda x: x[0],reverse=False)

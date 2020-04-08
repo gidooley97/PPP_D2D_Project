@@ -12,7 +12,7 @@ from io import BytesIO
 import urllib.request
 import mechanize
 from abc import ABC, abstractmethod
-
+import Levenshtein as lev
 class BookSite(ABC):
     def __init__(self):
         self.match_list=[] #common to all sites
@@ -276,6 +276,7 @@ class BookSite(ABC):
         url =self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
+        print('url', url)
         br.open(url)  
         #selects the form to populate 
         br.select_form(class_="search-form")
@@ -298,12 +299,12 @@ class BookSite(ABC):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
+        found= self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
         page=2
-        while page <=pages:#limit the results we will get
+        while page <=pages and not found:#limit the results we will get
             try:
                 res=br.follow_link(text="Next")
-                self.get_search_book_data_from_page(res.read(), site_book_data)
+                found=self.get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
@@ -334,9 +335,15 @@ class BookSite(ABC):
             book_site_data_new= self.get_book_data_from_site(url)
             #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            if score >=0.90:#Perfect match found
+                self.match_list=[]
+                book_data_score =tuple([score,book_site_data_new])
+                self.match_list.append(book_data_score)
+                return True
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
             self.filter_results_by_score()
+        return False
 
     
 
@@ -347,6 +354,7 @@ class BookSite(ABC):
     We do not want to compare book_id,site_slug, url, or book_img_url since that changes from site to site
     This function also does not compare content, extra, or parse_status
     This function does not compare format since as of now all books are ebooks.
+    !!!Update: Made sure to only count what is available inorder to have a better view of how similar the matches are.
     params:
         site_book1: first SiteBookData object
         site_book2: second SiteBookData object
@@ -355,37 +363,63 @@ class BookSite(ABC):
     """
     def match_percentage(self,site_book1, site_book2):
         matching_points = 0 # Keeps track of matching attributes
+        total =0
+        if site_book1.book_title and site_book2.book_title:
+            matching_points += lev.ratio(site_book1.book_title.strip().lower(), site_book2.book_title.strip().lower())*200
+            total += 200
 
-        if site_book1.book_title and site_book2.book_title and site_book1.book_title.strip().lower() == site_book2.book_title.strip().lower():
-            matching_points += 200
+        if site_book1.isbn_13 and site_book2.isbn_13:
+            matching_points += lev.ratio(site_book1.isbn_13.strip().lower(),site_book2.isbn_13.strip().lower())*750
+            total += 750
+        
+        if site_book1.description and site_book2.description:
+            matching_points += lev.ratio(site_book1.description.strip().lower(),site_book2.description.strip().lower())* 5
+            total += 5
+        
+        if site_book1.series and site_book2.series:
+            matching_points += lev.ratio(site_book1.series.strip().lower(), site_book2.series.strip().lower())*5
+            total += 5
 
-        if site_book1.isbn_13 and site_book2.isbn_13 and  site_book1.isbn_13.strip().lower() == site_book2.isbn_13.strip().lower():
-            matching_points += 750
+        if site_book1.volume and site_book2.volume:
+            matching_points += lev.ratio(site_book1.volume.strip().lower(),site_book2.volume.strip().lower())*5
+            total += 5
         
-        if site_book1.description and site_book2.description and site_book1.description.strip().lower() == site_book2.description.strip().lower():
-            matching_points += 5
-        
-        if site_book1.series and site_book2.series and site_book1.series.strip().lower() == site_book2.series.strip().lower():
-            matching_points += 5
-        
-        if site_book1.volume and site_book2.volume and site_book1.volume.strip().lower() == site_book2.volume.strip().lower():
-            matching_points += 5
-        
-        if site_book1.subtitle and site_book2.subtitle and site_book1.subtitle.strip().lower() == site_book2.subtitle.strip().lower():
-            matching_points += 5
+        if site_book1.subtitle and site_book2.subtitle:
+            matching_points += lev.ratio(site_book1.subtitle.lower(), site_book2.subtitle.lower())*5
+            total += 5
 
         # Compare author lists
-        if site_book1.authors and site_book2.authors and set(site_book1.authors) == set(site_book2.authors):
-            matching_points += 20
-
+        if site_book1.authors and site_book2.authors:
+            matching_points += self.compare_authors(site_book1.authors, site_book2.authors)*20
+            total += 20
             
         if site_book1.ready_for_sale and site_book2.ready_for_sale and site_book1.ready_for_sale.strip().lower() == site_book2.ready_for_sale.strip().lower():
-            matching_points += 5
+            matching_points += lev.ratio(site_book1.ready_for_sale.strip().lower(), site_book2.ready_for_sale.strip().lower())*5
+            total += 5
 
         # Allows a small margin of difference
-        if self.book_img_matcher(site_book1, site_book2) <= 10:
-            matching_points += 5
-        return matching_points/1000
+        if site_book1.book_img_url and   site_book2.book_img_url:
+            if self.book_img_matcher(site_book1, site_book2) <= 10:
+                matching_points += 5
+            total += 5
+        if total ==0:
+            return 0
+        return matching_points/total
+
+    """
+    Compares the authors in SiteBookData 1 and SiteBookData2 objects
+
+    Params:
+        auth1: the list of authors in site_book_data1
+        auth2: the list of authors in site_book_data2
+    return:
+        cumulative levenshtein ratio.
+    """
+    def compare_authors(self,auth1, auth2):
+        auth_str1 =  ','.join(auth1)
+        auth_str2 = ','.join(auth2)
+        #print("score",lev.ratio(auth_str1, auth_str2) )
+        return lev.ratio(auth_str1, auth_str2)
 
     """
     loops over the match(List(tuple(score, bookSiteData))) list and 
@@ -400,11 +434,11 @@ class BookSite(ABC):
         #Remove duplicates
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.005,self.match_list))
+        myList=list(filter(lambda x: x[0]>=0.6,self.match_list))
         self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
-        if len(self.match_list)>5:
-            self.match_list=self.match_list[:5]
+        # if len(self.match_list)>5:
+        #     self.match_list=self.match_list[:5]
         
     """
     Utility function for image comparison. 
