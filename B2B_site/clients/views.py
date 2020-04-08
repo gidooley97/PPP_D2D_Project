@@ -35,6 +35,38 @@ def detail(request, book_id):
 
     return render(request, 'detail.html', {'book': book})
 
+class SearchView(ListView):
+
+    template_name = 'search.html'
+    paginate_by = 20
+    
+
+    def get_queryset(self): 
+        object_list = []
+        title_list = []
+        other_list = []
+
+        query = ''#self.request.GET.get('s_bar')
+
+        if query is None:
+            query = "abcdefhijklmnopqrstuvwxyz"
+
+        '''
+        title_list = Book.objects.filter(Q(title__icontains=query))
+        
+        other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) 
+            | Q(subtitle__icontains=query) | Q(series__icontains=query) | Q(volume__icontains=query) 
+            | Q(desc__icontains=query) | Q(book_formats__icontains=query) | Q(sale_flag__icontains=query))
+
+        for x in title_list:
+            object_list.append(x)
+
+        for x in other_list:
+            object_list.append(x)
+        '''
+
+        return object_list
+    
 
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.

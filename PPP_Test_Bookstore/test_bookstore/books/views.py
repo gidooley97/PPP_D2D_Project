@@ -26,6 +26,7 @@ from django import template
 def index(request):
     documents = Document.objects.all()
     print(request)
+
     return render(request, 'index.html', {'documents': documents})
 
 def simple_upload(request):
@@ -40,11 +41,12 @@ def simple_upload(request):
         })
     return render(request, 'simple_upload.html')
 
+
 def onixfile(request):
     documents = Document.objects.all()
     print(request)
-    return render(request, 'onixfile.html', {'documents': documents})
 
+    return render(request, 'onixfile.html', {'documents': documents})
 
 
 def detail(request, book_id):
@@ -89,7 +91,6 @@ def process_Onix(request):
                         book.save()
                 
                     except Book.DoesNotExist:
-                        #print("inserting")
                         book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
                         subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
                         desc=dt.desc, book_formats=dt.book_formats, language=dt.language, price=dt.price,
@@ -97,10 +98,13 @@ def process_Onix(request):
 
                 message='Successfully processed the Onix file.'
                 color='green'
+
             else:
                 message='Unable to process file. Invalid file.'
                 color='red'
+
             fs.delete('onix.xml') #delete onix file
+
         else:
             message='No file to process.'
             color='red'
@@ -109,6 +113,7 @@ def process_Onix(request):
         'message':message,
         'color':color
         }
+
     return render(request,'process.html', context)   
 
 def load_onix_file(path):
@@ -126,23 +131,28 @@ class SearchResultsView(ListView):
     paginate_by = 20
     
 
-    
     def get_queryset(self): 
         object_list = []
         title_list = []
         other_list = []
+
         query = self.request.GET.get('s_bar')
+
         if query is None:
             query = "abcdefhijklmnopqrstuvwxyz"
+
         title_list = Book.objects.filter(Q(title__icontains=query))
-        other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
-            | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
-            | Q(sale_flag__icontains=query))
+        
+        other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) 
+            | Q(subtitle__icontains=query) | Q(series__icontains=query) | Q(volume__icontains=query) 
+            | Q(desc__icontains=query) | Q(book_formats__icontains=query) | Q(sale_flag__icontains=query))
 
         for x in title_list:
             object_list.append(x)
+
         for x in other_list:
             object_list.append(x)
+
         return object_list
  
     

@@ -3,8 +3,6 @@ from django.db import models
 from django.forms import ModelForm
 
 
-
-
 class Book(models.Model):
     title = models.CharField(max_length=200)
     authors = models.CharField(max_length=200)
@@ -18,9 +16,9 @@ class Book(models.Model):
     language = models.CharField(max_length=50)
     sale_flag = models.BooleanField(default=False)
     
-
     def __str__(self):
         return self.title
+
     def formats_as_list(self):
         return list(self.book_formats)
    
