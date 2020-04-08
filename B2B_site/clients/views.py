@@ -95,6 +95,6 @@ class loginView(TemplateView):
 def list_users(request):                    #This is the Report Page
     group_list = Group.objects.all()
     user_list = User.objects.all()
-    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list})
+    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list}) #connection with database
 
 
