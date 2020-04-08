@@ -12,7 +12,6 @@ from django.contrib.contenttypes.models import ContentType
 class Profile(models.Model):
 
 
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def query_handler(self, date):  

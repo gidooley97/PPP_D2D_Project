@@ -24,7 +24,7 @@ from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
-
+from .forms  import EditForm
 #def index(request):
     #profiles = Profile.objects.all()
     #print(request)
@@ -82,8 +82,31 @@ def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
-def company_report(request):
-    return render(request, "company_report.html")
+def company_edit_form(request,group_id):
+    form = EditForm()
+    group = Group.objects.get(id = group_id)
+    if request.method == 'POST':
+        form = EditForm(request.POST) # if post method then form will be validated
+        if form.is_valid():
+            cd = form.cleaned_data
+            name = cd.get('company_name')
+            group.name = name
+            group.save()
+           
+    if form.is_valid():
+        return HttpResponse("valid")
+
+    else:
+        form = EditForm() 
+    return render(request, "company_edit.html",{'form': form})
+
+
+
+   # return render(request, "company_edit.html", {"group": group})
+
+
+
+
 
 class logoutView(TemplateView):
     template_name = 'registration/logged_out.html'
