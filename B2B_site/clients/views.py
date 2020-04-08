@@ -36,6 +36,14 @@ def detail(request, book_id):
     return render(request, 'detail.html', {'book': book})
 
 
+def user_list(request):
+    try:
+        user = ""
+    except User.DoesNotExist:
+        raise Http404("User Does Not Exist")
+
+    return render(request, 'user_list.html', {'user': user})
+
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
 
