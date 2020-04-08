@@ -10,7 +10,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from .search_checkmate import search
 from lxml import etree
 from django.db import models
@@ -82,13 +83,18 @@ def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
-def company_report(request):
-    return render(request, "company_report.html")
+#def company_report(request):
+ #   return render(request, "company_report.html")
 
 class logoutView(TemplateView):
     template_name = 'registration/logged_out.html'
 
 class loginView(TemplateView):
     template_name = 'registration/login.html'
+
+def list_users(request):                    #This is the Report Page
+    group_list = Group.objects.all()
+    user_list = User.objects.all()
+    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list})
 
 
