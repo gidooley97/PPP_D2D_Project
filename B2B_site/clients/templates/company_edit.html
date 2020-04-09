@@ -4,7 +4,6 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'company_edit_style.css' %}">
 
-    <h1> {{ group.name }}</h1>
 
     <form action="{% url 'companies' %}" method="POST">{% csrf_token %}
         {{form.as_p}}

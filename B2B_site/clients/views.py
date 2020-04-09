@@ -84,18 +84,21 @@ def list_companies(request):
 
 def company_edit_form(request,group_id):
     company = Group.objects.get(id = group_id)
+    permissions = company.permissions.all()
     #------ Get Company Contact ----------
     all_users_in_group = User.objects.filter(groups__name = company.name)
     company_contact = all_users_in_group.filter(groups__name = 'Company Contact')
     cc_user = company_contact
-    form = EditForm(initial = {'company_name': company.name})
+    form = EditForm(initial = {'company_name': company.name, 'search_these' : permissions})
 
     if request.method == 'POST':
         form = EditForm(request.POST) # if post method then form will be validated
         if form.is_valid():
             clean_name = form.cleaned_data['company_name']
-            group.name = name
-            group.save()
+            company.name = clean_name
+            clean_permissions = form.cleaned_data['search_these']
+            company.permissions = clean_permissions
+            company.save()
            
     if form.is_valid():
         return HttpResponse("valid")
