@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
+
+    <h1> Company List</h1>
+
+    {% if group_list %}
+        <ul>
+        {% for group in group_list %}
+            {% if group.name != 'Company Contact' %}
+
+                <li class = 'com_li'>{{ group.name }} <a href="details/{{ group.id }}/" class = "clickable">View Details</a> <a href="edit/{{ group.id }}/" class = "clickable">Edit</a> </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No group are available.</p>
+    {% endif %}
+    <p class = "adder"> <a href = "/add/">+ Add New Company</a></p>
+{% endblock %}

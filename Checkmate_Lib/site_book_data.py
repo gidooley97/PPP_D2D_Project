@@ -79,6 +79,7 @@ class SiteBookData:
     def print_all(self):
         print("Format: " , self.format if self.format!=None else 'Not found')
         print("Title: " ,self.book_title if self.book_title !=None else 'Not found')
+        print("Subtitle: " ,self.subtitle if self.subtitle !=None else 'Not found')
         print("Authors: " , ','.join(self.authors) if self.authors else 'Not found')
         print("Series: " , self.series if self.series !=None else 'Not found')
         print("Volume:  ", self.volume if self.volume != None else 'Not found')

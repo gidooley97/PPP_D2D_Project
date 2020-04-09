@@ -9,6 +9,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from .search_checkmate import search
 from lxml import etree
 from django.db import models
@@ -20,6 +22,11 @@ from django import template
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from .models import Profile, Query_Manager
+from django.contrib.auth.models import Group
+from .serializers import SiteBookDataSerializer
+from rest_framework.response import Response 
+from rest_framework.views import APIView 
 
 #@login_required(login_url='/accounts/login/')
 #def index(request):
@@ -36,16 +43,22 @@ def detail(request, book_id):
 
     return render(request, 'detail.html', {'book': book})
 
-class SearchResultsView(LoginRequiredMixin, ListView):
-    #model = User
-    template_name = 'search.html'
-    print("SearchResultsView")
-    paginate_by = 20
 
-    def get_queryset(self): 
-        object_list = []
-        title_list = []
-        other_list = []
+"""
+This API calls the checkmate search module that uses the checkmate library to search for a given book.
+
+Params:
+    None
+Return:
+    JSON: serialized json of book matches.
+"""
+class SearchResultsView(APIView):
+    
+    print("SearchResultsView")
+    
+    def get(self,request): 
+        book_matches = []#only a list of book matches no scores for now.
+        print('request Meth:', request.method)
         query = self.request.GET
         title = query.get('title')
         print(title)
@@ -55,20 +68,13 @@ class SearchResultsView(LoginRequiredMixin, ListView):
         print(isbn)
         book_url = query.get('book_url')
         print(book_url)
-       
-        search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
-        #if query is None:
-            #query = "abcdefhijklmnopqrstuvwxyz"
-        #title_list = Book.objects.filter(Q(title__icontains=query))
-        #other_list = Book.objects.filter(Q(authors__icontains=query) | Q(isbn_13__icontains=query) | Q(subtitle__icontains=query)
-        #    | Q(series__icontains=query) | Q(volume__icontains=query) | Q(desc__icontains=query) | Q(book_formats__icontains=query)
-        #    | Q(sale_flag__icontains=query))
+        if title is None:
+            title="Lord" ##Change this value. if you want to search by a differnt book title.
+        object_list=search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
+        print(object_list)        
+        serializer = SiteBookDataSerializer(object_list, many=True)
+        return Response({"books":serializer.data})
 
-        #for x in title_list:
-        #    object_list.append(x)
-        #for x in other_list:
-        #    object_list.append(x)
-        return object_list
 
 @login_required(login_url='/accounts/login/')
 def SearchForm(request):
@@ -76,5 +82,18 @@ def SearchForm(request):
 	form = SignupForm()
 
 	return render(request, 'search.html', {'form':form})
+
+
+def list_companies(request):
+    group_list = Group.objects.all()
+    return render(request, "company_list.html", {"group_list": group_list})
+
+#def company_report(request):
+ #   return render(request, "company_report.html")
+
+def list_users(request):                    #This is the Report Page
+    group_list = Group.objects.all()
+    user_list = User.objects.all()
+    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list}) #connection with database
 
 

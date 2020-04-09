@@ -69,14 +69,14 @@ class GoogleBooks(BookSite):
 
         res = br.submit()
         content = res.read()
-        self.get_search_book_data_from_page(content,br, site_book_data)
+        found=self.get_search_book_data_from_page(content,br, site_book_data)
         page=2
         offset =10
-        while page<=pages:
+        while page<=pages and found:
             url = 'https://www.google.com/search?tbm=bks&q='+search_txt+'&start='+str(offset)
             res = br.open(url)
             #br.select_form(id="oc-search-form")
-            self.get_search_book_data_from_page(res.read(), br, site_book_data)
+            found=self.get_search_book_data_from_page(res.read(), br, site_book_data)
             offset+=10
             page+=1
         return self.match_list
@@ -103,9 +103,15 @@ class GoogleBooks(BookSite):
             if not book_site_dat_temp:
                 continue
             score = self.match_percentage(book_site_data_original, book_site_dat_temp)
+            if score >=0.90:#Perfect match found
+                self.match_list=[]
+                book_data_score =tuple([score,book_site_dat_temp])
+                self.match_list.append(book_data_score)
+                return True
             book_data_score = tuple([score,book_site_dat_temp])
             self.match_list.append(book_data_score)
             self.filter_results_by_score()
+        return False
 
     """
     goes to the page where book details can be found.

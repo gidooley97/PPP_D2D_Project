@@ -62,21 +62,18 @@ class AudioBookSite(BookSite):
         if not search_txt:
             return []
 
-        url = "https://www.audiobooks.com/search/book/"+search_txt.replace(' ','-').replace("'",'')
+        url = "https://www.audiobooks.com/search/book/"+search_txt
         self.match_list=[]
         print(url)
         res=br.open(url)
         content = res.read()
-        fileobj = open('page.html', 'wb')
-        fileobj.write(content)
-        fileobj.close()
-        self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
+        found = self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
         #return self.match_list # for testing I get the first page results only
         page=2
-        while page <=pages:#limit the results we will get
+        while page <=pages and not found:#limit the results we will get
             try:
                 res= br.open(url+'/page/'+str(page))
-                self.get_search_book_data_from_page(res.read(), site_book_data)
+                found=self.get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
@@ -99,15 +96,19 @@ class AudioBookSite(BookSite):
         root = self.get_root(url=None, content=content)#force this method to work with content
         #expects a path that will help us get the urls
         url_elements = root.xpath(self.get_search_urls_after_search_path())
-        print('urls', url_elements)
+        # print('urls', url_elements)
+        if len(url_elements)==0:
+            self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+            return True
         for url in url_elements:
-            print('url', url)
+            # print('url', url)
             book_site_data_new= self.get_book_data_from_site(url)
             #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
             self.filter_results_by_score()
+        return False
        
    
     """

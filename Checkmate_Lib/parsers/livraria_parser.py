@@ -18,7 +18,7 @@ from site_book_data import isbn_10_to_isbn_13
 class LivrariaSite(BookSite):
     def __init__(self):
         self.site_slug = "LC"
-        self.search_url="https://www3.livrariacultura.com.br/ebooks/" # to only return only ebooks
+        self.search_url="https://www3.livrariacultura.com.br/" # to only return only ebooks
         self.url_to_book_detail = "https://www3.livrariacultura.com.br/"
         self.match_list=[] 
 
@@ -75,7 +75,7 @@ class LivrariaSite(BookSite):
 
         content = requests.get(url).content
     
-        super().get_search_book_data_from_page(content,site_book_data)
+        found =super().get_search_book_data_from_page(content,site_book_data)
                
         return self.match_list
         
@@ -115,6 +115,10 @@ class LivrariaSite(BookSite):
                 auth_element=re.sub('Autores:', '', auth_element)
                 auth_element=re.sub('Tradutor:', '', auth_element)
                 auth_element=re.sub('Leitor/Narrador:', '', auth_element)
+                arr = auth_element.split(', ')
+                if len(arr) > 1:
+                    my_str = arr[1]+" "+arr[0]
+                    auth_element=my_str
                 authors.append(auth_element)
         return authors
     #override

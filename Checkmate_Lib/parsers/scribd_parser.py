@@ -112,8 +112,14 @@ class ScribdSite(BookSite):
         for url in urls:
             #call function to get book data with url
             book_site_data_new= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
+            #book_site_data_new.print_all()
+
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            if score >=0.90:#found the perfect match
+                self.match_list=[]
+                book_data_score =tuple([score,book_site_data_new])
+                self.match_list.append(book_data_score)
+                return 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
             self.filter_results_by_score()
