@@ -20,7 +20,7 @@ from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
 from .models import Profile, Query_Manager
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group,User
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
@@ -83,8 +83,12 @@ def list_companies(request):
     return render(request, "company_list.html", {"group_list": group_list})
 
 def company_edit_form(request,group_id):
-    form = EditForm()
-    group = Group.objects.get(id = group_id)
+    company = Group.objects.get(id = group_id)
+    #------ Get Company Contact ----------
+    all_users_in_group = User.objects.filter(groups__name = company.name)
+    company_contact = all_users_in_group.filter(groups__name = 'Company Contact')
+    form = EditForm(initial = {'company_name': company.name})
+
     if request.method == 'POST':
         form = EditForm(request.POST) # if post method then form will be validated
         if form.is_valid():

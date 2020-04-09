@@ -24,7 +24,8 @@ class EditForm(forms.Form):
 		("Google_Books", "Google_Books")
 	)
 
-	company_name = forms.CharField(label = 'Name' , max_length=50)
-	search_these = forms.MultipleChoiceField(label = 'Permissions', widget=forms.CheckboxSelectMultiple, choices=SEARCH_CHOICES)
+	company_name = forms.CharField(max_length=50)
+
+	search_these = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=SEARCH_CHOICES)
 
     
