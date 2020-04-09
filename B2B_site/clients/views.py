@@ -87,13 +87,13 @@ def company_edit_form(request,group_id):
     #------ Get Company Contact ----------
     all_users_in_group = User.objects.filter(groups__name = company.name)
     company_contact = all_users_in_group.filter(groups__name = 'Company Contact')
+    cc_user = company_contact
     form = EditForm(initial = {'company_name': company.name})
 
     if request.method == 'POST':
         form = EditForm(request.POST) # if post method then form will be validated
         if form.is_valid():
-            cd = form.cleaned_data
-            name = cd.get('company_name')
+            clean_name = form.cleaned_data['company_name']
             group.name = name
             group.save()
            
@@ -101,7 +101,7 @@ def company_edit_form(request,group_id):
         return HttpResponse("valid")
 
     else:
-        form = EditForm() 
+        form = EditForm(initial = {'company_name': company.name})
     return render(request, "company_edit.html",{'form': form})
 
 
