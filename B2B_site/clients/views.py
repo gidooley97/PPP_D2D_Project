@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -19,22 +20,18 @@ from django.views.generic import TemplateView, ListView
 from django.core.paginator import Paginator
 from urllib.parse import urlencode
 from django import template
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 from .models import Profile, Query_Manager
 from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
+from django.contrib.auth.decorators import login_required
 
-#@login_required(login_url='/accounts/login/')
 #def index(request):
     #profiles = Profile.objects.all()
     #print(request)
     #return render(request, 'index.html', {'users': users})
 
-@login_required(login_url='/accounts/login/')
 def detail(request, book_id):
     try:
         book = Book.objects.get(pk=book_id)
@@ -52,7 +49,7 @@ Params:
 Return:
     JSON: serialized json of book matches.
 """
-class SearchResultsView(APIView):
+class SearchAPIView(APIView):
     
     print("SearchResultsView")
     
@@ -78,10 +75,8 @@ class SearchResultsView(APIView):
 
 @login_required(login_url='/accounts/login/')
 def SearchForm(request):
-	#creating a new form
-	form = SignupForm()
-
-	return render(request, 'search.html', {'form':form})
+	#creating a new for
+	return render(request, 'search.html')
 
 
 def list_companies(request):
@@ -91,9 +86,17 @@ def list_companies(request):
 #def company_report(request):
  #   return render(request, "company_report.html")
 
-def list_users(request):                    #This is the Report Page
+class LogoutView(TemplateView):
+    template_name = 'registration/logged_out.html'
+
+class LoginView(TemplateView):
+    template_name = 'registration/login.html'
+
+@login_required(login_url='/accounts/login/')
+def activity(request):                    #This is the Report Page
     group_list = Group.objects.all()
-    user_list = User.objects.all()
-    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list}) #connection with database
+    user = request.user
+    print('user', user)
+    return render(request, "activity.html", {"group_list": group_list}) #connection with database
 
 
