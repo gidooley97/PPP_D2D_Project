@@ -52,7 +52,8 @@ Params:
 Return:
     JSON: serialized json of book matches.
 """
-class SearchResultsView(APIView):
+
+class SearchResultsView(LoginRequiredMixin, APIView):
     
     print("SearchResultsView")
     
@@ -83,6 +84,7 @@ def SearchForm(request):
 
 	return render(request, 'search.html', {'form':form})
 
+@login_required(login_url='/accounts/login/')
 
 def list_companies(request):
     group_list = Group.objects.all()
@@ -91,6 +93,7 @@ def list_companies(request):
 #def company_report(request):
  #   return render(request, "company_report.html")
 
+@login_required(login_url='/accounts/login/')
 def list_users(request):                    #This is the Report Page
     group_list = Group.objects.all()
     user_list = User.objects.all()
