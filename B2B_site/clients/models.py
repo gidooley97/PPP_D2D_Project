@@ -5,13 +5,14 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType 
+import datetime
 
 
+class Company(Group):
+    contact_person = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Profile(models.Model):
-
-
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -23,6 +24,8 @@ class Profile(models.Model):
             new_qm = Query_Manager(user=self.user,num_queries=1,last_date = date)
         finally:
             new_qm.save()
+    def __str__(self):
+        return self.user.first_name+','+self.user.last_name
         #DON'T DELETE!!
         # q_set =  Query_Manager.objects.all()
         # #This is also good but there is an easy way
@@ -37,7 +40,7 @@ class Profile(models.Model):
 class Query_Manager(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     num_queries = models.IntegerField(default =0)
-    last_date = models.DateField()
+    last_date = models.DateField(default= datetime.date.today)
 
     def get_num_queries():
         return num_queries

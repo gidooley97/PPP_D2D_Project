@@ -27,6 +27,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView 
 from django.contrib.auth.decorators import login_required
 import datetime
+from rest_framework.permissions import IsAuthenticated 
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -44,16 +45,16 @@ def detail(request, book_id):
 
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
-
+This search api requires authentication
 Params:
     None
 Return:
     JSON: serialized json of book matches.
 """
+#GET /clients/api/search?params and headers Authorizatio:<>
+#TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
-    
-    print("SearchResultsView")
-    
+    permission_classes = (IsAuthenticated,) #requires authentication
     def get(self,request): 
         book_matches = []#only a list of book matches no scores for now.
         print('request Meth:', request.method)
@@ -74,12 +75,13 @@ class SearchAPIView(APIView):
         return Response({"books":serializer.data})
 
 
+
 @login_required(login_url='/accounts/login/')
 def SearchView(request):
 	return render(request, 'search.html')
 
-@login_required(login_url='/accounts/login/')
 
+@login_required(login_url='/accounts/login/')
 def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
@@ -108,6 +110,10 @@ def activity(request):                    #This is the Report Page
     if user == 'admin':
         #do something
         pass
+    p = Profile.objects.get(user=user)
+    q_m= Query_Manager.objects.filter(user=p)
+    perm = group.permissions.all()
+    print('perm',perm)
     users_in_group = User.objects.filter(groups__name=group)
     #Take care of getting queries made
     return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database
