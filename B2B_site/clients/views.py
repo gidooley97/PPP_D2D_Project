@@ -81,7 +81,7 @@ def SearchView(request):
 	return render(request, 'search.html')
 
 
-@login_required(login_url='/accounts/login/')
+#@login_required(login_url='/accounts/login/')
 def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
