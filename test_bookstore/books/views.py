@@ -1,33 +1,27 @@
-from django.shortcuts import render
-from . import views
-from django.views import generic, View
-from django.shortcuts import get_object_or_404, render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import generic, View
+from django.views.generic import TemplateView, ListView
+from django import template
+from . import views
 from .models import Document, Book
 from .forms import DocumentForm
-from lxml import etree
 from .process_onix import process_data
-from django.db.models import Q
-from django.views.generic import TemplateView, ListView
-from django.core.paginator import Paginator
+from lxml import etree
 from urllib.parse import urlencode
-from django import template
 
-
-
-
+#index.html, otherwise know as our home page
 def index(request):
     documents = Document.objects.all()
     print(request)
     return render(request, 'index.html', {'documents': documents})
 
+#simple_upload.html , upload onix file page, allows you to choose onix file then process
 def simple_upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
@@ -40,13 +34,14 @@ def simple_upload(request):
         })
     return render(request, 'simple_upload.html')
 
+#onixfile.html, onix file management page, allows you to naviage to uploading onix file or processing the current one that is uploaded
 def onixfile(request):
     documents = Document.objects.all()
     print(request)
     return render(request, 'onixfile.html', {'documents': documents})
 
 
-
+#detail.html, this is the book detail page 
 def detail(request, book_id):
     try:
         book = Book.objects.get(pk=book_id)
@@ -55,19 +50,16 @@ def detail(request, book_id):
 
     return render(request, 'detail.html', {'book': book})
 
+#process.html, actually performs the process 
 def process_Onix(request):
     message=''
     color = 'green' # red if error message and green if success
     path= "documents/onix.xml"
-    # root= load_onix_file(path)
-    # data=process_data(root)[:5]
-    # for dt in data:
-    #     print(dt.series)
+
     if request.method=='POST':
         
         fs=FileSystemStorage()
         if fs.exists('onix.xml'):
-            #Code to parse goes here
             root= load_onix_file(path)
             if root:
                 data=process_data(root)
@@ -75,7 +67,6 @@ def process_Onix(request):
                 for dt in data:          
                     try:
                         book = Book.objects.get(isbn_13=dt.isbn_13)
-                        #print("Updating")
                         book.title =dt.title
                         book.authors=dt.authors
                         book.subtitle = dt.subtitle
@@ -89,7 +80,6 @@ def process_Onix(request):
                         book.save()
                 
                     except Book.DoesNotExist:
-                        #print("inserting")
                         book = Book.objects.create(title=dt.title, authors=dt.authors, isbn_13=dt.isbn_13,
                         subtitle = dt.subtitle, series=dt.series, volume=dt.volume,
                         desc=dt.desc, book_formats=dt.book_formats, language=dt.language, price=dt.price,
@@ -111,6 +101,7 @@ def process_Onix(request):
         }
     return render(request,'process.html', context)   
 
+#adds functionality for loading onix file
 def load_onix_file(path):
     context=''
     try:
@@ -120,10 +111,11 @@ def load_onix_file(path):
         
     return context                                                                                          
 
+#search.html, displays results for query, pagenated by 20
 class SearchResultsView(ListView):
     model = Book
     template_name = 'search.html'
-    paginate_by = 20
+    paginate_by = 20 #change to add/remove pages
     
 
     

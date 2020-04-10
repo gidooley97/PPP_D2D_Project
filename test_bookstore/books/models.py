@@ -2,9 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.forms import ModelForm
 
-
-
-
+#Book Model, creates fields for our book object
 class Book(models.Model):
     title = models.CharField(max_length=200)
     authors = models.CharField(max_length=200)
@@ -24,7 +22,7 @@ class Book(models.Model):
     def formats_as_list(self):
         return list(self.book_formats)
    
-
+#Document model, creates fields for out document object
 class Document(models.Model):
     document = models.FileField(upload_to='documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
