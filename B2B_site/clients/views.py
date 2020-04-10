@@ -86,10 +86,9 @@ def company_edit_form(request,group_id):
     company = Group.objects.get(id = group_id)
     permissions = company.permissions.all()
     #------ Get Company Contact ----------
-    all_users_in_group = User.objects.filter(groups__name = company.name)
-    company_contact = all_users_in_group.filter(groups__name = 'Company Contact')
-    cc_user = company_contact
-    form = EditForm(initial = {'company_name': company.name, 'search_these' : permissions})
+    contact = company.contact_person
+  
+    form = EditForm(initial = { 'company_name': company.name, 'search_these' : permissions})
 
     if request.method == 'POST':
         form = EditForm(request.POST) # if post method then form will be validated
@@ -104,8 +103,9 @@ def company_edit_form(request,group_id):
         return HttpResponse("valid")
 
     else:
-        form = EditForm(initial = {'company_name': company.name})
-    return render(request, "company_edit.html",{'form': form})
+        form = EditForm(initial = {'company_name': company.name, 'search_these' : permissions})
+    return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
+     'contact_lname': contact.last_name, 'contact_email': contact.email})
 
 
 

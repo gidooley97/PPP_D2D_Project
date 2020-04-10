@@ -7,7 +7,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType 
 
 
-
+class Company(Group):
+    contact_person = models.OneToOneField(User, on_delete = models.CASCADE)
 
 class Profile(models.Model):
 

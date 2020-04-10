@@ -2,11 +2,12 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'company_edit_style.css' %}">
-
-
-    <form action="{% url 'companies' %}" method="POST">{% csrf_token %}
-        {{form.as_p}}
-        <button type="submit">Submit</button>
-    </form>
+<link rel="stylesheet" type="text/css" href="{% static 'edit_company_style.css' %}">
+<div class = 'main'>
+    <h1>{{ contact_fname }} {{ contact_lname }} {{ contact_email}}</h1>
+        <form action="{% url 'companies' %}" method="POST">{% csrf_token %}
+            {{form.as_p}}
+            <button type="submit">Submit</button>
+        </form>
+</div>
 {% endblock %}

@@ -24,8 +24,11 @@ class EditForm(forms.Form):
 		("Google_Books", "Google_Books")
 	)
 
-	company_name = forms.CharField(max_length=50)
-
+	company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'x'}))
 	search_these = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=SEARCH_CHOICES)
+	contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
+	contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
+	contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
+
 
     
