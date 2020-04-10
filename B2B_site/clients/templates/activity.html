@@ -6,18 +6,12 @@
 
     <h1> Activity </h1>
 
-    {% if group_list %}
+    {% if group  %}
         <ul>
-            <label for="company">Company Name:</label>
-                <select id="company">                
-                    {% for group in group_list %}
-                        {% if group.name != 'Company Contact' %}
-                            <option value="x">
-                                {{ group.name }}
-                            </option>    
-                        {% endif %}
-                    {% endfor %}
-                </select>
+            <label for="company">Company Name:</label> {{ group.name }}
+                     
+                
+            
         </ul>
     
 

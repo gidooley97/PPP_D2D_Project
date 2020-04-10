@@ -100,6 +100,7 @@ input[type="text"]:disabled, textarea:disabled {
              value="json"> Search by Json</label> 
   </div>
   <form class = 'form-inline' action="{% url 'search' %}" method="get"  >
+    {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
       <label for="s_bar1">Title:</label>
@@ -133,7 +134,7 @@ input[type="text"]:disabled, textarea:disabled {
       </div>
       </div>
     <div class = "row">
-    <input class="text" type="submit" value="Search" >
+    <!-- <input class="text" type="submit" value="Search" > -->
     </div>
   </form>
 

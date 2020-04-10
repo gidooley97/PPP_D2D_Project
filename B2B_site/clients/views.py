@@ -26,6 +26,7 @@ from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
 from django.contrib.auth.decorators import login_required
+import datetime
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -74,29 +75,41 @@ class SearchAPIView(APIView):
 
 
 @login_required(login_url='/accounts/login/')
-def SearchForm(request):
-	#creating a new for
+def SearchView(request):
 	return render(request, 'search.html')
 
+@login_required(login_url='/accounts/login/')
 
 def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
-#def company_report(request):
+#def company_report(request): #no one will ever access these views
+# We will ourselves ask therm to login and give them an option to logout 
  #   return render(request, "company_report.html")
 
-class LogoutView(TemplateView):
-    template_name = 'registration/logged_out.html'
+# class LogoutView(TemplateView):
+#     template_name = 'registration/logged_out.html'
 
-class LoginView(TemplateView):
-    template_name = 'registration/login.html'
+# class LoginView(TemplateView):
+#     template_name = 'registration/login.html'
+
+class MyView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+
 
 @login_required(login_url='/accounts/login/')
 def activity(request):                    #This is the Report Page
-    group_list = Group.objects.all()
-    user = request.user
-    print('user', user)
-    return render(request, "activity.html", {"group_list": group_list}) #connection with database
+    # group_list = Group.objects.all() #no need to get all groups
+    user = request.user 
+    #let's do something different for admin users
+    group = user.groups.all()[0]
+    if user == 'admin':
+        #do something
+        pass
+    users_in_group = User.objects.filter(groups__name=group)
+    #Take care of getting queries made
+    return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database
 
 
