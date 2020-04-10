@@ -6,7 +6,9 @@ ns = {"d": "http://ns.editeur.org/onix/3.0/reference"}
 
 
 class BookData:
-    def __init__(self, title, auth, isbn_13, subtitle, series, volume, desc, book_format, sale_flag, language, price):
+    def __init__(self, title, auth, isbn_13, subtitle, series,
+        volume, desc, book_format, sale_flag, language, price):
+
         self.title = title
         self.authors = auth
         self.isbn_13 = isbn_13
@@ -18,6 +20,8 @@ class BookData:
         self.sale_flag = sale_flag
         self.language = language
         self.price = price
+
+
     def __str__(self):
         return self.title +' '+self.isbn_13
 
@@ -35,48 +39,59 @@ BOOK_FORMATS={"00":"Undefined","AA":"Audio","AB":"Audio cassette","AC":"CD-Audio
 		 	
 
 def load_onix_file(path):
-    
     try:
         context = etree.parse(path)
     except:
         print("unable to parse onix file.")
         raise
+
     return context
 
 
 def process_data(root):
-    #path= "real_stuff_onix3_01.xml"
-    #root = load_onix_file(path)
-
     book_list = []
+
     if not root: #check if there is no content in the file
         return book_list
 
     product_elemnts = root.xpath("d:Product", namespaces=ns)
-    for prod_el in product_elemnts:
-        isbn_13 = prod_el.xpath(".//d:ProductIdentifier[d:ProductIDType='15']/d:IDValue", namespaces=ns)[0].text
 
-        auth_els = prod_el.xpath(".//d:Contributor[d:ContributorRole='A01']/d:PersonName", namespaces=ns)
+    for prod_el in product_elemnts:
+        isbn_13 = prod_el.xpath(".//d:ProductIdentifier[d:ProductIDType='15']/d:IDValue",
+             namespaces=ns)[0].text
+
+        auth_els = prod_el.xpath(".//d:Contributor[d:ContributorRole='A01']/d:PersonName",
+             namespaces=ns)
+
         authors = []
+
         for auth in auth_els:
             authors.append(auth.text)
 
-        lang_el = prod_el.xpath(".//d:Language[d:LanguageRole='01']/d:LanguageCode", namespaces=ns)
+        lang_el = prod_el.xpath(".//d:Language[d:LanguageRole='01']/d:LanguageCode",
+             namespaces=ns)
+
         languages = []
+
         for lang in lang_el:
             languages.append(lang.text)
 
         title = prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:TitleText", namespaces=ns)[0].text
-        #let's talk about series and title
+        
         subtitle=''
+
         if prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:Subtitle", namespaces=ns):
             subtitle=prod_el.xpath(".//d:DescriptiveDetail/d:TitleDetail[d:TitleType='01']/d:TitleElement/d:Subtitle", namespaces=ns)[0].text
         collection_el=prod_el.xpath(".//d:Collection", namespaces=ns)
+
         volume = '-'
+
         if collection_el:
             if prod_el.xpath(".//d:PartNumber", namespaces=ns):
                 volume = prod_el.xpath(".//d:PartNumber", namespaces=ns)[0].text
+
         series ='None'
+
         if prod_el.xpath(".//d:Collection/d:TitleDetail/d:TitleElement[d:SequenceNumber='2']/d:TitleText", namespaces=ns):
             series = prod_el.xpath(".//d:Collection/d:TitleDetail/d:TitleElement[d:SequenceNumber='2']/d:TitleText", namespaces=ns)[0].text
 
@@ -85,18 +100,20 @@ def process_data(root):
             price = prod_el.xpath(".//d:Price[d:PriceType='01']/d:PriceAmount", namespaces=ns)[0].text
 
         description = prod_el.xpath(".//d:TextContent[d:TextType='03']/d:Text", namespaces=ns)[0].text
+
         pub_stat_code=prod_el.xpath(".//d:PublishingStatus", namespaces=ns)[0].text
+
         #publ_status =PUBLISHING_STATUS[pub_stat_code]
         book_format_code =  prod_el.xpath(".//d:ProductForm", namespaces=ns)[0].text
         book_format=BOOK_FORMATS[book_format_code]
         sale_flag= (pub_stat_code=="13" or pub_stat_code=="04")
-        #data
         auths= ','.join(authors)
         langs = ','.join(languages)
         print(price)
         
         tmp_book_data = BookData(title,auths,isbn_13,subtitle,series,volume ,description, book_format,sale_flag,langs,price)
-        book_list.append(tmp_book_data) #Add book data to list
+        book_list.append(tmp_book_data)
+
     return book_list
 
 
