@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from  builtins import any as b_any
 from concurrent.futures import ThreadPoolExecutor
+import json
 
 #a hacky way of getting around the problem of importing modules.
 root= str(Path(__file__).resolve().parents[2])
@@ -31,8 +32,12 @@ return:
     -list: list of matches found from every site that the user
      has permission to search with.
 """
-def  process(permissions, query):
-    return search(permissions,query)    
+def  process(permissions, query,data):
+    if data:#json
+        params = data
+    else:#attribut fields
+        params = query
+    return search(permissions,params)    
 
 
 """
@@ -46,6 +51,7 @@ return:
      has permission to search with.
 """
 def search(permissions, query):
+    matches = []
     book_title=query.get('title')
     if query.get('authors'):
         authors = str(query.get('authors')).split(',')
@@ -53,7 +59,11 @@ def search(permissions, query):
         authors =None
     isbn_13 = query.get('isbn')
     book_url = query.get('book_url')
-    matches = []
+        
+
+    if book_title is None and authors is None and  isbn_13 is None and book_url is None:
+        return [] 
+
     #remember to handle json 
     
     if b_any('scribd' in x for x in permissions):
@@ -91,7 +101,9 @@ return:
     
 def get_matches(site_slug, book_title, authors,isbn_13, book_url):
     book_site = get_book_site(site_slug)
-    if book_url:
+    if book_url and site_slug ==is_url_for_site(book_url):
+        print('site', site_slug)
+        print('book_url')
         site_book_data =book_site.get_book_data_from_site(book_url)
     else:
         site_book_data = SiteBookData(book_title=book_title, authors=authors,
@@ -100,3 +112,27 @@ def get_matches(site_slug, book_title, authors,isbn_13, book_url):
     matches =  book_site.find_book_matches_at_site(site_book_data)
     return list(map(lambda x:x[1],matches))
 
+
+"""
+Determines if the book url is for a given site.
+
+Params:
+    -book_url: book url
+Returns:
+    -site_slug: returns site slug if found found. else returns empty st.
+"""
+
+def is_url_for_site(book_url):
+    if 'scribd' in book_url:
+        return 'SC'
+    elif 'google' in book_url:
+        return 'GB'
+    elif 'kobo' in book_url:
+        return 'KO'
+    elif 'livraria' in book_url:
+        return 'LC'
+    elif 'audio' in book_url:
+        return 'AU'
+    elif 'http://127.0.0.1' in book_url:
+        return 'TB'
+    return ''

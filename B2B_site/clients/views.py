@@ -56,17 +56,18 @@ Return:
 #TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
     permission_classes = (IsAuthenticated,) #requires authentication
-    def get(self,request): 
+   
+    def get(self,request,): 
         book_matches = []#only a list of book matches no scores for now.
         try:
             user = request.user
             company = Group.objects.filter(user=request.user)[0]
             permissions = company.permissions.all()#getting company's permissions
-            perm_codenames = list(map(lambda x:x.codename,permissions))
-            query = self.request.GET
+            # perm_codenames = list(map(lambda x:x.codename,permissions))
+            # query = self.request.GET
             
-            book_matches = process(perm_codenames,query)
-            print( book_matches)        
+            # book_matches = process(perm_codenames,query)
+            # print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
         except:
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
@@ -85,6 +86,40 @@ class SearchAPIView(APIView):
         
         return Response({"books":serializer.data}, status.HTTP_200_OK)
 
+    def post(self, request, format=None):
+        book_matches = []#only a list of book matches no scores for now.
+        if True:
+            user = request.user
+            company = Group.objects.filter(user=request.user)[0]
+            permissions = company.permissions.all()#getting company's permissions
+            perm_codenames = list(map(lambda x:x.codename,permissions))
+            query = self.request.GET
+            data = request.data
+            print('data',data)
+            if data:  #we can only use json or the other attributs
+                query = None
+            else:
+                data=None
+            book_matches = process(perm_codenames,query,data)
+            print( book_matches)        
+            serializer = SiteBookDataSerializer( book_matches, many=True)
+        else:
+            content ={"Error":"Something went wrong. Make sure you have access to this API."}
+            return Response(content, status=status.HTTP_404_NOT_FOUND) 
+
+        #Tracking system
+        p = Profile.objects.get(user=user)
+        try:
+            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+            q_m.num_queries +=1
+            q_m.save() 
+                
+        except Query_Manager.DoesNotExist:
+            print("Creating new query manager with new date") 
+            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+        
+        return Response({"books":serializer.data}, status.HTTP_200_OK)
+        
 
 
 @login_required(login_url='/accounts/login/')
