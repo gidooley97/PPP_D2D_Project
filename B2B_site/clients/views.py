@@ -29,7 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required
 import datetime
 from rest_framework.permissions import IsAuthenticated 
-from .forms import EditForms
+from .forms import EditForm
 
 #def index(request):
     #profiles = Profile.objects.all()
