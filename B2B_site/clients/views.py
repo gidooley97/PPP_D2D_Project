@@ -29,6 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required
 import datetime
 from rest_framework.permissions import IsAuthenticated 
+from .forms import EditForms
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -135,7 +136,7 @@ def company_edit_form(request,group_id):
     group = Group.objects.get(id = group_id)
     permissions = group.permissions.all()
     #------ Get Company Contact ----------
-    contact = group.contact_person
+    contact = group.contact_user
   
     form = EditForm(initial = { 'company_name': company.name, 'search_these' : permissions})
 
