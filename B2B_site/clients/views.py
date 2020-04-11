@@ -158,11 +158,11 @@ def activity(request):                    #This is the Report Page
         #do something
         pass
     p = Profile.objects.get(user=user)
-    q_m= Query_Manager.objects.filter(user=p)
+    q_m= Query_Manager.objects.filter(user=p)[0]
     perm = group.permissions.all()
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
     #Take care of getting queries made
-    return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database
+    return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m}) #connection with database
 
 
