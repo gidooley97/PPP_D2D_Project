@@ -9,10 +9,9 @@
     {% if group_list %}
         <ul>
         {% for group in group_list %}
-            {% if group.name != 'Company Contact' %}
 
                 <li class = 'com_li'>{{ group.name }} <a href="details/{{ group.id }}/" class = "clickable">View Details</a> <a href="edit/{{ group.id }}/" class = "clickable">Edit</a> </li>
-            {% endif %}
+
         {% endfor %}
         </ul>
     {% else %}

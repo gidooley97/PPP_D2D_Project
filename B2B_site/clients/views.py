@@ -131,3 +131,28 @@ def activity(request):                    #This is the Report Page
     return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database
 
 
+def company_edit_form(request,group_id):
+    group = Group.objects.get(id = group_id)
+    permissions = group.permissions.all()
+    #------ Get Company Contact ----------
+    contact = group.contact_person
+  
+    form = EditForm(initial = { 'company_name': company.name, 'search_these' : permissions})
+
+    if request.method == 'POST':
+        form = EditForm(request.POST) # if post method then form will be validated
+        if form.is_valid():
+            clean_name = form.cleaned_data['company_name']
+            group.name = clean_name
+            clean_permissions = form.cleaned_data['search_these']
+            group.permissions = clean_permissions
+            group.save()
+           
+    if form.is_valid():
+        return HttpResponse("valid")
+
+    else:
+        form = EditForm(initial = {'company_name': group.name, 'search_these' : permissions})
+    return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
+     'contact_lname': contact.last_name, 'contact_email': contact.email})
+
