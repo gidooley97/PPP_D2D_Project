@@ -129,7 +129,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = 'search'
 LOGOUT_REDIRECT_URL = 'login'
-DJANGO_GROUP_MODEL = 'models.Company'
+#DJANGO_GROUP_MODEL = 'models.Company'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

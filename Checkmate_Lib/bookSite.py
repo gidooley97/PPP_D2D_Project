@@ -13,6 +13,7 @@ import urllib.request
 import mechanize
 from abc import ABC, abstractmethod
 import Levenshtein as lev
+
 class BookSite(ABC):
     def __init__(self):
         self.match_list=[] #common to all sites
@@ -299,12 +300,13 @@ class BookSite(ABC):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        found= self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
-        page=2
+        found = False
+        page=1
         while page <=pages and not found:#limit the results we will get
             try:
-                res=br.follow_link(text="Next")
+                content =res.read()
                 found=self.get_search_book_data_from_page(res.read(), site_book_data)
+                res=br.follow_link(text="Next")
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
@@ -325,9 +327,11 @@ class BookSite(ABC):
     """
     def get_search_book_data_from_page(self, content,  book_site_data_original):
         root = self.get_root(url=None, content=content)#force this method to work with content
-        
+        xpath = self.get_search_urls_after_search_path()
         #expects a path that will help us get the urls
-        url_elements = root.xpath(self.get_search_urls_after_search_path())
+        if  xpath is  None or root is None: 
+            return False
+        url_elements = root.xpath(xpath)
         
         for url in url_elements:
             if self.site_slug == 'TB':
@@ -345,7 +349,6 @@ class BookSite(ABC):
             self.filter_results_by_score()
         return False
 
-    
 
     """
     match_percentage takes 2 sitebookdata objects and compares them.  
@@ -434,7 +437,7 @@ class BookSite(ABC):
         #Remove duplicates
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.6,self.match_list))
+        myList=list(filter(lambda x: x[0]>=0.7,self.match_list))
         self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:

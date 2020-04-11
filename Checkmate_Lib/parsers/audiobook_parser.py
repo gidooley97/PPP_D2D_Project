@@ -205,20 +205,14 @@ class AudioBookSite(BookSite):
         try:
             desc_element_list = root.xpath(path)[0]
             xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
-            desc = BeautifulSoup(xmlstr,features="lxml") 
+            desc = BeautifulSoup(xmlstr,features="lxml")
+            desc = desc.get_text()
         except:
             desc = None    
-        return desc.get_text()
+        return desc
     #override
     def series_parser(self, root):
         series = None
-        try:
-            for ser in title:
-              if ser.isdigit() and ("Series" in title or "series" in title):
-                series = ser
-                return series
-        except:
-            series =None
         return series  
     #override
     def book_id_parser(self, url):

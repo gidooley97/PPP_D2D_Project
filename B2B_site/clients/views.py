@@ -11,8 +11,8 @@ from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
-from .search_checkmate import search
+from django.contrib.auth.models import Group, Permission
+from .search_checkmate import process
 from lxml import etree
 from django.db import models
 from django.db.models import Q
@@ -23,7 +23,8 @@ from django import template
 from .models import Profile, Query_Manager
 from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
-from rest_framework.response import Response 
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView 
 from django.contrib.auth.decorators import login_required
 import datetime
@@ -57,27 +58,38 @@ class SearchAPIView(APIView):
     permission_classes = (IsAuthenticated,) #requires authentication
     def get(self,request): 
         book_matches = []#only a list of book matches no scores for now.
-        print('request Meth:', request.method)
-        query = self.request.GET
-        title = query.get('title')
-        print(title)
-        authors = str(query.get('authors')).split(',')
-        print(authors)
-        isbn= query.get('isbn')
-        print(isbn)
-        book_url = query.get('book_url')
-        print(book_url)
-        if title is None:
-            title="Lord" ##Change this value. if you want to search by a differnt book title.
-        object_list=search(book_title=title, authors=authors,isbn_13=isbn,url=book_url)
-        print(object_list)        
-        serializer = SiteBookDataSerializer(object_list, many=True)
-        return Response({"books":serializer.data})
+        try:
+            user = request.user
+            company = Group.objects.filter(user=request.user)[0]
+            permissions = company.permissions.all()#getting company's permissions
+            perm_codenames = list(map(lambda x:x.codename,permissions))
+            query = self.request.GET
+            
+            book_matches = process(perm_codenames,query)
+            print( book_matches)        
+            serializer = SiteBookDataSerializer( book_matches, many=True)
+        except:
+            content ={"Error":"Something went wrong. Make sure you have access to this API."}
+            return Response(content, status=status.HTTP_404_NOT_FOUND) 
+
+        #Tracking system
+        p = Profile.objects.get(user=user)
+        try:
+            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+            q_m.num_queries +=1
+            q_m.save() 
+                
+        except Query_Manager.DoesNotExist:
+            print("Creating new query manager with new date") 
+            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+        
+        return Response({"books":serializer.data}, status.HTTP_200_OK)
 
 
 
 @login_required(login_url='/accounts/login/')
 def SearchView(request):
+
 	return render(request, 'search.html')
 
 
@@ -113,7 +125,7 @@ def activity(request):                    #This is the Report Page
     p = Profile.objects.get(user=user)
     q_m= Query_Manager.objects.filter(user=p)
     perm = group.permissions.all()
-    print('perm',perm)
+    print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
     #Take care of getting queries made
     return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database

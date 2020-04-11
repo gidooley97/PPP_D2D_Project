@@ -243,13 +243,16 @@ class GoogleBooks(BookSite):
     #override
     def format_parser(self, root):
         fmt = None
-        sales_element = root.xpath("//*[@id='gb-get-book-content']")[0].text
-        if "print" in sales_element.lower():
-            fmt = "Print"
-        elif "ebook" in sales_element.lower():
-            fmt = "Ebook"
-        elif "pre-order" in sales_element.lower():
-            fmt = "Pre-order"
+        try:
+            sales_element = root.xpath("//*[@id='gb-get-book-content']")[0].text
+            if "print" in sales_element.lower():
+                fmt = "Print"
+            elif "ebook" in sales_element.lower():
+                fmt = "Ebook"
+            elif "pre-order" in sales_element.lower():
+                fmt = "Pre-order"
+        except:
+            frmt=None
         return fmt
 
     #method specific to this parser.

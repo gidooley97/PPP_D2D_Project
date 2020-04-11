@@ -37,7 +37,7 @@ class ScribdSite(BookSite):
         search_txt =''
         if site_book_data.book_title:
             search_txt=site_book_data.book_title
-        elif site_book_data.isbn13:
+        elif site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]

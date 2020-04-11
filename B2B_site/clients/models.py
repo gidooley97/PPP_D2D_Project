@@ -41,14 +41,14 @@ class Query_Manager(models.Model):
     num_queries = models.IntegerField(default =0)
     last_date = models.DateField(default= datetime.date.today)
 
-    def get_num_queries():
-        return num_queries
+    def get_num_queries(self):
+        return self.num_queries
     
-    def inc_num_queries():
-        num_queries += 1
+    def inc_num_queries(self):
+        self.num_queries += 1
     
-    def get_date():
-        return last_date
+    def get_date(self):
+        return self.last_date
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
