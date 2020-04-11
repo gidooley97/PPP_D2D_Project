@@ -194,8 +194,8 @@ input[type="text"]:disabled, textarea:disabled {
 
     {% for book in object_list %}
       <li>
-        <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
-        <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
+        <button class="button button2 text-right" ><a href="{{ book.book_url }}">Book Url</a></button> </span>
+        <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
       </li>
     {% endfor %}
     </ul> 
