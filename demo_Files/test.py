@@ -4,7 +4,7 @@ from checkmate import get_book_site #this is the only import we need to use the 
 from site_book_data import SiteBookData
 from demo import *
 
-#write tests 
+#tests file we can use for full navigation of all parsers 
 
 def main():
     driver()
@@ -61,12 +61,12 @@ def searchHandler(searchSbd):
     elif searchSbd.subtitle != '':
         valid_attr_count += 1
     
-    if (valid_attr_count > 0): # Launch Search after ensuring there is a slug
+    if valid_attr_count > 0: # Launch Search after ensuring there is a slug
         # Make sure there is a valid site slug
         slug = searchSbd.site_slug.upper()
         # Every object "should" have a slug, but this is just in case
-        if (slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
-            while(slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
+        if slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC' and slug !='AU':
+            while slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC' and slug !='AU':
                 # if no valid slug, prompt user for new slug.
                 slug = input ("No valid slug to search with. Add one now.")
                 searchSbd.slug = slug # Set new slug
@@ -93,21 +93,21 @@ def sbdEditHandler(searchSbd):
     option = ''
     while option != 'B':
         option = input("Select an attribute to edit.").upper()
-        if (option =='T'):
+        if option =='T':
             title = input("Input Title.  ")
             searchSbd.book_title = title
-        elif (option == 'I'):
+        elif option == 'I':
             isbn = input("Input ISBN.   ")
             searchSbd.isbn_13 = isbn
-        elif (option == 'S'):
+        elif option == 'S':
             series = input("Input Series.   ")
             searchSbd.series = series
-        elif(option == 'A'):
+        elif option == 'A':
             author_choice  = input( "Would you like to add on author ('A'), or replace the existing authors ('R')?  ").upper()
             # Add author to current author list
             if author_choice == 'A':
                 name = input("Input authors name.   ")
-                if(len(searchSbd.authors) == 0 ):
+                if len(searchSbd.authors) == 0:
                     searchSbd.authors = [name]
                 else:
                     searchSbd.authors = searchSbd.authors.append(name)
@@ -117,10 +117,10 @@ def sbdEditHandler(searchSbd):
                 searchSbd.authors = [] # Empty list
                 searchSbd.authors = searchSbd.authors.append(name)
 
-        elif(option =='ST'):
+        elif option =='ST':
             subtitle = input("Input Subtitle.   ")
             searchSbd.subtitle = subtitle
-        elif(option == 'B'):
+        elif option == 'B':
             return searchSbd
         else:
             print("Invalid Option. Try Again.")
@@ -143,9 +143,9 @@ def driver():
         if option == 'C': # Create new SBD
             slug = ''
             # Get slug from user
-            while (slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
+            while slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC' and slug !='AU':
                 slug = input("Enter site slug.").upper()
-                if(slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC'):
+                if slug != 'KO' and slug != 'GO' and slug != 'TB' and slug != 'LC' and slug != 'SC' and slug !='AU':
                     print("Invalid slug. Try Again.")
 
             searchSbd = SiteBookData()
@@ -159,14 +159,16 @@ def driver():
         elif option == 'L': # Loads complete SBD form a site
             if slug == 'KO':
                 KO_demo()
-            elif slug == 'GO':
-                GO_demo()
+            elif slug == 'GB':
+                GB_demo()
             elif slug == 'TB':
                 TB_demo()
             elif slug == 'LC':
                 LC_demo()
             elif slug == 'SC':
                 SC_demo()
+            elif slug == 'AU':
+                AU_demo()
         elif option == 'S':
             value =  searchHandler(searchSbd)
             if  value == 'F':

@@ -10,6 +10,7 @@ import mechanize
 from bs4 import BeautifulSoup
 import urllib
 
+
 ############ AudioBookSite Class ################
 """parses the book data from AudioBook"""
 class AudioBookSite(BookSite):
@@ -71,14 +72,13 @@ class AudioBookSite(BookSite):
         fileobj.write(content)
         fileobj.close()
         self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
-        #return self.match_list # for testing I get the first page results only
         page=2
         while page <=pages:#limit the results we will get
             try:
                 res= br.open(url+'/page/'+str(page))
                 self.get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
-            except mechanize._mechanize.LinkNotFoundError:#end of results
+            except mechanize._mechanize.LinkNotFoundError:
                 break
         return self.match_list
 
@@ -103,7 +103,6 @@ class AudioBookSite(BookSite):
         for url in url_elements:
             print('url', url)
             book_site_data_new= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
@@ -121,6 +120,7 @@ class AudioBookSite(BookSite):
     #override
     def convert_book_id_to_url(self,book_id):
         return self.url_to_book_detail+book_id
+
 ################################# Get Xpath Methods########################################
     #override
     def get_search_urls_after_search_path(self):
@@ -213,7 +213,7 @@ class AudioBookSite(BookSite):
         series = None
         try:
             for ser in title:
-              if ser.isdigit() and ("Series" in title or "series" in title):
+              if ser.isdigit() and "Series" in title or "series" in title:
                 series = ser
                 return series
         except:

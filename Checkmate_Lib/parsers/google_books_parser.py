@@ -3,7 +3,6 @@ import io
 from lxml import etree
 import requests
 from PIL import Image
-import requests
 from io import BytesIO
 import urllib.request
 from bookSite import BookSite
@@ -12,10 +11,11 @@ import checkmate
 from bookSite import BookSite
 import re
 
+############ GoogleBooksSite Class ################
+"""parses the book data from GoogleBooks"""
 class GoogleBooks(BookSite):
     def __init__(self):
         self.site_slug = "GB"
-        #self.search_url = "https://www.google.com/search?q=&source=lnms&tbm=bks&sa=X&ved=2ahUKEwj10bG89ZDoAhUEnKwKHcC4B-YQ_AUoAXoECBQQCQ&biw=1235&bih=634"
         self.search_url = "https://books.google.com/"
         self.url_to_book_detail = "https://www.books.google.com/book?vid=ISBN"
         self.match_list = []
@@ -75,7 +75,6 @@ class GoogleBooks(BookSite):
         while page<=pages:
             url = 'https://www.google.com/search?tbm=bks&q='+search_txt+'&start='+str(offset)
             res = br.open(url)
-            #br.select_form(id="oc-search-form")
             self.get_search_book_data_from_page(res.read(), br, site_book_data)
             offset+=10
             page+=1
@@ -98,7 +97,6 @@ class GoogleBooks(BookSite):
         root =super().get_root(url=None, content=content)
         url_elements = root.xpath('//a[@class="fuLhoc ZWRArf"]/@href')
         for url in url_elements:
-            #book_site_dat_temp = self.get_book_data_from_site(url)
             book_site_dat_temp=self.navigate_to_view_ebook_page(br, url)
             if not book_site_dat_temp:
                 continue

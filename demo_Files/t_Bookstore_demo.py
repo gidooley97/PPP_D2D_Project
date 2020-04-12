@@ -10,7 +10,6 @@ def run_demo():
     if search_with_attr:
         attribute=["N.W. Moors"]
         book_site_data= SiteBookData(authors=attribute)
-        #print("passes")
         matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches in a list of tuples
         for book in matches:
             print("score", str(book[0]))

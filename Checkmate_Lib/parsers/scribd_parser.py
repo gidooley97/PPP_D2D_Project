@@ -9,6 +9,7 @@ import urllib.request
 from bookSite import BookSite
 import mechanize
 import json
+
 ############ Scribd Site Class ################
 """parses the book data from Scribd"""
 class ScribdSite(BookSite):
@@ -87,18 +88,10 @@ class ScribdSite(BookSite):
         root = super().get_root(url=None, content=content)
         try:    
             dom_txt = root.xpath(".//script")[21].text
-
             tmp_txt = dom_txt.split('"results":{"books":{"content":{"documents":')[1].split(']')[0]
-        
-            #print('{"results":'+tmp_txt+"]}")//"results":{"books":{"content":{"documents":
             un_parsed_json='{"results":'+tmp_txt+']}'
-            #m=json.dumps(un_parsed_json)
             my_json = json.loads(un_parsed_json)
-        
-            #only getting results for books
-        
             results = my_json["results"]
-        
             urls = []
             for r in results:
                 urls.append(r["book_preview_url"])
@@ -112,7 +105,6 @@ class ScribdSite(BookSite):
         for url in urls:
             #call function to get book data with url
             book_site_data_new= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
@@ -163,7 +155,7 @@ class ScribdSite(BookSite):
         series = None
         try:
             for ser in title:
-              if ser.isdigit() and ("Series" in title or "series" in title):
+              if ser.isdigit() and "Series" in title or "series" in title:
                 series = ser
                 return series
         except:
@@ -175,7 +167,7 @@ class ScribdSite(BookSite):
         volume = None
         try:
             for vol in title:
-                if vol.isdigit() and ("Volume" in title or "volume" in title):
+                if vol.isdigit() and "Volume" in title or "volume" in title:
                     volume = vol
                     return volume
         except:

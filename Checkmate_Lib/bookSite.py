@@ -6,12 +6,16 @@ from site_book_data import SiteBookData
 import io
 from lxml import etree
 import requests
-from PIL import Image
-import requests
 from io import BytesIO
 import urllib.request
 import mechanize
 from abc import ABC, abstractmethod
+
+
+#BookSite is the parent class for all parsers, it does most of the default work for parsing, 
+# you are able to override some functions and methods as needed.
+
+#BookSite also contains the match_percentage functions that determines how good our search is. 
 
 class BookSite(ABC):
     def __init__(self):
@@ -136,7 +140,6 @@ class BookSite(ABC):
         return format
    
     def image_parser(self, url):
-        #response = requests.get(url)
         image =None
         try:
             image = Image.open(urllib.request.urlopen(url))
@@ -332,7 +335,6 @@ class BookSite(ABC):
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
             book_site_data_new= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)

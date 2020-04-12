@@ -5,7 +5,6 @@ from PIL import Image
 import requests
 from io import BytesIO
 import urllib.request
-import requests
 import lxml.html
 import mechanize
 from bookSite import BookSite
@@ -13,8 +12,8 @@ import re
 import json
 from site_book_data import isbn_10_to_isbn_13
 
-############ KoboSite Class ################
-
+############ LivrariaSite Class ################
+"""parses the book data from Livraria"""
 class LivrariaSite(BookSite):
     def __init__(self):
         self.site_slug = "LC"
@@ -65,7 +64,7 @@ class LivrariaSite(BookSite):
         if not search_txt:
             return []
         self.match_list =[]
-        #this site is hard to go to the next page. We used the PS param t specify how many search 
+        #this site is hard to go to the next page. We used the PS param to specify how many search 
         #results we want to see on one page. The max is 96 
         if not pages:
             results = 96 #Max

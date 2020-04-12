@@ -3,7 +3,6 @@ import io
 from lxml import etree
 import requests
 from PIL import Image
-import requests
 from io import BytesIO
 import urllib.request
 from bookSite import BookSite
@@ -33,7 +32,6 @@ class KoboSite(BookSite):
         try:
             if root.xpath(path):
                 #Seperate series number from series title
-                
                 series_split = series.split('#')
                 if len(series_split) > 1:
                     volume = series_split[1]
