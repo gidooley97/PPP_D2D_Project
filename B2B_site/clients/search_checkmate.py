@@ -122,10 +122,10 @@ def get_matches(site_slug, book_title, authors,isbn_13, book_url):
                             isbn_13=isbn_13)
 
     matches =  book_site.find_book_matches_at_site(site_book_data)
-    for book in matches:
-            print("=======================================================================================")
-            print("Score    : ", str(book[0]))
-            book[1].print_all()
+    # for book in matches:
+    #         print("=======================================================================================")
+    #         print("Score    : ", str(book[0]))
+    #         book[1].print_all()
     return list(map(lambda x:x[1],matches))
 
 
