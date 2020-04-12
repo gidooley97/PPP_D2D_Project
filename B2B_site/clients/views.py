@@ -35,13 +35,13 @@ from rest_framework.permissions import IsAuthenticated
     #print(request)
     #return render(request, 'index.html', {'users': users})
 
-def detail(request, book_id):
-    try:
-        book = Book.objects.get(pk=book_id)
-    except Book.DoesNotExist:
-        raise Http404("Question does not exist")
+# def detail(request, book_id):
+#     try:
+#         book = Book.objects.get(pk=book_id)
+#     except Book.DoesNotExist:
+#         raise Http404("Question does not exist")
 
-    return render(request, 'detail.html', {'book': book})
+#     return render(request, 'detail.html', {'book': book})
 
 
 """
@@ -88,7 +88,7 @@ class SearchAPIView(APIView):
 
     def post(self, request, format=None):
         book_matches = []#only a list of book matches no scores for now.
-        if True:
+        try:
             user = request.user
             company = Group.objects.filter(user=request.user)[0]
             permissions = company.permissions.all()#getting company's permissions
@@ -103,7 +103,7 @@ class SearchAPIView(APIView):
             book_matches = process(perm_codenames,query,data)
             print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
-        else:
+        except:
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
             return Response(content, status=status.HTTP_404_NOT_FOUND) 
 
