@@ -63,11 +63,11 @@ class SearchAPIView(APIView):
             user = request.user
             company = Group.objects.filter(user=request.user)[0]
             permissions = company.permissions.all()#getting company's permissions
-            # perm_codenames = list(map(lambda x:x.codename,permissions))
-            # query = self.request.GET
+            perm_codenames = list(map(lambda x:x.codename,permissions))
+            query = self.request.GET
             
-            # book_matches = process(perm_codenames,query)
-            # print( book_matches)        
+            book_matches = process(perm_codenames,query)
+            print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
         except:
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
@@ -158,11 +158,11 @@ def activity(request):                    #This is the Report Page
         #do something
         pass
     p = Profile.objects.get(user=user)
-    q_m= Query_Manager.objects.filter(user=p)
+    q_m= Query_Manager.objects.filter(user=p)[0]
     perm = group.permissions.all()
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
     #Take care of getting queries made
-    return render(request, "activity.html", {"group": group, "user_list":users_in_group}) #connection with database
+    return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m}) #connection with database
 
 

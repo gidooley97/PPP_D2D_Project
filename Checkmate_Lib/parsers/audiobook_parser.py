@@ -51,21 +51,23 @@ class AudioBookSite(BookSite):
         br.set_handle_robots(False)
         br.set_handle_refresh(False)
         br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-        search_txt =''
+        search_txt =None
         #populate the field. You may need to check if this is actually working
-        if site_book_data.isbn_13:
-            search_txt= site_book_data.isbn_13
-        elif site_book_data.book_title:
+        if site_book_data.book_title:
             search_txt=site_book_data.book_title
+        elif site_book_data.isbn_13:
+            search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        if not search_txt:
+        if not search_txt or len(search_txt)==0:
             return []
-
         url = "https://www.audiobooks.com/search/book/"+search_txt
         self.match_list=[]
-        print(url)
-        res=br.open(url)
+        print('audio url',url)
+        try:
+            res=br.open(url)
+        except:
+            return []
         content = res.read()
         found = self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
         #return self.match_list # for testing I get the first page results only

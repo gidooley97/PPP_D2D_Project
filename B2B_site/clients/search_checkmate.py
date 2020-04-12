@@ -7,7 +7,7 @@ from  builtins import any as b_any
 from concurrent.futures import ThreadPoolExecutor
 import json
 
-#a hacky way of getting around the problem of importing modules.
+# getting around the problem of importing modules.
 root= str(Path(__file__).resolve().parents[2])
 dir_of_interest = root+'/Checkmate_Lib'
 modules = {}
@@ -64,25 +64,36 @@ def search(permissions, query):
     if book_title is None and authors is None and  isbn_13 is None and book_url is None:
         return [] 
 
+    all_site_slugs = get_sites(permissions)
+
+    #having issues with searching with a book url
+    if book_url and get_slug_for_url(book_url) in all_site_slugs:
+        book_site = get_book_site(get_slug_for_url(book_url))
+        site_book_data =book_site.get_book_data_from_site(book_url)
+        book_title = site_book_data.book_title
+        authors =site_book_data.authors
+        isbn_13=site_book_data.isbn_13
+
+    for site_slug in all_site_slugs:
+        matches.extend(get_matches(site_slug,book_title,authors,isbn_13,book_url))
     #remember to handle json 
-    
-    if b_any('scribd' in x for x in permissions):
-        matches.extend(get_matches('SC',book_title,authors,isbn_13,book_url))        
+    # if b_any('scribd' in x for x in permissions):
+    #     matches.extend(get_matches('SC',book_title,authors,isbn_13,book_url))        
 
-    if b_any('google' in x.lower() for x in permissions):
-        matches.extend(get_matches('GB',book_title,authors,isbn_13,book_url))
+    # if b_any('google' in x.lower() for x in permissions):
+    #     matches.extend(get_matches('GB',book_title,authors,isbn_13,book_url))
 
-    if b_any('kobo' in x.lower() for x in permissions):
-        matches.extend(get_matches('KO',book_title,authors,isbn_13,book_url))        
+    # if b_any('kobo' in x.lower() for x in permissions):
+    #     matches.extend(get_matches('KO',book_title,authors,isbn_13,book_url))        
 
-    if b_any('test' in x.lower() for x in permissions):
-        matches.extend(get_matches('TB',book_title,authors,isbn_13,book_url)) 
+    # if b_any('test' in x.lower() for x in permissions):
+    #     matches.extend(get_matches('TB',book_title,authors,isbn_13,book_url)) 
 
-    if b_any('livraria' in x.lower() for x in permissions):
-        matches.extend(get_matches('LC',book_title,authors,isbn_13,book_url))        
+    # if b_any('livraria' in x.lower() for x in permissions):
+    #     matches.extend(get_matches('LC',book_title,authors,isbn_13,book_url))        
 
-    if b_any('audio' in x.lower() for x in permissions):
-        matches.extend(get_matches('AU',book_title,authors,isbn_13,book_url))
+    # if b_any('audio' in x.lower() for x in permissions):
+    #     matches.extend(get_matches('AU',book_title,authors,isbn_13,book_url))
     
     return matches
     
@@ -101,15 +112,20 @@ return:
     
 def get_matches(site_slug, book_title, authors,isbn_13, book_url):
     book_site = get_book_site(site_slug)
-    if book_url and site_slug ==is_url_for_site(book_url):
-        print('site', site_slug)
-        print('book_url')
-        site_book_data =book_site.get_book_data_from_site(book_url)
-    else:
-        site_book_data = SiteBookData(book_title=book_title, authors=authors,
+    # if book_url and site_slug ==is_url_for_site(book_url):
+    #     print('site', site_slug)
+    #     print('book_url', book_url)
+    #     site_book_data =book_site.get_book_data_from_site(book_url)
+    #     #site_book_data.print_all()
+   
+    site_book_data = SiteBookData(book_title=book_title, authors=authors,
                             isbn_13=isbn_13)
 
     matches =  book_site.find_book_matches_at_site(site_book_data)
+    for book in matches:
+            print("=======================================================================================")
+            print("Score    : ", str(book[0]))
+            book[1].print_all()
     return list(map(lambda x:x[1],matches))
 
 
@@ -122,7 +138,7 @@ Returns:
     -site_slug: returns site slug if found found. else returns empty st.
 """
 
-def is_url_for_site(book_url):
+def get_slug_for_url(book_url):
     if 'scribd' in book_url:
         return 'SC'
     elif 'google' in book_url:
@@ -136,3 +152,32 @@ def is_url_for_site(book_url):
     elif 'http://127.0.0.1' in book_url:
         return 'TB'
     return ''
+"""
+Gets site_slugs that the user has permission to access.
+
+Params:
+    -permissions: permissions
+Returns:
+    site_slugs: list of site slugs
+"""
+def get_sites(permissions):
+    site_slugs =[]
+    if b_any('scribd' in x for x in permissions):
+        site_slugs.append('SC')        
+
+    if b_any('google' in x.lower() for x in permissions):
+        site_slugs.append('GB') 
+
+    if b_any('kobo' in x.lower() for x in permissions):
+        site_slugs.append('KO') 
+
+    if b_any('test' in x.lower() for x in permissions):
+        site_slugs.append('TB') 
+
+    if b_any('livraria' in x.lower() for x in permissions):
+        site_slugs.append('LC') 
+
+    if b_any('audio' in x.lower() for x in permissions):
+        site_slugs.append('AU') 
+
+    return site_slugs
