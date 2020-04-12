@@ -27,7 +27,7 @@
       <input type="radio" name="inputRadio" 
              value="json"> Search by Json</label> 
   </div>
-  <form id= "textform" class = 'form-inline' onsubmit="callApi()">
+  <form id= "textform" class = 'form-inline'>
     {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
@@ -54,11 +54,11 @@
       </div>
       </div>
     <div class = "row">
-    <input class="text" type="submit" value="Search" > 
+    <button class="text" onclick="callApi()" value="Search" >Search</button> 
     </div>
   </form>
 
-  <form class = 'form-inline' id="jsonform" onsubmit="callApi()" >
+  <form class = 'form-inline' id="jsonform"  >
     <div class= "row">
       <div class="col-25">
         <label>Json:</label>
@@ -68,7 +68,7 @@
       </div>
     </div>
   <div class= "row">
-    <input class="json" type="submit" value="Search"  style = "padding: 1%; bottom: 8px; right: 16px;">
+    <button class="json" onclick="callApi()" value="Search">Search</button>
   </div>  
     
 </form>

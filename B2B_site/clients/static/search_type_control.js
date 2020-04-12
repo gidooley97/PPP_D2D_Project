@@ -15,25 +15,39 @@ $(document).ready(function() {
     }); 
 }); 
 
-$("#textform").submit(function(e) {
-  e.preventDefault();
-});
-
-$("#jsonform").submit(function(e) {
-  e.preventDefault();
-});
-
 function callApi() {
+  var serializedData;
+  var formData;
+  event.preventDefault();
   var format = $('input[type="radio"]:checked').attr("value");
-  console.log("help")
   if (format == "text") {
+    formData = $("#textform").serialize();
     $("#textform:input").each(function(){
-      console.log(JSON.stringify($(this))); // This is the jquery object of the input, do what you will
+      serializedData = serializedData + $(this).val();
      });
   }
 
   else if (format == "json") {
-    //
+    formData = $("#jsonform").serialize();
+    $("#jsonform:input").each(function(){
+      serializedData = serializedData + $(this).val();
+     });
+  }
+
+  console.log(formData);
+  console.log(JSON.stringify(formData));
+  console.log("http://127.0.0.1:8000/clients/api/search/"+formData)
+
+  let request = new XMLHttpRequest();
+  request.open("GET", "http://127.0.0.1:8000/clients/api/search/?"+formData);
+  request.send();
+  request.onload = () => {
+    console.log(request);
+    if (request.status == 200) {
+      console.log(JSON.parse(request.response));
+    } else {
+      console.log(`error ${request.status} ${request.statusText}`)
+    }
   }
 }
 

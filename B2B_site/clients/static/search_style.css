@@ -34,7 +34,7 @@
   }
   
   /* Style the input fields */
-  .form-inline input, .form-inline textarea {
+  .form-inline input, .form-inline textarea, #text button {
     vertical-align: left;
     margin: 5px 10px 5px 0;
     padding: 10px;
@@ -46,14 +46,14 @@
   /* Style the submit button */
   .form-inline button {
     padding: 10px 20px;
-    background-color: dodgerblue;
+    background-color: #1c2559;
     border: 1px solid #ddd;
     color: white;
     float: right;
   }
   
   .form-inline button:hover {
-    background-color: royalblue;
+    background-color: #1c2559;
   }
   
   input[type="text"]:disabled, input[type="submit"]:disabled, textarea:disabled {
