@@ -3,11 +3,7 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
-<style>
-table, th, td {
-    border: 2px solid black;
-  }
-</style>
+
     <h1> Activity </h1>
 
     {% if group  %}
@@ -40,7 +36,6 @@ table, th, td {
                 {% for user in user_list %}
                     <tr>
                         <td>{{ user.first_name }} {{ user.last_name }}</td>
-                        <td> {{ q_m.num_queries }}</td> 
                     </tr>
                 {% endfor %}
             </table>
