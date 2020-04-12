@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        #('auth', '0012_group_contact_user'),
+        ('auth', '0012_group_contact_user'),
         ('clients', '0004_auto_20200410_0444'),
     ]
 
