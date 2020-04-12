@@ -63,11 +63,11 @@ class SearchAPIView(APIView):
             user = request.user
             company = Group.objects.filter(user=request.user)[0]
             permissions = company.permissions.all()#getting company's permissions
-            # perm_codenames = list(map(lambda x:x.codename,permissions))
-            # query = self.request.GET
+            perm_codenames = list(map(lambda x:x.codename,permissions))
+            query = self.request.GET
             
-            # book_matches = process(perm_codenames,query)
-            # print( book_matches)        
+            book_matches = process(perm_codenames,query)
+            print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
         except:
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
