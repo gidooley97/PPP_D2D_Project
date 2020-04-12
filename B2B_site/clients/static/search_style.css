@@ -56,8 +56,9 @@
     background-color: royalblue;
   }
   
-  input[type="text"]:disabled, textarea:disabled {
+  input[type="text"]:disabled, input[type="submit"]:disabled, textarea:disabled {
     background: #dddddd;
+    background-color: #dddddd
   }
   
   .container {
