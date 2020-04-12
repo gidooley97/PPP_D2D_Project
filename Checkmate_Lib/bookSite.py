@@ -282,15 +282,14 @@ class BookSite(ABC):
         #selects the form to populate 
         br.select_form(class_="search-form")
         search_txt =None
-        
         #populate the field. You may need to check if this is actually working
-        if site_book_data.book_title:
-            search_txt=site_book_data.book_title
-        elif site_book_data.isbn_13:
+        if site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
+        elif site_book_data.book_title:
+            search_txt=site_book_data.book_title
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        print(search_txt)
+        
         if not search_txt:
             return []
         if self.site_slug=='KO':
@@ -333,9 +332,7 @@ class BookSite(ABC):
         if  xpath is  None or root is None: 
             return False
         url_elements = root.xpath(xpath)
-        if len(url_elements)==0:
-            self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
-            return True
+        
         for url in url_elements:
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
@@ -440,7 +437,7 @@ class BookSite(ABC):
         #Remove duplicates
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.5,self.match_list))
+        myList=list(filter(lambda x: x[0]>=0.7,self.match_list))
         self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:
