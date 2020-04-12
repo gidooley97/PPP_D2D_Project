@@ -27,7 +27,7 @@
       <input type="radio" name="inputRadio" 
              value="json"> Search by Json</label> 
   </div>
-  <form class = 'form-inline' action="{% url 'search' %}" method="get"  >
+  <form id= "textform" class = 'form-inline' onsubmit="callApi()">
     {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
@@ -53,20 +53,12 @@
         <input  name= "isbn" class="text" type="text" size="75%" >
       </div>
       </div>
-      <div class = "row">
-      <div class = "col-25">
-        <label for="s_bar2">Book URL:</label>
-      </div>
-      <div class = "col-75">
-        <input  name= "book_url"  class="text"  type="text"  size="75%" >
-      </div>
-      </div>
     <div class = "row">
     <input class="text" type="submit" value="Search" > 
     </div>
   </form>
 
-  <form class = 'form-inline' action="{% url 'search' %}" method="get" >
+  <form class = 'form-inline' id="jsonform" onsubmit="callApi()" >
     <div class= "row">
       <div class="col-25">
         <label>Json:</label>
