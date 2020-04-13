@@ -135,6 +135,7 @@ def activity(request):                    #This is the Report Page
 def company_edit_form(request,group_id):
     group = Group.objects.get(id = group_id)
     permissions = group.permissions.all()
+
     #------ Get Company Contact ----------
     contact = group.contact_user
   
@@ -146,13 +147,11 @@ def company_edit_form(request,group_id):
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
             clean_permissions = form.cleaned_data['search_these']
-            group.permissions = clean_permissions
-            clean_format = clean_permissions = form.cleaned_data['format']
+            #group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
+            clean_format =  form.cleaned_data['formats']
             group.format = clean_format
             group.save()
-           
-    if form.is_valid():
-        return HttpResponse("valid")
+            return HttpResponseRedirect(reverse('companies') )
 
     else:
         form = EditForm(initial = {'company_name': group.name, 'search_these' : permissions})
