@@ -16,15 +16,23 @@ class EditForm(forms.Form):
     
     SEARCH_CHOICES = (
         ('Kobo', 'Kobo'),
-        ('Livraria_Cultura', 'Livraria_Cultura'),
-        ("Test_Book_Store", 'Test_Book_Store'),
+        ('Livraria_Cultura', 'Livraria Cultura'),
+        ("Test_Book_Store", 'Test Book Store'),
         ("Scribd", "Scribd"),
-        ("Audio_Books", "Audio_Books"),
-        ("Google_Books", "Google_Books")
+        ("Audio_Books", "Audio Books"),
+        ("Google_Books", "Google Books")
     )
 
-    company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'x'}))
-    search_these = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=SEARCH_CHOICES)
+    FORMATS = (
+        ('Ebook', 'Ebook'),
+        ('Audio', 'Audio Book'),
+        ("Hard_Cover", 'Hard Cover'),
+        ("Paper_Back", "Paper Back"),
+    )
+
+    company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'com_name'},))
+    search_these = forms.MultipleChoiceField(label ="Permissions",widget=forms.CheckboxSelectMultiple(attrs={'class':'perm'}), choices=SEARCH_CHOICES)
+    formats = forms.MultipleChoiceField(label ="Formats",widget=forms.CheckboxSelectMultiple(attrs={'class':'format'}), choices = FORMATS)
     contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)

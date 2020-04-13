@@ -138,7 +138,7 @@ def company_edit_form(request,group_id):
     #------ Get Company Contact ----------
     contact = group.contact_user
   
-    form = EditForm(initial = { 'company_name': company.name, 'search_these' : permissions})
+    form = EditForm(initial = { 'company_name': group.name, 'search_these' : permissions, 'formats': group.format})
 
     if request.method == 'POST':
         form = EditForm(request.POST) # if post method then form will be validated
@@ -147,6 +147,8 @@ def company_edit_form(request,group_id):
             group.name = clean_name
             clean_permissions = form.cleaned_data['search_these']
             group.permissions = clean_permissions
+            clean_format = clean_permissions = form.cleaned_data['format']
+            group.format = clean_format
             group.save()
            
     if form.is_valid():
@@ -156,4 +158,3 @@ def company_edit_form(request,group_id):
         form = EditForm(initial = {'company_name': group.name, 'search_these' : permissions})
     return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
      'contact_lname': contact.last_name, 'contact_email': contact.email})
-

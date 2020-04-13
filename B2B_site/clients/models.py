@@ -8,8 +8,9 @@ from django.contrib.contenttypes.models import ContentType
 import datetime
 
 
-Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE, default = ''))
 
+Group.add_to_class('format', models.CharField(max_length=20,blank = True))
+Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE,  null = True))
 
 class Profile(models.Model):
 
