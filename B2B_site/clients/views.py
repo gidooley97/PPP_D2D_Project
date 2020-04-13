@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+import requests
 from django.views import generic, View
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404
@@ -43,7 +43,6 @@ from rest_framework.permissions import IsAuthenticated
 
 #     return render(request, 'detail.html', {'book': book})
 
-
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
 This search api requires authentication
@@ -69,7 +68,8 @@ class SearchAPIView(APIView):
             book_matches = process(perm_codenames,query)
             print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
-        except:
+        except Exception as e:
+            print(e)
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
             return Response(content, status=status.HTTP_404_NOT_FOUND) 
 
@@ -124,8 +124,9 @@ class SearchAPIView(APIView):
 
 @login_required(login_url='/accounts/login/')
 def SearchView(request):
-
-	return render(request, 'search.html')
+    text_form = SearchForm()
+    json_form = JsonSearchForm()
+    return render(request, 'search.html')
 
 
 @login_required(login_url='/accounts/login/')

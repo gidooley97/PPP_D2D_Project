@@ -39,7 +39,9 @@ function callApi() {
   console.log("http://127.0.0.1:8000/clients/api/search/"+formData)
 
   let request = new XMLHttpRequest();
-  request.open("GET", "http://127.0.0.1:8000/clients/api/search/?"+formData);
+  
+  request.open("GET", "http://127.0.0.1:8000/clients/api/search/?title=lord");
+  request.setRequestHeader('Authorization', 'Token b9d0859ce2420ed4c69878b47abebcbd056e627e');
   request.send();
   request.onload = () => {
     console.log(request);

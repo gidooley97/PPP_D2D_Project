@@ -32,7 +32,7 @@ return:
     -list: list of matches found from every site that the user
      has permission to search with.
 """
-def  process(permissions, query,data):
+def  process(permissions, query=0, data=0):
     if data:#json
         params = data
     else:#attribut fields
