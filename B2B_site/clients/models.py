@@ -8,8 +8,26 @@ from django.contrib.contenttypes.models import ContentType
 import datetime
 
 
+from multiselectfield import MultiSelectField
 
-Group.add_to_class('format', models.CharField(max_length=20,blank = True))
+MY_FORMATS = (
+    ('ebook', "Ebook"),
+    ('audio', "Audio Book"),
+    ('hard_cover', 'Hard Cover'),
+    ('paper_back', 'Paper Back')
+)
+
+SITES_TO_SEARCH =(
+    ('kobo', "Kobo"),
+    ('google_books',"Google Books"),
+    ('scribd', "Scribd"),
+    ('audio_books', "Audio Books"),
+    ('test_store', "Test Book Store"),
+    ('livraria cultura', "Livraria Cultura")
+)
+#formats = MultiSelectField(choices=MY_CHOICES, max_length=11)
+Group.add_to_class('formats',MultiSelectField(choices=MY_FORMATS, max_length=30, blank = True))
+Group.add_to_class('search_sites',MultiSelectField(choices=SITES_TO_SEARCH, max_length=50, blank = True))
 Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE,  null = True))
 
 class Profile(models.Model):
