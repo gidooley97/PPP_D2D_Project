@@ -29,6 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required
 import datetime
 from rest_framework.permissions import IsAuthenticated 
+from .forms import EditForm
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -167,3 +168,28 @@ def activity(request):                    #This is the Report Page
     return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m}) #connection with database
 
 
+def company_edit_form(request,group_id):
+    group = Group.objects.get(id = group_id)
+    contact = group.contact_user
+    #------ Get Company Contact ----------
+    
+    form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
+
+    if request.method == 'POST':
+        form = EditForm(request.POST) # if post method then form will be validated
+        if form.is_valid():
+            clean_name = form.cleaned_data['company_name']
+            group.name = clean_name
+            clean_permissions = form.cleaned_data['search_these']
+            #group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
+            clean_format =  form.cleaned_data['formats']
+            group.format = clean_format
+            clean_sites = form.cleaned_data['search_these']
+            group.search_sites = clean_sites
+            group.save()
+            return HttpResponseRedirect(reverse('companies') )
+
+    else:
+        form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
+    return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
+     'contact_lname': contact.last_name, 'contact_email': contact.email})
