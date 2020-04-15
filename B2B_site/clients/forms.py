@@ -1,5 +1,9 @@
 #importing forms
 from django import forms 
+from multiselectfield import MultiSelectFormField
+from .models import *
+from .models import MY_FORMATS
+from .models import SITES_TO_SEARCH
 
 #creating our forms
 class SearchForm(forms.Form):
