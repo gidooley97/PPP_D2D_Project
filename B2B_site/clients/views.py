@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.views import generic, View
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, get_object_or_404, redirect
@@ -25,6 +25,7 @@ from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
+from .forms import UpdateUserForm
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -91,6 +92,32 @@ class logoutView(TemplateView):
 
 class loginView(TemplateView):
     template_name = 'registration/login.html'
+
+def admin_users_list(request):
+    user_list = User.objects.all()
+    return render(request, "user_list.html", {"user_list": user_list})
+
+def update_user(request, user_id):
+    if request.user:
+        user = User.objects.get(id = user_id)
+        profile = get_object_or_404(Profile, user__username__exact=user)
+        if request.method == 'POST':
+            form = UpdateUserForm(request.POST)
+            if form.is_valid():
+                profile.user.first_name = form.cleaned_data['first_name']
+                profile.user.last_name = form.cleaned_data['last_name']
+                profile.user.save()
+            return HttpResponseRedirect(reverse('user_list.html'))
+
+        else:
+            form = UpdateUserForm(instance=profile)
+
+        context = {
+            'form': form,
+        }
+
+    return render(request, 'update_user.html')
+
 
 def list_users(request):                    #This is the Report Page
     group_list = Group.objects.all()

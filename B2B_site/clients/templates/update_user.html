@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+    <h1>User Info: </h1>
+    <form action="" method="POST">
+        {% csft_token %}
+        <table>
+            {{ form.as_p }}
+        </table>
+        <input type="submit" value="Update">
+    </form>
+{% endblock %}
