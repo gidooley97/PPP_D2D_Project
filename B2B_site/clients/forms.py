@@ -16,9 +16,8 @@ class SearchForm(forms.Form):
 	ISBN = forms.CharField(label='ISBN:', max_length=100)
     #Book_Url= forms.URLField(label='Book-url', max_lenght=100)
 
-class JsonSearchForm(forms.Form):
-	Json_data = forms.Textarea(label='Json', cols='76', rows='15')
-
+# class JsonSearchForm(forms.Form):
+# 	Json_data = forms.Textarea(label='Json', cols='76', rows='15')
 
 
 class EditForm(forms.Form):

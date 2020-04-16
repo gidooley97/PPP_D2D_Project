@@ -104,7 +104,8 @@ class SearchAPIView(APIView):
             book_matches = process(perm_codenames,query,data)
             print( book_matches)        
             serializer = SiteBookDataSerializer( book_matches, many=True)
-        except:
+        except Exception as e:
+            print(e)
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
             return Response(content, status=status.HTTP_404_NOT_FOUND) 
 
@@ -125,8 +126,8 @@ class SearchAPIView(APIView):
 
 @login_required(login_url='/accounts/login/')
 def SearchView(request):
-    text_form = SearchForm()
-    json_form = JsonSearchForm()
+    #text_form = SearchForm()
+    #json_form = JsonSearchForm()
     return render(request, 'search.html')
 
 
