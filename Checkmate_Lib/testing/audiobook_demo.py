@@ -1,8 +1,27 @@
-from checkmate import get_book_site #this is the only import we need to use the library
-from site_book_data import SiteBookData
+# from checkmate import get_book_site #this is the only import we need to use the library
+# from site_book_data import SiteBookData
 import urllib
+
 # Load a sitebook data object from a url. Then searches for 
 # site matches using the book.
+import os
+import sys
+from pathlib import Path
+# getting around the problem of importing modules.
+root= str(Path(__file__).resolve().parents[2])
+dir_of_interest = root+'/Checkmate_Lib'
+modules = {}
+sys.path.append(dir_of_interest)
+for module in os.listdir(dir_of_interest):
+    if '.py' in module and '.pyc' not in module:
+        current = module.replace('.py', '')
+        modules[current] = __import__(current)
+
+get_book_site = modules['checkmate'].get_book_site
+SiteBookData = modules['site_book_data'].SiteBookData
+
+
+
 def run_demo():
     search_with_attr=False #Change this to true to search by attribute
 
@@ -30,6 +49,9 @@ def run_demo():
             book[1].print_all()
 
 def main():
+    file = open("lord_jim_audio.html", "r")
+    
+    print(file.read())
     run_demo()
 
 if __name__ == "__main__":

@@ -29,8 +29,8 @@ class AudioBookSite(BookSite):
     return:
         book_site_data: a SiteBookData object
     """
-    def get_book_data_from_site(self,url):
-        return super().get_book_data_from_site(url)
+    def get_book_data_from_site(self,url=None,content=None):
+        return super().get_book_data_from_site(url,content)
 
     
     """
@@ -46,7 +46,7 @@ class AudioBookSite(BookSite):
         match:List[Tuple[SiteBookData, float]]
     """
     #override
-    def find_book_matches_at_site(self,site_book_data, pages=2):
+    def find_book_matches_at_site(self,site_book_data, pages=2, is_unittest=False):
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.set_handle_refresh(False)
@@ -63,13 +63,16 @@ class AudioBookSite(BookSite):
             return []
         url = "https://www.audiobooks.com/search/book/"+search_txt
         self.match_list=[]
-        print('audio url',url)
+        # print('audio url',url)
         try:
             res=br.open(url)
         except:
             return []
         content = res.read()
+        if is_unittest:
+            return self.get_search_book_data_from_page(content, site_book_data, is_unittest)
         found = self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
+        
         #return self.match_list # for testing I get the first page results only
         page=2
         while page <=pages and not found:#limit the results we will get
@@ -93,8 +96,10 @@ class AudioBookSite(BookSite):
        
     return: 
         None: 
+        bool: whether to continue or not
+        urls: for unittest return urls
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, is_unittest=False):
         root = self.get_root(url=None, content=content)#force this method to work with content
         #expects a path that will help us get the urls
         url_elements = root.xpath(self.get_search_urls_after_search_path())
@@ -102,6 +107,8 @@ class AudioBookSite(BookSite):
         if len(url_elements)==0:
             self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
             return True
+        if is_unittest: #return urls to do the unittest
+            return url_elements
         for url in url_elements:
             # print('url', url)
             book_site_data_new= self.get_book_data_from_site(url)
