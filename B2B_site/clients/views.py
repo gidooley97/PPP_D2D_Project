@@ -25,16 +25,16 @@ from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView 
+from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required
 import datetime
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticated
 from .forms import EditForm
 
-#def index(request):
-    #profiles = Profile.objects.all()
-    #print(request)
-    #return render(request, 'index.html', {'users': users})
+# def index(request):
+    # profiles = Profile.objects.all()
+    # print(request)
+    # return render(request, 'index.html', {'users': users})
 
 # def detail(request, book_id):
 #     try:
@@ -52,99 +52,84 @@ Params:
 Return:
     JSON: serialized json of book matches.
 """
-#GET /clients/api/search?params and headers Authorizatio:<>
-#TO generate auth token:run python3 manage.py drf_create_token <username>
+# GET /clients/api/search?params and headers Authorizatio:<>
+# TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
-    permission_classes = (IsAuthenticated,) #requires authentication
-   
-    def get(self,request,): 
-        book_matches = []#only a list of book matches no scores for now.
-        try:
-            user = request.user
-            company = Group.objects.filter(user=request.user)[0]
-            permissions = company.permissions.all()#getting company's permissions
-            perm_codenames = list(map(lambda x:x.codename,permissions))
-            query = self.request.GET
-            
-            book_matches = process(perm_codenames,query)
-            print( book_matches)        
-            serializer = SiteBookDataSerializer( book_matches, many=True)
-        except Exception as e:
-            print(e)
-            content ={"Error":"Something went wrong. Make sure you have access to this API."}
-            return Response(content, status=status.HTTP_404_NOT_FOUND) 
+    permission_classes = (IsAuthenticated,)  # requires authentication
 
-        #Tracking system
-        p = Profile.objects.get(user=user)
-        try:
-            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
-            q_m.num_queries +=1
-            q_m.save() 
-                
-        except Query_Manager.DoesNotExist:
-            print("Creating new query manager with new date") 
-            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
-        
-        return Response({"books":serializer.data}, status.HTTP_200_OK)
-
+    def get(self, request,):
+        return request_processor(request)
     def post(self, request, format=None):
-        book_matches = []#only a list of book matches no scores for now.
-        try:
-            user = request.user
-            company = Group.objects.filter(user=request.user)[0]
-            permissions = company.permissions.all()#getting company's permissions
-            perm_codenames = list(map(lambda x:x.codename,permissions))
-            query = self.request.GET
-            data = request.data
-            print('data',data)
-            if data:  #we can only use json or the other attributs
-                query = None
-            else:
-                data=None
-            book_matches = process(perm_codenames,query,data)
-            print( book_matches)        
-            serializer = SiteBookDataSerializer( book_matches, many=True)
-        except Exception as e:
-            print(e)
-            content ={"Error":"Something went wrong. Make sure you have access to this API."}
-            return Response(content, status=status.HTTP_404_NOT_FOUND) 
+        return request_processor(request)        
 
-        #Tracking system
-        p = Profile.objects.get(user=user)
-        try:
-            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
-            q_m.num_queries +=1
-            q_m.save() 
-                
-        except Query_Manager.DoesNotExist:
-            print("Creating new query manager with new date") 
-            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+"""
+processes the request by calling the checkmate library.
+
+params:
+    request:
+returns:
+    json response: json contsining matches
+"""
+def request_processor(request):
+    book_matches = []  # only a list of book matches no scores for now.
+    try:
+        user = request.user
+        company = Group.objects.filter(user=request.user)[0]
+        # getting company's permissions
+        sites_allowed = list(company.search_sites)
+        formats = list(company.formats)
+        if not sites_allowed or not formats:
+            content = {
+                "Error": "User does not have access to any sites or formats."
+                }
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+        query = request.GET
+        data =None
+
+        if request.method=="POST":
+            data = request.data
+    
+        if data:  # we can only use json or the other attributs
+            query = None
+       
+        book_matches = process(sites_allowed, formats, query, data)
+        print(book_matches)
+        serializer = SiteBookDataSerializer(book_matches, many=True)
+    except Exception as e:
+        print(e)
+        content = {
+            "Error": "Something went wrong. Make sure you have access to this API."}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
+    # Tracking system
+    p = Profile.objects.get(user=user)
+    try:
+        q_m = Query_Manager.objects.get(
+        user=p, last_date__exact=datetime.date.today())
+        q_m.num_queries += 1
+        q_m.save()
+
+    except Query_Manager.DoesNotExist:
+        print("Creating new query manager with new date") 
+        new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
         
-        return Response({"books":serializer.data}, status.HTTP_200_OK)
-        
+    return Response({"books":serializer.data}, status.HTTP_200_OK)    
 
 
 @login_required(login_url='/accounts/login/')
 def SearchView(request):
-    #text_form = SearchForm()
-    #json_form = JsonSearchForm()
+    # text_form = SearchForm()
+    # json_form = JsonSearchForm()
     return render(request, 'search.html')
 
 
 @login_required(login_url='/accounts/login/')
 def list_companies(request):
+    if not request.user.is_staff:
+        return HttpResponseRedirect(reverse('search') )
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
-#def company_report(request): #no one will ever access these views
-# We will ourselves ask therm to login and give them an option to logout 
- #   return render(request, "company_report.html")
-
-# class LogoutView(TemplateView):
-#     template_name = 'registration/logged_out.html'
-
-# class LoginView(TemplateView):
-#     template_name = 'registration/login.html'
 
 class MyView(LoginRequiredMixin, View):
     login_url = '/login/'
@@ -155,24 +140,26 @@ class MyView(LoginRequiredMixin, View):
 def activity(request):                    #This is the Report Page
     # group_list = Group.objects.all() #no need to get all groups
     user = request.user 
-    #let's do something different for admin users
+    # let's do something different for admin users
     group = user.groups.all()[0]
     if user == 'admin':
-        #do something
+        # do something
         pass
     p = Profile.objects.get(user=user)
     q_m= Query_Manager.objects.filter(user=p)[0]
     perm = group.permissions.all()
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
-    #Take care of getting queries made
+    # Take care of getting queries made
     return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m}) #connection with database
 
-
+@login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):
+    if not request.user.is_staff:
+        return HttpResponseRedirect(reverse('search') )
     group = Group.objects.get(id = group_id)
     contact = group.contact_user
-    #------ Get Company Contact ----------
+    # ------ Get Company Contact ----------
     
     form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
 
@@ -182,7 +169,7 @@ def company_edit_form(request,group_id):
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
             clean_permissions = form.cleaned_data['search_these']
-            #group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
+            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
             group.format = clean_format
             clean_sites = form.cleaned_data['search_these']

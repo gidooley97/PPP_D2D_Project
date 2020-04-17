@@ -26,8 +26,8 @@ SITES_TO_SEARCH =(
     ('livraria cultura', "Livraria Cultura")
 )
 #formats = MultiSelectField(choices=MY_CHOICES, max_length=11)
-Group.add_to_class('formats',MultiSelectField(choices=MY_FORMATS, max_length=30, blank = True))
-Group.add_to_class('search_sites',MultiSelectField(choices=SITES_TO_SEARCH, max_length=50, blank = True))
+Group.add_to_class('formats',MultiSelectField(choices=MY_FORMATS, max_length=50, blank = True))
+Group.add_to_class('search_sites',MultiSelectField(choices=SITES_TO_SEARCH, max_length=80, blank = True))
 Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE,  null = True))
 
 class Profile(models.Model):
@@ -44,16 +44,7 @@ class Profile(models.Model):
             new_qm.save()
     def __str__(self):
         return self.user.first_name+','+self.user.last_name
-        #DON'T DELETE!!
-        # q_set =  Query_Manager.objects.all()
-        # #This is also good but there is an easy way
-        # for q in q_set:
-        #     if date.date == q.get_date().date:
-        #         q.inc_num_queries
-        #     else:
-        #         new_qm = Query_Manager(last_date = date)
-        #         new_qm.inc_num_queries
-
+        
 
 class Query_Manager(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)

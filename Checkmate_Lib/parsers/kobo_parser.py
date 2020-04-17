@@ -77,7 +77,7 @@ class KoboSite(BookSite):
         path = self.get_format_path()
         try: 
             format_element = root.xpath(path)[0]
-            format = format_element.text.strip().split(' ')[0]
+            format = super().format_mapper(format_element.text.strip().split(' ')[0])
         except:
             format = None
         return format

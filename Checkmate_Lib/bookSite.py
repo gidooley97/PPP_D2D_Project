@@ -134,8 +134,18 @@ class BookSite(ABC):
             format = root.xpath(path)[0].text
         except:
             format = None
-        return format
+        return format_mapper(format)
    
+    def format_mapper(self, format):
+        if format is None:
+            return None
+        if "print" in format.lower() or 'hard' in format.lower():
+             return "Hard Cover"
+        elif "audio" in format.lower():
+            return "Audio"
+        else:
+            return "Ebook"
+
     def image_parser(self, url):
         #response = requests.get(url)
         image =None
@@ -273,7 +283,7 @@ class BookSite(ABC):
         match:List[Tuple[SiteBookData, float]]
     """
     
-    def find_book_matches_at_site(self, site_book_data, pages=2):
+    def find_book_matches_at_site(self, site_book_data, formats=None,pages=2):
         url =self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
@@ -306,7 +316,7 @@ class BookSite(ABC):
         while page <=pages and not found:#limit the results we will get
             try:
                 content =res.read()
-                found=self.get_search_book_data_from_page(res.read(), site_book_data)
+                found=self.get_search_book_data_from_page(res.read(), site_book_data, formats=None)
                 res=br.follow_link(text="Next")
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
@@ -326,16 +336,19 @@ class BookSite(ABC):
     return: 
         None: 
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, formats=None):
         root = self.get_root(url=None, content=content)#force this method to work with content
         xpath = self.get_search_urls_after_search_path()
         #expects a path that will help us get the urls
         if  xpath is  None or root is None: 
             return False
         url_elements = root.xpath(xpath)
-        if len(url_elements)==0:
-            self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
-            return True
+        if len(url_elements)==0 and formats:
+            if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
+                self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+                return True
+            else:
+                return False
         for url in url_elements:
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
@@ -436,12 +449,13 @@ class BookSite(ABC):
     return:
         None
     """
-    def filter_results_by_score(self):
+    def filter_results_by_score(self, formats=None):
         #Remove duplicates
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.5,self.match_list))
-        self.match_list=myList
+        if formats:
+            myList=list(filter(lambda x: x[0]>=0.5 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:
         #     self.match_list=self.match_list[:5]

@@ -52,7 +52,7 @@ class LivrariaSite(BookSite):
     """
     
     #override
-    def find_book_matches_at_site(self,site_book_data,pages=2):
+    def find_book_matches_at_site(self,site_book_data,formats=None,pages=2):
         #to get the max results set pages to None. 
         # Set to 2 for testing purposes
         search_txt =''
@@ -75,7 +75,7 @@ class LivrariaSite(BookSite):
 
         content = requests.get(url).content
     
-        found =super().get_search_book_data_from_page(content,site_book_data)
+        found =super().get_search_book_data_from_page(content,site_book_data, formats)
                
         return self.match_list
         
@@ -126,7 +126,7 @@ class LivrariaSite(BookSite):
         xpath = self.get_format_path()
         try:
             format_element = root.xpath(xpath)[0].text
-            form = format_element
+            form = super().format_mapper(format_element)
         except:
             form=None
         return form
