@@ -155,8 +155,6 @@ def activity(request):                    #This is the Report Page
 
 @login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):
-    if not request.user.is_staff:
-        return HttpResponseRedirect(reverse('search') )
     group = Group.objects.get(id = group_id)
     contact = group.contact_user
     # ------ Get Company Contact ----------
