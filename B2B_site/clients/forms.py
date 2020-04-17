@@ -13,7 +13,7 @@ class SearchForm(forms.Form):
     Title = forms.CharField(label='Title:', max_length=100)
     Author = forms.CharField(label='Author:', max_length=100)
     ISBN = forms.CharField(label='ISBN:', max_length=100)
-    Book_Url= forms.URLField(label='Book-url', max_lenght=100)
+    Book_Url= forms.URLField(label='Book-url', max_length=100)
 
 
 
@@ -35,6 +35,6 @@ class EditForm(forms.Form):
     contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
 
-class FilterForm(forms.Form):
-	start_date = forms.DateTime(label='Start Date')
-	end_date = forms.DateTime(label='End Date')
+#class FilterForm(forms.Form):
+#	start_date = forms.DateTime(label='Start Date')
+#	end_date = forms.DateTime(label='End Date')

@@ -17,5 +17,5 @@
     {% else %}
         <p>No group are available.</p>
     {% endif %}
-    <p class = "adder"> <a href = "/add/">+ Add New Company</a></p>
+    <p class = "adder"> <a href = "{% url 'company_add_form' %}">+ Add New Company</a></p>
 {% endblock %}

@@ -179,3 +179,25 @@ def company_edit_form(request,group_id):
         form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
     return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
      'contact_lname': contact.last_name, 'contact_email': contact.email})
+
+@login_required(login_url='/accounts/login/')
+def company_add_form(request):
+    # ------ Get Company Contact ----------
+
+    form = EditForm(request.POST)
+
+    if request.method == 'POST':
+        form = EditForm(request.POST) # if post method then form will be validated
+        if form.is_valid():
+            
+            clean_name = form.cleaned_data['company_name']
+            clean_permissions = form.cleaned_data['search_these']
+            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
+            clean_format =  form.cleaned_data['formats']
+            clean_sites = form.cleaned_data['search_these']
+            Group.objects.create(name=clean_name)
+            return HttpResponseRedirect(reverse('companies'))
+
+    else:
+        form = EditForm(request.POST)
+    return render(request, "company_add.html", {'form': form})
