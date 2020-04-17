@@ -191,11 +191,15 @@ def company_add_form(request):
         if form.is_valid():
             
             clean_name = form.cleaned_data['company_name']
+            Group.objects.create(name=clean_name)
+            group = Group.objects.get(name=clean_name)
             clean_permissions = form.cleaned_data['search_these']
             # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
+            group.format = clean_format
             clean_sites = form.cleaned_data['search_these']
-            Group.objects.create(name=clean_name)
+            group.search_sites = clean_sites
+            group.save()
             return HttpResponseRedirect(reverse('companies'))
 
     else:
