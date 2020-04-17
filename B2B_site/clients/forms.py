@@ -18,3 +18,6 @@ class SearchForm(forms.Form):
 class JsonSearchForm(forms.Form):
 	Json_data = forms.Textarea(label='Json', cols='76', rows='15')
 
+class FilterForm(forms.Form):
+	start_date = forms.DateTime(label='Start Date')
+	end_date = forms.DateTime(label='End Date')
