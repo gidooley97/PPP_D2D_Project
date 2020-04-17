@@ -160,8 +160,8 @@ def activity(request):                    #This is the Report Page
         if form.is_valid():
             
             q_m = Query_Manager.objects.filter(user=p, last_date__range=(form.cleaned_data['start_date'], form.cleaned_data['end_date']))[0]
-
-            return HttpResponseRedirect(reverse('activity'))
+            q_m.save()
+            #return HttpResponseRedirect(reverse(request, "activity", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}))
 
     else:
         form = FilterForm(request.POST)
