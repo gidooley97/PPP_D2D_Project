@@ -52,3 +52,6 @@ class EditForm(forms.Form):
 
    # formats = MultiSelectFormField(choices=MyModel.MY_CHOICES)
 
+class FilterForm(forms.Form):
+	start_date = forms.DateTime(label='Start Date')
+	end_date = forms.DateTime(label='End Date')
