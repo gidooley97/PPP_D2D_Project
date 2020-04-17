@@ -29,7 +29,9 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm
+from .forms import EditForm, FilterForm
+from datetime import date
+
 
 # def index(request):
     # profiles = Profile.objects.all()
@@ -146,12 +148,25 @@ def activity(request):                    #This is the Report Page
         # do something
         pass
     p = Profile.objects.get(user=user)
-    q_m= Query_Manager.objects.filter(user=p)[0]
+    q_m= Query_Manager.objects.filter(user=p)[0] #, last_date__range=(date(2020,1,1), date(2020, 2, 9)))[0]
     perm = group.permissions.all()
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
     # Take care of getting queries made
-    return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m}) #connection with database
+
+    form = FilterForm(request.POST)
+    if request.method == 'POST':
+        form = FilterForm(request.POST) # if post method then form will be validated      try with: 2020-4-10 to 2020-4-12 : output should be 19
+        if form.is_valid():
+            
+            q_m = Query_Manager.objects.filter(user=p, last_date__range=(form.cleaned_data['start_date'], form.cleaned_data['end_date']))[0]
+
+            return HttpResponseRedirect(reverse('activity'))
+
+    else:
+        form = FilterForm(request.POST)
+
+    return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
 
 @login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):

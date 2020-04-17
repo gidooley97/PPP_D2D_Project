@@ -35,6 +35,6 @@ class EditForm(forms.Form):
     contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
 
-#class FilterForm(forms.Form):
-#	start_date = forms.DateTime(label='Start Date')
-#	end_date = forms.DateTime(label='End Date')
+class FilterForm(forms.Form):
+	start_date = forms.DateField()
+	end_date = forms.DateField()
