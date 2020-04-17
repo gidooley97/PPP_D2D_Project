@@ -91,8 +91,21 @@ class SiteBookData:
         print("Direct book Url: ", self.url if self.url else 'Not found')
         print("Extra: ", self.extra if self.extra else 'Not found')
 
+    """
+    This method overrides the == operations between 2 objects of this class
+
+
+    """
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return (self.book_title.strip() == other.book_title.strip() and ''.join(self.authors).strip() ==''.join(other.authors).strip() and
+            self.book_img_url == other.book_img_url and self.parse_status == other.parse_status and self.site_slug == other.site_slug)
+        return False
+
+
+
 """
-convert isbn10 to isbn13.
+convert isbn10 to isbn13. Utility method
 
 1. take the 10 digit ISBN (10 digits)
 2. drop the last character (9 digits)
@@ -127,6 +140,7 @@ def isbn_10_to_isbn_13(isbn_10):
     t = abs(t-10) #finally, compute the absolute value of subtract the result from 10
     y = y+str(t)  
     return y
+
 
     
 
