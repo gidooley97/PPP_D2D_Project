@@ -150,7 +150,7 @@ def activity(request):                    #This is the Report Page
         # do something
         pass
     p = Profile.objects.get(user=user)
-    q_m= Query_Manager.objects.filter(user=p)[0] #, last_date__range=(date(2020,1,1), date(2020, 2, 9)))[0]
+    q_m= Query_Manager.objects.filter(user=p) #, last_date__range=(date(2020,1,1), date(2020, 2, 9)))[0]
     perm = group.permissions.all()
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
