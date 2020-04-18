@@ -16,9 +16,7 @@ class CompanyReport:
         self.user_reports = []
         self.total_queries = 0
 
-            
-
-
+        
 
 def filter_dates(group, time_range):
     company_report = CompanyReport(group.name)
@@ -38,7 +36,7 @@ def get_query_for_user(range, p ):
     if "w" in range.lower():
         #gets queries made in that week
         datetime.date.today()
-        start_date = datetime.date.today() - datetime.timedelta( days=datetime.date.today().weekday()+1)#weekdays:sun 0-sat 6
+        start_date = datetime.date.today() - datetime.timedelta( days=datetime.date.today().weekday())#weekdays:sun 0-sat 6
         end_date = datetime.date.today() 
         print("end", start_date)
         q_m = Query_Manager.objects.filter(user=p,  last_date__gte=start_date, last_date__lte=end_date )
