@@ -34,19 +34,6 @@ from datetime import date
 from .filter_dates import filter_dates
 
 
-# def index(request):
-    # profiles = Profile.objects.all()
-    # print(request)
-    # return render(request, 'index.html', {'users': users})
-
-# def detail(request, book_id):
-#     try:
-#         book = Book.objects.get(pk=book_id)
-#     except Book.DoesNotExist:
-#         raise Http404("Question does not exist")
-
-#     return render(request, 'detail.html', {'book': book})
-
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
 This search api requires authentication

@@ -3,6 +3,9 @@ from .models import Query_Manager, Profile
 from django.db.models import Sum
 from django.contrib.auth.models import User
 
+"""
+class that represents the user report.
+"""
 class UserReport:
     def __init__(self, user_fname,user_lname, q_count):
         self.user_fname= user_fname
@@ -10,6 +13,9 @@ class UserReport:
         self.query_count = q_count
 
 
+"""
+represents company report
+"""
 class CompanyReport:
     def __init__(self, c_name):
         self.company_name=c_name
@@ -18,6 +24,15 @@ class CompanyReport:
 
         
 
+"""
+gets all company users' activity.
+
+params:
+    group: the group that the user belongs to.
+    time_range: daily, weekly, monthly,...
+returns:
+    company_report: company report
+"""
 def filter_dates(group, time_range):
     company_report = CompanyReport(group.name)
     users_in_group = User.objects.filter(groups__name=group) 
@@ -31,7 +46,15 @@ def filter_dates(group, time_range):
     return company_report
 
 
+"""
+gets the number of queries made by user within a speicific time range.
 
+params:
+    range: time range
+    p: user Profile
+returns:
+    q_m:number of queries made
+"""
 def get_query_for_user(range, p ):
     if "w" in range.lower():
         #gets queries made in that week
