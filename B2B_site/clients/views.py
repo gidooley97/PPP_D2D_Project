@@ -31,6 +31,7 @@ import datetime
 from rest_framework.permissions import IsAuthenticated
 from .forms import EditForm, FilterForm
 from datetime import date
+from .filter_dates import filter_dates
 
 
 # def index(request):
@@ -142,7 +143,8 @@ class MyView(LoginRequiredMixin, View):
 def activity(request):                    #This is the Report Page
     # group_list = Group.objects.all() #no need to get all groups
     user = request.user 
-    # let's do something different for admin users
+    if not user.groups.all():
+        raise Http404("User does not belong to any group")
     group = user.groups.all()[0]
     if user == 'admin':
         # do something
@@ -153,20 +155,22 @@ def activity(request):                    #This is the Report Page
     print('group',perm[0].name)
     users_in_group = User.objects.filter(groups__name=group)
     # Take care of getting queries made
-
-    form = FilterForm(request.POST)
+   
+    form = FilterForm()
     if request.method == 'POST':
         form = FilterForm(request.POST) # if post method then form will be validated      try with: 2020-4-10 to 2020-4-12 : output should be 19
         if form.is_valid():
-            
-            q_m = Query_Manager.objects.filter(user=p, last_date__range=(form.cleaned_data['start_date'], form.cleaned_data['end_date']))[0]
-            q_m.save()
+            company_report = filter_dates(group, form.cleaned_data['time_range'])
+            #print("time range", form.cleaned_data['time_range'])
+            #q_m = Query_Manager.objects.filter(user=p, last_date__range=(form.cleaned_data['start_date'], form.cleaned_data['end_date']))[0]
+            #q_m.save()
             #return HttpResponseRedirect(reverse(request, "activity", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}))
-
+            return render(request, "activity.html", {"form":form, "group": group,"company_report":company_report})
     else:
-        form = FilterForm(request.POST)
+        form = FilterForm()
+    #return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
+    return render(request, "activity.html", {"form":form,"group": group }) #connection with database
 
-    return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
 
 @login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):

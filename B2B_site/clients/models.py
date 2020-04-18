@@ -59,6 +59,8 @@ class Query_Manager(models.Model):
     
     def get_date(self):
         return self.last_date
+    def __str__(self):
+        return str(self.num_queries)+", "+str(self.last_date)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

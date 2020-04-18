@@ -36,5 +36,7 @@ class EditForm(forms.Form):
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
 
 class FilterForm(forms.Form):
-	start_date = forms.DateField()
-	end_date = forms.DateField()
+    TIME_RANGE_CHOICES=[("d", "Daily"),("w", "Weekly"),("m", "Monthly"),("y", "Yearly"),("a","All-time")]
+	#start_date = forms.DateField()
+    time_range = forms.ChoiceField(choices=TIME_RANGE_CHOICES, required=True)
+	#end_date = forms.DateField()
