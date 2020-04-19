@@ -11,10 +11,19 @@ class SearchForm(forms.Form):
 	Author = forms.CharField(label='Author:', max_length=100)
 	ISBN = forms.CharField(label='ISBN:', max_length=100)
 	Book_Url= forms.URLField(label='Book-url', max_length=100)
-
-class UpdateUserForm(forms.Form):
-
-	first_name = forms.CharField(max_length=50, label = 'First Name')
-	last_name = forms.CharField(max_length=50, label = 'Last Name')
-	username = forms.CharField(max_length=50, label = 'Username')
 	
+class UpdateUserForm(forms.Form):
+	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
+	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
+	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
+	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
+	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
+	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
+
+class AddUserForm(forms.Form):
+	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
+	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
+	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
+	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
+	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
+	is_staff = forms.BooleanField(label = "Is Staff?", required = False)

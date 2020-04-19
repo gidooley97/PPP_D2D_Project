@@ -25,7 +25,7 @@ from django.contrib.auth.models import Group
 from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
-from .forms import UpdateUserForm
+from .forms import UpdateUserForm, AddUserForm
 
 #def index(request):
     #profiles = Profile.objects.all()
@@ -97,26 +97,48 @@ def admin_users_list(request):
     user_list = User.objects.all()
     return render(request, "user_list.html", {"user_list": user_list})
 
-def update_user(request, user_id):
-    if request.user:
-        user = User.objects.get(id = user_id)
-        profile = get_object_or_404(Profile, user__username__exact=user)
-        if request.method == 'POST':
-            form = UpdateUserForm(request.POST)
-            if form.is_valid():
-                profile.user.first_name = form.cleaned_data['first_name']
-                profile.user.last_name = form.cleaned_data['last_name']
-                profile.user.save()
-            return HttpResponseRedirect(reverse('user_list.html'))
+def user_edit_form(request,user_id):
+    user = User.objects.get(id = user_id)
 
-        else:
-            form = UpdateUserForm(instance=profile)
+    form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
 
-        context = {
-            'form': form,
-        }
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.username = form.cleaned_data['username']
+            user.password = form.cleaned_data['password']
+            user.save()
+            return HttpResponseRedirect(reverse('users'))
 
-    return render(request, 'update_user.html')
+    else:
+        form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 
+        'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+    return render(request, "update_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name, 
+    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+
+def user_add_form(request):
+    form = AddUserForm(request.POST)
+
+    if request.method == 'POST':
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            User.objects.create(first_name=first_name)
+            user = User.objects.get(first_name=first_name)
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.username = form.cleaned_data['username']
+            user.password = form.cleaned_data['password']
+
+            user.save()
+            return HttpResponseRedirect(reverse('users'))
+
+    else:
+        form = AddUserForm(request.POST)
+    return render(request, "add_user.html", {'form': form})
 
 
 def list_users(request):                    #This is the Report Page
