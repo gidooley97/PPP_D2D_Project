@@ -138,10 +138,10 @@ def search(request):
             permissions = company.permissions.all()#getting company's permissions
             sites_allowed = list(company.search_sites)
             formats = list(company.formats) 
-
+            
             query = request.GET
             data =None
-
+            print(query)
             if request.method=="POST":
                 data = request.data
     
@@ -150,7 +150,8 @@ def search(request):
             
             book_matches = process(sites_allowed,formats,query,data)
             print( book_matches)        
-            context = SiteBookDataSerializer( book_matches, many=True)
+            book_dict = SiteBookDataSerializer( book_matches, many=True)
+            context = {"books":book_dict.data}
         except Exception as e:
             print(e)
             print("dummy")
