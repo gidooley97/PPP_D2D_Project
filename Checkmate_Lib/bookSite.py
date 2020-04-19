@@ -13,6 +13,7 @@ import urllib.request
 import mechanize
 from abc import ABC, abstractmethod
 import Levenshtein as lev
+
 class BookSite(ABC):
     def __init__(self):
         self.match_list=[] #common to all sites
@@ -133,8 +134,18 @@ class BookSite(ABC):
             format = root.xpath(path)[0].text
         except:
             format = None
-        return format
+        return format_mapper(format)
    
+    def format_mapper(self, format):
+        if format is None:
+            return None
+        if "print" in format.lower() or 'hard' in format.lower():
+             return "Hard Cover"
+        elif "audio" in format.lower():
+            return "Audio"
+        else:
+            return "Ebook"
+
     def image_parser(self, url):
         #response = requests.get(url)
         image =None
@@ -272,7 +283,7 @@ class BookSite(ABC):
         match:List[Tuple[SiteBookData, float]]
     """
     
-    def find_book_matches_at_site(self, site_book_data, pages=2):
+    def find_book_matches_at_site(self, site_book_data, formats=None,pages=2):
         url =self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
@@ -281,14 +292,15 @@ class BookSite(ABC):
         #selects the form to populate 
         br.select_form(class_="search-form")
         search_txt =None
+        
         #populate the field. You may need to check if this is actually working
-        if site_book_data.isbn_13:
-            search_txt= site_book_data.isbn_13
-        elif site_book_data.book_title:
+        if site_book_data.book_title:
             search_txt=site_book_data.book_title
+        elif site_book_data.isbn_13:
+            search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        
+        print(search_txt)
         if not search_txt:
             return []
         if self.site_slug=='KO':
@@ -299,12 +311,13 @@ class BookSite(ABC):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        found= self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
-        page=2
+        found = False
+        page=1
         while page <=pages and not found:#limit the results we will get
             try:
+                content =res.read()
+                found=self.get_search_book_data_from_page(res.read(), site_book_data, formats=None)
                 res=br.follow_link(text="Next")
-                found=self.get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
@@ -323,12 +336,19 @@ class BookSite(ABC):
     return: 
         None: 
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, formats=None):
         root = self.get_root(url=None, content=content)#force this method to work with content
-        
+        xpath = self.get_search_urls_after_search_path()
         #expects a path that will help us get the urls
-        url_elements = root.xpath(self.get_search_urls_after_search_path())
-        
+        if  xpath is  None or root is None: 
+            return False
+        url_elements = root.xpath(xpath)
+        if len(url_elements)==0 and formats:
+            if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
+                self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+                return True
+            else:
+                return False
         for url in url_elements:
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
@@ -345,7 +365,6 @@ class BookSite(ABC):
             self.filter_results_by_score()
         return False
 
-    
 
     """
     match_percentage takes 2 sitebookdata objects and compares them.  
@@ -430,12 +449,13 @@ class BookSite(ABC):
     return:
         None
     """
-    def filter_results_by_score(self):
+    def filter_results_by_score(self, formats=None):
         #Remove duplicates
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.6,self.match_list))
-        self.match_list=myList
+        if formats:
+            myList=list(filter(lambda x: x[0]>=0.5 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:
         #     self.match_list=self.match_list[:5]

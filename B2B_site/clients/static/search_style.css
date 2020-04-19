@@ -1,0 +1,97 @@
+.button {
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 0.5%;
+    text-align: center;
+    display: inline-block;
+    font-size: 100%;
+    margin: 1%;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    padding: 1%;
+  }
+
+.button2 {
+    background-color: white; 
+    color: rgb(252, 252, 252); 
+    border:  solid #042a7a;
+    padding:1%;
+  }
+  
+.button2:hover {
+    background-color: #042a7a;
+    color: white;
+  }
+
+.form-inline { 
+    flex-flow: row wrap;
+    align-items: center;
+  }
+  /* Add some margins for each label */
+  .form-inline label {
+    margin: 9px 50px 5px 0;
+  }
+  
+  /* Style the input fields */
+  .form-inline input, .form-inline textarea, #text button {
+    vertical-align: left;
+    margin: 5px 10px 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    float: right;
+  }
+  
+  /* Style the submit button */
+  .form-inline button {
+    padding: 10px 20px;
+    background-color: #1c2559;
+    border: 1px solid #ddd;
+    color: white;
+    float: right;
+  }
+  
+  .form-inline button:hover {
+    background-color: #1c2559;
+  }
+  
+  input[type="text"]:disabled, input[type="submit"]:disabled, textarea:disabled {
+    background: #dddddd;
+    background-color: #dddddd
+  }
+  
+  .container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+  }
+  
+  .col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+  }
+  
+  .col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+  }
+  
+  /* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
+  @media screen and (max-width: 800px) {
+    .form-inline input {
+      margin: 10px 0;
+    }
+  
+    .form-inline {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .col-25, .col-75, input[type=submit] {
+      width: 100%;
+      margin-top: 0;
+    }
+  }

@@ -29,8 +29,8 @@ class AudioBookSite(BookSite):
     return:
         book_site_data: a SiteBookData object
     """
-    def get_book_data_from_site(self,url):
-        return super().get_book_data_from_site(url)
+    def get_book_data_from_site(self,url=None,content=None):
+        return super().get_book_data_from_site(url,content)
 
     
     """
@@ -46,34 +46,39 @@ class AudioBookSite(BookSite):
         match:List[Tuple[SiteBookData, float]]
     """
     #override
-    def find_book_matches_at_site(self,site_book_data, pages=2):
+    def find_book_matches_at_site(self,site_book_data, formats=None,pages=2, is_unittest=False):
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.set_handle_refresh(False)
         br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-        search_txt =''
+        search_txt =None
         #populate the field. You may need to check if this is actually working
-        if site_book_data.isbn_13:
-            search_txt= site_book_data.isbn_13
-        elif site_book_data.book_title:
+        if site_book_data.book_title:
             search_txt=site_book_data.book_title
+        elif site_book_data.isbn_13:
+            search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        if not search_txt:
+        if not search_txt or len(search_txt)==0:
             return []
-
         url = "https://www.audiobooks.com/search/book/"+search_txt
         self.match_list=[]
-        print(url)
-        res=br.open(url)
+        # print('audio url',url)
+        try:
+            res=br.open(url)
+        except:
+            return []
         content = res.read()
-        found = self.get_search_book_data_from_page(content, site_book_data)#get page 1 of results
+        if is_unittest:
+            return self.get_search_book_data_from_page(content, site_book_data, is_unittest)
+        found = self.get_search_book_data_from_page(content, site_book_data,formats)#get page 1 of results
+        
         #return self.match_list # for testing I get the first page results only
         page=2
         while page <=pages and not found:#limit the results we will get
             try:
                 res= br.open(url+'/page/'+str(page))
-                found=self.get_search_book_data_from_page(res.read(), site_book_data)
+                found=self.get_search_book_data_from_page(res.read(), site_book_data,formats)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
@@ -91,15 +96,20 @@ class AudioBookSite(BookSite):
        
     return: 
         None: 
+        bool: whether to continue or not
+        urls: for unittest return urls
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, formats=None, is_unittest=False):
         root = self.get_root(url=None, content=content)#force this method to work with content
         #expects a path that will help us get the urls
         url_elements = root.xpath(self.get_search_urls_after_search_path())
         # print('urls', url_elements)
         if len(url_elements)==0:
-            self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
-            return True
+            if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
+                self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+                return True
+        if is_unittest: #return urls to do the unittest
+            return url_elements
         for url in url_elements:
             # print('url', url)
             book_site_data_new= self.get_book_data_from_site(url)
@@ -187,7 +197,7 @@ class AudioBookSite(BookSite):
 
     #override
     def format_parser(self, root):
-        return "Audiobook"
+        return super().format_mapper("Audiobook")
 
     #override
     def image_url_parser(self, root):
@@ -205,20 +215,14 @@ class AudioBookSite(BookSite):
         try:
             desc_element_list = root.xpath(path)[0]
             xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
-            desc = BeautifulSoup(xmlstr,features="lxml") 
+            desc = BeautifulSoup(xmlstr,features="lxml")
+            desc = desc.get_text()
         except:
             desc = None    
-        return desc.get_text()
+        return desc
     #override
     def series_parser(self, root):
         series = None
-        try:
-            for ser in title:
-              if ser.isdigit() and ("Series" in title or "series" in title):
-                series = ser
-                return series
-        except:
-            series =None
         return series  
     #override
     def book_id_parser(self, url):

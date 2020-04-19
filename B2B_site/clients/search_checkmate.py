@@ -3,9 +3,11 @@
 import os
 import sys
 from pathlib import Path
+from  builtins import any as b_any
+from concurrent.futures import ThreadPoolExecutor
+import json
 
-
-#a hacky way of getting around the problem of importing modules.
+# getting around the problem of importing modules.
 root= str(Path(__file__).resolve().parents[2])
 dir_of_interest = root+'/Checkmate_Lib'
 modules = {}
@@ -20,40 +22,108 @@ SiteBookData = modules['site_book_data'].SiteBookData
 
 
 
+"""
+Process the request to search using CheckMate Library. 
+
+Params:
+    -permissions: permission codenames granted to the user.
+    -query: parameters sent by the user.
+return:
+    -list: list of matches found from every site that the user
+     has permission to search with.
+"""
+def  process(sites_allowed, formats, query=0, data=0):
+    if data:#json
+        params = data
+    else:#attribut fields
+        params = query
+    return search(sites_allowed,formats,params)    
 
 
-def search(**kwargs):
-    search_with_attr=True
-    print(kwargs)
-    # if not( kwargs['url'] and  kwargs['book_title'] and kwargs['authors']  and kwargs['isbn_13']):
-    #     return  
-    if 'url' in kwargs:
-        url = kwargs['url'] 
-        # if url is not None:
-        #     search_with_attr=False 
-   #Change this to true to search by attribute
-    slug = 'KO'
-    if search_with_attr:
-        bookSite = get_book_site(slug)
-        book_site_data = SiteBookData(book_title=kwargs['book_title'])
-        matches= bookSite.find_book_matches_at_site(book_site_data)
-        
-        for book in matches:
-            print("=======================================================================================")
-            #print("Score: ", str(book[0]))
-            #book[1].print_all()
+"""
+Search the request to search using CheckMate Library. 
 
-
+Params:
+    -sites_allwed : sites the user has accewss to search.
+    -query: parameters sent by the user.
+return:
+    -list: list of matches found from every site that the user
+     has permission to search with.
+"""
+def search(sites_allowed, formats, query):
+    matches = []
+    book_title=query.get('title')
+    if query.get('authors'):
+        authors = str(query.get('authors')).split(',')
     else:
-        book_site = get_book_site(slug) # seed Book Site object with slug
-        print('url:',url)
-        #url = "https://www.google.com/books/edition/Harry_Potter_and_the_Cursed_Child_Parts/tcSMCwAAQBAJ?hl=en"
-        book_site_data = book_site.get_book_data_from_site(url) # Parse data from site
-        matches = book_site.find_book_matches_at_site(book_site_data) # Get book matches
-        for book in matches:
-            print("=======================================================================================")
-            print("Score: ", str(book[0]))
-            book[1].print_all()
-    return list(map(lambda x:x[1],matches))#for now to remove the score.
+        authors =None
+    isbn_13 = query.get('isbn')
+
+    if book_title is None and authors is None and  isbn_13 is None:
+        return [] 
+
+    all_site_slugs = get_sites(sites_allowed)
+
+    for site_slug in all_site_slugs:
+        matches.extend(get_matches(site_slug,book_title,authors,isbn_13, formats))
+        
+    return matches
+    
+"""
+Get book matches from a specified site.
+
+Params:
+    -site_slug:site slug
+    -book_title
+    -authors: list of authors
+    -isbn_13
+
+return:
+    -matches: list of site_book_data objects.
+"""
+    
+def get_matches(site_slug, book_title, authors,isbn_13, formats):
+    try:
+        book_site = get_book_site(site_slug)
+     
+        site_book_data = SiteBookData(book_title=book_title, authors=authors,
+                            isbn_13=isbn_13)
+
+        matches =  book_site.find_book_matches_at_site(site_book_data)
+        # for book in matches:
+        #         print("=======================================================================================")
+        #         print("Score    : ", str(book[0]))
+        #         book[1].print_all()
+        return list(map(lambda x:x[1],matches))
+    except:
+        return []
 
 
+"""
+Gets site_slugs that the user has permission to access.
+
+Params:
+    -permissions: sites allowed to be searched by user
+Returns:
+    site_slugs: list of site slugs
+"""
+def get_sites(permissions):
+    site_slugs =[]
+    if b_any('scribd' in x for x in permissions):
+        site_slugs.append('SC')        
+
+    if b_any('google' in x.lower() for x in permissions):
+        site_slugs.append('GB') 
+
+    if b_any('kobo' in x.lower() for x in permissions):
+        site_slugs.append('KO') 
+
+    if b_any('test' in x.lower() for x in permissions):
+        site_slugs.append('TB') 
+
+    if b_any('livraria' in x.lower() for x in permissions):
+        site_slugs.append('LC') 
+
+    if b_any('audio' in x.lower() for x in permissions):
+        site_slugs.append('AU') 
+    return site_slugs

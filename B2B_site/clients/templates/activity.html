@@ -3,35 +3,32 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
-
+<style>
+    table, th, td {
+      border: 2px solid black;
+    }
+</style>
     <h1> Activity </h1>
 
-    {% if group_list %}
+    
         <ul>
-            <label for="company">Company Name:</label>
-                <select id="company">                
-                    {% for group in group_list %}
-                        {% if group.name != 'Company Contact' %}
-                            <option value="x">
-                                {{ group.name }}
-                            </option>    
-                        {% endif %}
-                    {% endfor %}
-                </select>
+            <label for="company">Company Name:</label> {{ group.name }}
+                     
+                
+            
         </ul>
     
 
         <h3>Queries Count</h3>
 
-        <label for="filter">Filter by: </label>
-        <select id="filter">
-            <option value="Day">Day</option>
-            <option value="Week">Week</option>
-            <option value="Month">Month</option>
-            <option value="Year">Year</option>
-        </select>
+        <form action="" method="POST">{% csrf_token %}
+            {{ form.as_p }} 
+            <button type="submit" >Apply</button>
+        </form>
+
+        
     
-        {% if user_list %}
+        {% if company_report.user_reports %}
             
             <table>
                 <tr>
@@ -39,18 +36,22 @@
                     <th>Queries Made</th>
                     
                 </tr>
-                {% for user in user_list %}
+                {% for user_r in company_report.user_reports %}
                     <tr>
-                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                        <td>{{ user_r.user_fname }} {{ user_r.user_lname }}</td>
+                        <td>{{ user_r.query_count }}</td>
                     </tr>
                 {% endfor %}
+                <tr>
+                    <td>Total</td>
+                    <td>{{ company_report.total_queries }}</td>
+                </tr>
             </table>
         {% else %}
-            <p>No Users</p>
+            <p>No Report to show</p>
         {% endif %}
 
-    {% else %}
-        <p>No group are available.</p>
-    {% endif %}
+   
+
 
 {% endblock %}

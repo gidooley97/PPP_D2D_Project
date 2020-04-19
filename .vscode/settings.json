@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "c:\\Users\\admin\\Documents\\SE V\\Cap Stone Project\\project\\ppp_proj\\venv\\Scripts\\python.exe"
+    "python.pythonPath": "/usr/bin/python3.8",
+    "git.ignoreLimitWarning": true
 }
