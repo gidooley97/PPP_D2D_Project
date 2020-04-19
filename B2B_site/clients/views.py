@@ -32,6 +32,7 @@ from rest_framework.permissions import IsAuthenticated
 from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm
 from datetime import date
 from .filter_dates import filter_dates
+import json
 
 
 """
@@ -128,22 +129,28 @@ def search(request):
         print("i'm here")
         if(request.GET):
             query = request.GET
-            print(query, "nothing")
 
-    
-
-    if (request.GET): 
+    if (request.GET or request.POST): 
         try:
             user = request.user
             print(user)
-            print(Group.objects.filter(user))
-            company = Group.objects.filter(user=request.user)[0]
+            company = user.groups.all()[0]
             permissions = company.permissions.all()#getting company's permissions
-            perm_codenames = list(map(lambda x:x.codename,permissions))            
+            sites_allowed = list(company.search_sites)
+            formats = list(company.formats) 
+
+            query = request.GET
+            data =None
+
+            if request.method=="POST":
+                data = request.data
+    
+            if data:  # we can only use json or the other attributs
+                query = None          
             
-            book_matches = search(perm_codenames,query)
+            book_matches = process(sites_allowed,formats,query,data)
             print( book_matches)        
-            #serializer = SiteBookDataSerializer( book_matches, many=True)
+            context = SiteBookDataSerializer( book_matches, many=True)
         except Exception as e:
             print(e)
             print("dummy")
@@ -161,7 +168,7 @@ def search(request):
             print("Creating new query manager with new date") 
             new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
         
-        context = book_matches
+
     
     return render(request, 'search.html', context)
     
