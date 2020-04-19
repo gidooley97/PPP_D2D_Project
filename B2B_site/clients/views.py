@@ -57,16 +57,15 @@ class SearchAPIView(APIView):
 processes the request by calling the checkmate library.
 
 params:
-    request:
+    request: if get request, parameters are query, if post it is json
 returns:
-    json response: json contsining matches
+    json response: json containing matches
 """
 def request_processor(request):
     book_matches = []  # only a list of book matches no scores for now.
     try:
         user = request.user
         company = Group.objects.filter(user=request.user)[0]
-        # getting company's permissions
         sites_allowed = list(company.search_sites)
         formats = list(company.formats)
         if not sites_allowed or not formats:
@@ -92,50 +91,30 @@ def request_processor(request):
         content = {
             "Error": "Something went wrong. Make sure you have access to this API."}
         return Response(content, status=status.HTTP_404_NOT_FOUND)
-    # Tracking system
+    
     p = Profile.objects.get(user=user)
-    try:
-        q_m = Query_Manager.objects.get(
-        user=p, last_date__exact=datetime.date.today())
-        q_m.num_queries += 1
-        q_m.save()
-
-    except Query_Manager.DoesNotExist:
-        print("Creating new query manager with new date") 
-        new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+    addQuery(p)
         
     return Response({"books":serializer.data}, status.HTTP_200_OK)    
 
+"""
+displays search page and handles get and post requests for searches
+interfaces with checkmate library through search_checkmate
+accesses user to ensure they only access their sites and their queries are counted
 
+params:
+    request: get or post request holding fields to be queried
+returns:
+    context: dict containing list of books resulting from checkmate search
+"""
 @login_required(login_url='/accounts/login/')
 def search(request):
-    
     context = {}
-    '''
-    text_form = TextForm()
-    if text_form.is_valid():
-        title = text_form.cleaned_data['title']
-        authors = text_form.cleaned_data['authors']
-        isbn = text_form.cleaned_data['isbn']
-        query = "?title="+title+"authors="+authors+"isbn="+isbn
-
-    json_form = JsonForm()
-
-    if json_form.is_valid():
-        json_data = text_form.cleaned_data['json_data']
-        '''
-
-    if (request.method == "GET") :
-        print("i'm here")
-        if(request.GET):
-            query = request.GET
 
     if (request.GET or request.POST): 
         try:
             user = request.user
-            print(user)
             company = user.groups.all()[0]
-            permissions = company.permissions.all()#getting company's permissions
             sites_allowed = list(company.search_sites)
             formats = list(company.formats) 
             
@@ -152,27 +131,34 @@ def search(request):
             print( book_matches)        
             book_dict = SiteBookDataSerializer( book_matches, many=True)
             context = {"books":book_dict.data}
+
         except Exception as e:
             print(e)
-            print("dummy")
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
             return HttpResponse(content) 
 
-        #Tracking system
         p = Profile.objects.get(user=user)
-        try:
-            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
-            q_m.num_queries +=1
-            q_m.save() 
-                
-        except Query_Manager.DoesNotExist:
-            print("Creating new query manager with new date") 
-            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+        addQuery(p)
         
-
-    
     return render(request, 'search.html', context)
     
+
+"""
+handles incrementing number of searches made by a user
+if no query manager exists for the user on this date, create new one
+params:
+    user: the user making the query on the checkmate tool
+returns:
+    none
+"""
+def addQuery(user):
+    try:
+        q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+        q_m.num_queries +=1
+        q_m.save() 
+                
+    except Query_Manager.DoesNotExist:
+        new_q_m= Query_Manager.objects.create(user=user, num_queries=1, last_date=datetime.date.today(),)
 
 
 @login_required(login_url='/accounts/login/')
