@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
+{% if request.user.is_staff %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
 
@@ -18,4 +19,8 @@
         <p>No group are available.</p>
     {% endif %}
     <p class = "adder"> <a href = "{% url 'company_add_form' %}">+ Add New Company</a></p>
+{% else %}
+<p>You do not have access to this page.</p>
+{% endif %}
+
 {% endblock %}

@@ -26,10 +26,10 @@ from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, FilterForm
+from .forms import EditForm, AddForm, FilterForm
 from datetime import date
 from .filter_dates import filter_dates
 
@@ -172,10 +172,8 @@ def company_edit_form(request,group_id):
         if form.is_valid():
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
-            clean_permissions = form.cleaned_data['search_these']
-            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
-            group.format = clean_format
+            group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
             group.save()
@@ -190,24 +188,36 @@ def company_edit_form(request,group_id):
 def company_add_form(request):
     # ------ Get Company Contact ----------
 
-    form = EditForm(request.POST)
+    form = AddForm(request.POST)
 
     if request.method == 'POST':
-        form = EditForm(request.POST) # if post method then form will be validated
+        form = AddForm(request.POST) # if post method then form will be validated
         if form.is_valid():
             
             clean_name = form.cleaned_data['company_name']
             Group.objects.create(name=clean_name)
             group = Group.objects.get(name=clean_name)
-            clean_permissions = form.cleaned_data['search_these']
-            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
-            group.format = clean_format
+            group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
+            
+            clean_username = form.cleaned_data['username']
+            User.objects.create(username=clean_username)
+            user = User.objects.get(username=clean_username)  
+            clean_fname = form.cleaned_data['contact_fname']
+            user.first_name = clean_fname
+            clean_lname = form.cleaned_data['contact_lname']
+            user.last_name = clean_lname
+            clean_email = form.cleaned_data['contact_email']
+            user.email = clean_email
+
+            user.save()
+            group.contact_user = user
             group.save()
+
             return HttpResponseRedirect(reverse('companies'))
 
     else:
-        form = EditForm(request.POST)
+        form = AddForm(request.POST)
     return render(request, "company_add.html", {'form': form})

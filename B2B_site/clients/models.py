@@ -25,7 +25,6 @@ SITES_TO_SEARCH =(
     ('test_store', "Test Book Store"),
     ('livraria cultura', "Livraria Cultura")
 )
-#formats = MultiSelectField(choices=MY_CHOICES, max_length=11)
 Group.add_to_class('formats',MultiSelectField(choices=MY_FORMATS, max_length=50, blank = True))
 Group.add_to_class('search_sites',MultiSelectField(choices=SITES_TO_SEARCH, max_length=80, blank = True))
 Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE,  null = True))

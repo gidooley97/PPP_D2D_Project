@@ -18,22 +18,24 @@ class SearchForm(forms.Form):
 
 
 class EditForm(forms.Form):
-    
-    SEARCH_CHOICES = (
-        ('Kobo', 'Kobo'),
-        ('Livraria_Cultura', 'Livraria Cultura'),
-        ("Test_Book_Store", 'Test Book Store'),
-        ("Scribd", "Scribd"),
-        ("Audio_Books", "Audio Books"),
-        ("Google_Books", "Google Books")
-    )
 
     company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'com_name'},))
     formats = MultiSelectFormField(label = "Formats", choices=MY_FORMATS,widget=forms.CheckboxSelectMultiple(attrs={'class':'frmts'}))
     search_these = MultiSelectFormField(label = "Searchable Sites", choices=SITES_TO_SEARCH, widget=forms.CheckboxSelectMultiple(attrs={'class':'sites'}))
     contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
-    contact_fname = forms.CharField(widget = forms.HiddenInput(), required = False)
+    contact_lname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
+
+class AddForm(forms.Form):
+
+    company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'com_name'},))
+    formats = MultiSelectFormField(label = "Formats", choices=MY_FORMATS,widget=forms.CheckboxSelectMultiple(attrs={'class':'frmts'}))
+    search_these = MultiSelectFormField(label = "Searchable Sites", choices=SITES_TO_SEARCH, widget=forms.CheckboxSelectMultiple(attrs={'class':'sites'}))
+    username = forms.CharField(label="Username",widget=forms.TextInput(), required = True)
+    contact_fname = forms.CharField(label="First Name",widget=forms.TextInput(), required = True)
+    contact_lname = forms.CharField(label="Last Name",widget=forms.TextInput(), required = True)
+    contact_email = forms.CharField(label="Email",widget=forms.TextInput(), required = True)
+
 
 class FilterForm(forms.Form):
     TIME_RANGE_CHOICES=[("d", "Daily"),("w", "Weekly"),("m", "Monthly"),("y", "Yearly"),("a","All-time")]
