@@ -29,7 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, AddForm, FilterForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm
 from datetime import date
 from .filter_dates import filter_dates
 
@@ -107,10 +107,64 @@ def request_processor(request):
 
 
 @login_required(login_url='/accounts/login/')
-def SearchView(request):
-    # text_form = SearchForm()
-    # json_form = JsonSearchForm()
-    return render(request, 'search.html')
+def search(request):
+    
+    context = {}
+    '''
+    text_form = TextForm()
+    if text_form.is_valid():
+        title = text_form.cleaned_data['title']
+        authors = text_form.cleaned_data['authors']
+        isbn = text_form.cleaned_data['isbn']
+        query = "?title="+title+"authors="+authors+"isbn="+isbn
+
+    json_form = JsonForm()
+
+    if json_form.is_valid():
+        json_data = text_form.cleaned_data['json_data']
+        '''
+
+    if (request.method == "GET") :
+        print("i'm here")
+        if(request.GET):
+            query = request.GET
+            print(query, "nothing")
+
+    
+
+    if (request.GET): 
+        try:
+            user = request.user
+            print(user)
+            print(Group.objects.filter(user))
+            company = Group.objects.filter(user=request.user)[0]
+            permissions = company.permissions.all()#getting company's permissions
+            perm_codenames = list(map(lambda x:x.codename,permissions))            
+            
+            book_matches = search(perm_codenames,query)
+            print( book_matches)        
+            #serializer = SiteBookDataSerializer( book_matches, many=True)
+        except Exception as e:
+            print(e)
+            print("dummy")
+            content ={"Error":"Something went wrong. Make sure you have access to this API."}
+            return HttpResponse(content) 
+
+        #Tracking system
+        p = Profile.objects.get(user=user)
+        try:
+            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+            q_m.num_queries +=1
+            q_m.save() 
+                
+        except Query_Manager.DoesNotExist:
+            print("Creating new query manager with new date") 
+            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+        
+        context = book_matches
+    
+    return render(request, 'search.html', context)
+    
 
 
 @login_required(login_url='/accounts/login/')
