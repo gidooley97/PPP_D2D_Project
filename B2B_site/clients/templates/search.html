@@ -76,7 +76,12 @@
     
 </form>
 
-
+{% for book in books %}
+      <li>
+        <button class="button button2 text-right" ><a href="">Book Url</a></button> </span>
+        <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
+      </li>
+    {% endfor %}
 
 </div>
     <h2>Search Results</h2 >

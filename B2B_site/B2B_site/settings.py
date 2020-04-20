@@ -33,7 +33,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+<<<<<<< HEAD
     # 'widget_tweaks', 
+=======
+    'widget_tweaks', 
+>>>>>>> parent of c1f671d... Revert "Merge branch 'model_for_b2b' of https://github.com/gidooley97/PPP_D2D_Project into model_for_b2b"
     'clients.apps.ClientsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
