@@ -26,26 +26,14 @@ from .serializers import SiteBookDataSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, FilterForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm
 from datetime import date
 from .filter_dates import filter_dates
+import json
 
-
-# def index(request):
-    # profiles = Profile.objects.all()
-    # print(request)
-    # return render(request, 'index.html', {'users': users})
-
-# def detail(request, book_id):
-#     try:
-#         book = Book.objects.get(pk=book_id)
-#     except Book.DoesNotExist:
-#         raise Http404("Question does not exist")
-
-#     return render(request, 'detail.html', {'book': book})
 
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
@@ -120,10 +108,70 @@ def request_processor(request):
 
 
 @login_required(login_url='/accounts/login/')
-def SearchView(request):
-    # text_form = SearchForm()
-    # json_form = JsonSearchForm()
-    return render(request, 'search.html')
+def search(request):
+    
+    context = {}
+    '''
+    text_form = TextForm()
+    if text_form.is_valid():
+        title = text_form.cleaned_data['title']
+        authors = text_form.cleaned_data['authors']
+        isbn = text_form.cleaned_data['isbn']
+        query = "?title="+title+"authors="+authors+"isbn="+isbn
+
+    json_form = JsonForm()
+
+    if json_form.is_valid():
+        json_data = text_form.cleaned_data['json_data']
+        '''
+
+    if (request.method == "GET") :
+        print("i'm here")
+        if(request.GET):
+            query = request.GET
+
+    if (request.GET or request.POST): 
+        try:
+            user = request.user
+            print(user)
+            company = user.groups.all()[0]
+            permissions = company.permissions.all()#getting company's permissions
+            sites_allowed = list(company.search_sites)
+            formats = list(company.formats) 
+
+            query = request.GET
+            data =None
+
+            if request.method=="POST":
+                data = request.data
+    
+            if data:  # we can only use json or the other attributs
+                query = None          
+            
+            book_matches = process(sites_allowed,formats,query,data)
+            print( book_matches)        
+            context = SiteBookDataSerializer( book_matches, many=True).data
+        except Exception as e:
+            print(e)
+            print("dummy")
+            content ={"Error":"Something went wrong. Make sure you have access to this API."}
+            return HttpResponse(content) 
+
+        #Tracking system
+        p = Profile.objects.get(user=user)
+        try:
+            q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+            q_m.num_queries +=1
+            q_m.save() 
+                
+        except Query_Manager.DoesNotExist:
+            print("Creating new query manager with new date") 
+            new_q_m= Query_Manager.objects.create(user=p, num_queries=1, last_date=datetime.date.today(),)
+        
+
+    
+    return render(request, 'search.html', context)
+    
 
 
 @login_required(login_url='/accounts/login/')
@@ -185,10 +233,8 @@ def company_edit_form(request,group_id):
         if form.is_valid():
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
-            clean_permissions = form.cleaned_data['search_these']
-            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
-            group.format = clean_format
+            group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
             group.save()
@@ -203,24 +249,36 @@ def company_edit_form(request,group_id):
 def company_add_form(request):
     # ------ Get Company Contact ----------
 
-    form = EditForm(request.POST)
+    form = AddForm(request.POST)
 
     if request.method == 'POST':
-        form = EditForm(request.POST) # if post method then form will be validated
+        form = AddForm(request.POST) # if post method then form will be validated
         if form.is_valid():
             
             clean_name = form.cleaned_data['company_name']
             Group.objects.create(name=clean_name)
             group = Group.objects.get(name=clean_name)
-            clean_permissions = form.cleaned_data['search_these']
-            # group.permissions.set(clean_permissions) #Let's use a multiselect for the websites in the Group model
             clean_format =  form.cleaned_data['formats']
-            group.format = clean_format
+            group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
+            
+            clean_username = form.cleaned_data['username']
+            User.objects.create(username=clean_username)
+            user = User.objects.get(username=clean_username)  
+            clean_fname = form.cleaned_data['contact_fname']
+            user.first_name = clean_fname
+            clean_lname = form.cleaned_data['contact_lname']
+            user.last_name = clean_lname
+            clean_email = form.cleaned_data['contact_email']
+            user.email = clean_email
+
+            user.save()
+            group.contact_user = user
             group.save()
+
             return HttpResponseRedirect(reverse('companies'))
 
     else:
-        form = EditForm(request.POST)
+        form = AddForm(request.POST)
     return render(request, "company_add.html", {'form': form})

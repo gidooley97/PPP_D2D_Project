@@ -2,8 +2,12 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'activity_style.css' %}">
-
+<link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
+<style>
+    table, th, td {
+      border: 2px solid black;
+    }
+</style>
     <h1> Activity </h1>
 
     
@@ -13,12 +17,17 @@
                 
             
         </ul>
+    
+
+        <h3>Queries Count</h3>
 
         <form action="" method="POST">{% csrf_token %}
-            {{ form.as_p }}<button type="submit" >Apply</button> 
-            
+            {{ form.as_p }} 
+            <button type="submit" >Apply</button>
         </form>
 
+        
+    
         {% if company_report.user_reports %}
             
             <table>
