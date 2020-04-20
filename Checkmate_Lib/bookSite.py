@@ -140,11 +140,11 @@ class BookSite(ABC):
         if format is None:
             return None
         if "print" in format.lower() or 'hard' in format.lower():
-             return "Hard Cover"
+             return "hard_cover"
         elif "audio" in format.lower():
-            return "Audio"
+            return "audio"
         else:
-            return "Ebook"
+            return "ebook"
 
     def image_parser(self, url):
         #response = requests.get(url)
@@ -287,7 +287,6 @@ class BookSite(ABC):
         url =self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
-        print('url', url)
         br.open(url)  
         #selects the form to populate 
         br.select_form(class_="search-form")
@@ -300,7 +299,6 @@ class BookSite(ABC):
             search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        print(search_txt)
         if not search_txt:
             return []
         if self.site_slug=='KO':
@@ -316,11 +314,14 @@ class BookSite(ABC):
         while page <=pages and not found:#limit the results we will get
             try:
                 content =res.read()
-                found=self.get_search_book_data_from_page(res.read(), site_book_data, formats=None)
+                found=self.get_search_book_data_from_page(content, site_book_data, formats=formats)
                 res=br.follow_link(text="Next")
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
+        # print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        # print('formts', formats)
+        self.filter_results_by_score(formats)
         return self.match_list
 
     """
@@ -343,6 +344,7 @@ class BookSite(ABC):
         if  xpath is  None or root is None: 
             return False
         url_elements = root.xpath(xpath)
+        #print('urls', url_elements)
         if len(url_elements)==0 and formats:
             if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
                 self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
@@ -353,16 +355,17 @@ class BookSite(ABC):
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
             book_site_data_new= self.get_book_data_from_site(url)
-            #book_site_dat_tmp.print_all()
+            #book_site_data_new.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
-            if score >=0.90:#Perfect match found
+            if score >=0.90 and book_site_data_new.format.lower() in formats:#Perfect match found
+                # print('-------------------------------------')
                 self.match_list=[]
+                #book_site_data_new.print_all()
                 book_data_score =tuple([score,book_site_data_new])
                 self.match_list.append(book_data_score)
                 return True
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score()
         return False
 
 
@@ -449,12 +452,18 @@ class BookSite(ABC):
     return:
         None
     """
-    def filter_results_by_score(self, formats=None):
-        #Remove duplicates
-        self.match_list = list(dict.fromkeys(self.match_list))
+    def filter_results_by_score(self, formats):
+        
+        print('formats',formats)
+        #temp_dict= {b[1] : b for b in self.match_list}
+        print('dict',list(dict.fromkeys(self.match_list)))
+        #self.match_list = list(temp_dict.values())
         #min score to the least points of our matches.
+        
         if formats:
-            myList=list(filter(lambda x: x[0]>=0.5 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            # print('unfiltered', self.match_list)
+            myList=list(filter(lambda x: x[0]>=0.5 and x[1].parse_status== "FULLY PARSED" and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            # print('filtered', self.match_list)
             self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:

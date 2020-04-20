@@ -102,7 +102,9 @@ class SiteBookData:
             self.book_img_url == other.book_img_url and self.parse_status == other.parse_status and self.site_slug == other.site_slug)
         return False
 
-
+    def __hash__(self):
+        return hash(('book_title', self.book_title, 'book_img_url',self.book_img_url, 'parse_status',self.parse_status,'site_slug',self.site_slug
+                 ))
 
 """
 convert isbn10 to isbn13. Utility method

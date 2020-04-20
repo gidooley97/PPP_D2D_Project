@@ -72,13 +72,14 @@ class GoogleBooks(BookSite):
         found=self.get_search_book_data_from_page(content,br, site_book_data,formats)
         page=2
         offset =10
-        while page<=pages and found:
+        while page<=pages and not found:
             url = 'https://www.google.com/search?tbm=bks&q='+search_txt+'&start='+str(offset)
             res = br.open(url)
             #br.select_form(id="oc-search-form")
             found=self.get_search_book_data_from_page(res.read(), br, site_book_data,formats)
             offset+=10
             page+=1
+        self.filter_results_by_score(formats)
         return self.match_list
     """
     returns a list of tuple(score, book_data).
@@ -94,7 +95,7 @@ class GoogleBooks(BookSite):
         None: 
     """
     #override
-    def get_search_book_data_from_page(self, content, br, book_site_data_original, formats=None):
+    def get_search_book_data_from_page(self, content, br, book_site_data_original, formats):
         root =super().get_root(url=None, content=content)
         url_elements = root.xpath('//a[@class="fuLhoc ZWRArf"]/@href')
         for url in url_elements:
@@ -103,14 +104,15 @@ class GoogleBooks(BookSite):
             if not book_site_dat_temp:
                 continue
             score = self.match_percentage(book_site_data_original, book_site_dat_temp)
-            if score >=0.90:#Perfect match found
+            #print('score', score)
+            #book_site_dat_temp.print_all()
+            if score >=0.90 and book_site_dat_temp.format.lower() in formats:#Perfect match found
                 self.match_list=[]
                 book_data_score =tuple([score,book_site_dat_temp])
                 self.match_list.append(book_data_score)
                 return True
             book_data_score = tuple([score,book_site_dat_temp])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score(formats)
         return False
 
     """
@@ -271,6 +273,14 @@ class GoogleBooks(BookSite):
     #override
     def volume_parser(self, root):
         return None
+    #override
+    def get_parse_status(self,title, isbn13, desc, authors):
+         #determine parse_status checks if we have the most basic data about a book
+        if title and isbn13 and authors:
+            return "FULLY PARSED"
+        if title or isbn13 or desc or authors:
+            return "PARTIALLY PARSED"
+        return "UNSUCCESSFUL"
 
         
    

@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'widget_tweaks', 
+    # 'widget_tweaks', 
     'clients.apps.ClientsConfig',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -52,7 +52,7 @@ class LivrariaSite(BookSite):
     """
     
     #override
-    def find_book_matches_at_site(self,site_book_data,formats=None,pages=2):
+    def find_book_matches_at_site(self,site_book_data,formats,pages=2):
         #to get the max results set pages to None. 
         # Set to 2 for testing purposes
         search_txt =''
@@ -76,7 +76,7 @@ class LivrariaSite(BookSite):
         content = requests.get(url).content
     
         found =super().get_search_book_data_from_page(content,site_book_data, formats)
-               
+        self.filter_results_by_score(formats)
         return self.match_list
         
         

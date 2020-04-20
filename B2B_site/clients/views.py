@@ -66,7 +66,6 @@ def request_processor(request):
     try:
         user = request.user
         company = Group.objects.filter(user=request.user)[0]
-        # getting company's permissions
         sites_allowed = list(company.search_sites)
         formats = list(company.formats)
         if not sites_allowed or not formats:
@@ -83,8 +82,9 @@ def request_processor(request):
     
         if data:  # we can only use json or the other attributs
             query = None
-       
         book_matches = process(sites_allowed, formats, query, data)
+        if book_matches is None:
+            raise Exception
         print(book_matches)
         serializer = SiteBookDataSerializer(book_matches, many=True)
     except Exception as e:
@@ -150,7 +150,7 @@ def search(request):
             
             book_matches = process(sites_allowed,formats,query,data)
             print( book_matches)        
-            context = SiteBookDataSerializer( book_matches, many=True)
+            context = SiteBookDataSerializer( book_matches, many=True).data
         except Exception as e:
             print(e)
             print("dummy")

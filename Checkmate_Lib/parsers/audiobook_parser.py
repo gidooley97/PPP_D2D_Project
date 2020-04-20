@@ -46,7 +46,7 @@ class AudioBookSite(BookSite):
         match:List[Tuple[SiteBookData, float]]
     """
     #override
-    def find_book_matches_at_site(self,site_book_data, formats=None,pages=2, is_unittest=False):
+    def find_book_matches_at_site(self,site_book_data, formats,pages=2, is_unittest=False):
         br = mechanize.Browser()
         br.set_handle_robots(False)
         br.set_handle_refresh(False)
@@ -82,6 +82,7 @@ class AudioBookSite(BookSite):
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
+        self.filter_results_by_score(formats)
         return self.match_list
 
     """
@@ -99,14 +100,14 @@ class AudioBookSite(BookSite):
         bool: whether to continue or not
         urls: for unittest return urls
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original, formats=None, is_unittest=False):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, formats, is_unittest=False):
         root = self.get_root(url=None, content=content)#force this method to work with content
         #expects a path that will help us get the urls
         url_elements = root.xpath(self.get_search_urls_after_search_path())
         # print('urls', url_elements)
         if len(url_elements)==0:
             if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
-                self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+                self.match_list.append(tuple([1.00,self.get_book_data_from_site(url=None, content=content)]))
                 return True
         if is_unittest: #return urls to do the unittest
             return url_elements
@@ -115,9 +116,13 @@ class AudioBookSite(BookSite):
             book_site_data_new= self.get_book_data_from_site(url)
             #book_site_dat_tmp.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            if score >=0.90 and book_site_data_new.format.lower() in formats:#Perfect match found
+                self.match_list=[]
+                book_data_score =tuple([score,book_site_data_new])
+                self.match_list.append(book_data_score)
+                return True
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score()
         return False
        
    
@@ -253,5 +258,12 @@ class AudioBookSite(BookSite):
         except:
             narrators = None #Fail
         return narrators
-        
+    #override
+    def get_parse_status(self,title, isbn13, desc, authors):
+         #determine parse_status checks if we have the most basic data about a book
+        if title and desc and authors:
+            return "FULLY PARSED"
+        if title or desc or authors:
+            return "PARTIALLY PARSED"
+        return "UNSUCCESSFUL" 
 #--------------------------------------------------------------------------------------------------------------#

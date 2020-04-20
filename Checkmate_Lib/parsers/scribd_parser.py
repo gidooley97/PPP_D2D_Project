@@ -32,15 +32,16 @@ class ScribdSite(BookSite):
 
     
 
-    def find_book_matches_at_site(self,site_book_data, formats=None,pages = 2):
+    def find_book_matches_at_site(self,site_book_data, formats,pages = 2):
         self.match_list=[]
-        search_txt =''
+        search_txt =None
         if site_book_data.book_title:
             search_txt=site_book_data.book_title
         elif site_book_data.isbn_13:
             search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
+        #print('searc',search_txt)
         if not search_txt:
             return []
         br = mechanize.Browser()
@@ -49,13 +50,16 @@ class ScribdSite(BookSite):
         page =1
         url=self.search_url+'?content_type=books&page=1&language=1&query='+search_txt
         content = br.open(url).read() 
+        #print('content', content)
         page_count = self.get_page_count_from_js(content)#gets number of pages of results
+        #print('page count', page_count)
         while page <= pages and page <= page_count:  #for testing we want to get a few pages
             payload ={'content_type':'books', 'language':'1', 'page':page, 'query':search_txt}
             content = requests.get(self.search_url,params=payload).content
             urls=self.get_urls_js(content)
             page+=1
-        self.get_search_book_data_from_page(urls,site_book_data, formats)        
+        self.get_search_book_data_from_page(urls,site_book_data, formats)    
+        self.filter_results_by_score(formats)    
         return self.match_list
 
 ##################################### Find Matches util methods #################################
@@ -70,7 +74,13 @@ class ScribdSite(BookSite):
     """
     def get_page_count_from_js(self, content):
         root = super().get_root(url=None, content=content)#given html content returns the root
-        dom_txt = root.xpath(".//script")[21].text
+        js_text=""
+        for el in root.xpath(".//script"):
+            if el.text is not None:
+                js_text+=el.text
+        
+        dom_txt =js_text
+
         tmp_txt = dom_txt.split('"page_count":')[1].split(',')[0]
         page_count=int(tmp_txt)
         return page_count
@@ -85,8 +95,12 @@ class ScribdSite(BookSite):
     """ 
     def get_urls_js(self,content):
         root = super().get_root(url=None, content=content)
-        try:    
-            dom_txt = root.xpath(".//script")[21].text
+        try:   
+            js_text=""
+            for el in root.xpath(".//script"):
+                if el.text is not None:
+                    js_text+=el.text 
+            dom_txt = js_text
 
             tmp_txt = dom_txt.split('"results":{"books":{"content":{"documents":')[1].split(']')[0]
         
@@ -108,21 +122,22 @@ class ScribdSite(BookSite):
 
     
     #passed urls and returns the bookDataSite objects with their scores
-    def get_search_book_data_from_page(self, urls, book_site_data_original, formats=None):
+    def get_search_book_data_from_page(self, urls, book_site_data_original, formats):
+        #print('urls',urls)
         for url in urls:
             #call function to get book data with url
             book_site_data_new= self.get_book_data_from_site(url)
             #book_site_data_new.print_all()
 
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
-            if score >=0.90:#found the perfect match
+            if score >=0.90 and book_site_data_new.format in formats:#found the perfect match
                 self.match_list=[]
                 book_data_score =tuple([score,book_site_data_new])
                 self.match_list.append(book_data_score)
                 return 
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score(formats)
+            
 
     
     def convert_book_id_to_url(self,book_id):

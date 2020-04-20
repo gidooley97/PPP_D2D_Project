@@ -60,11 +60,14 @@ def search(sites_allowed, formats, query):
     isbn_13 = query.get('isbn')
 
     if book_title is None and authors is None and  isbn_13 is None:
-        return [] 
+        return None
+    #print('formats', formats)
+    #print('site_allowed',sites_allowed)
 
     all_site_slugs = get_sites(sites_allowed)
 
     for site_slug in all_site_slugs:
+        print(site_slug)
         matches.extend(get_matches(site_slug,book_title,authors,isbn_13, formats))
         
     return matches
@@ -89,7 +92,7 @@ def get_matches(site_slug, book_title, authors,isbn_13, formats):
         site_book_data = SiteBookData(book_title=book_title, authors=authors,
                             isbn_13=isbn_13)
 
-        matches =  book_site.find_book_matches_at_site(site_book_data)
+        matches =  book_site.find_book_matches_at_site(site_book_data,formats=formats)
         # for book in matches:
         #         print("=======================================================================================")
         #         print("Score    : ", str(book[0]))
