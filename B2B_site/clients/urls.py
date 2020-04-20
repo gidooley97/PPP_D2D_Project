@@ -10,7 +10,7 @@ urlpatterns = [
     path('companies/', views.list_companies, name='companies'),
     path('companies/edit/<int:group_id>/',views.company_edit_form, name = 'company_edit_form'),
     path('companies/add/',views.company_add_form, name = 'company_add_form'),
-
+    path('companies/delete/<int:group_id>/',views.company_delete_form, name = 'company_delete_form'),
     path('activity/', views.activity, name='activity'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'), #to get the auth token send a POST request http://127.0.0.1:8000/clients/api-token-auth/ with the body{ username:<username>, password:<pass>}
     
