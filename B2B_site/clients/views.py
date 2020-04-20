@@ -333,3 +333,23 @@ def company_add_form(request):
     else:
         form = AddForm(request.POST)
     return render(request, "company_add.html", {'form': form})
+
+@login_required(login_url='/accounts/login/')
+def company_delete_form(request, group_id):
+    group = Group.objects.get(id = group_id)
+
+    # ------ Get Company Contact ----------
+    form = DeleteForm(request.POST)
+
+    if request.method == 'POST':
+        form = DeleteForm(request.POST)
+        if form.is_valid():
+                
+            Group.objects.get(id = group_id).delete()
+
+
+            return HttpResponseRedirect(reverse('companies'))
+
+    else:
+        form = DeleteForm(request.POST)
+    return render(request, "company_delete.html", {'form': form,'company_name': group.name})
