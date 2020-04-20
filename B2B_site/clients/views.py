@@ -2,7 +2,7 @@ from django.shortcuts import render
 import requests
 from django.views import generic, View
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, get_object_or_404, redirect
@@ -29,11 +29,23 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm
 from datetime import date
 from .filter_dates import filter_dates
 import json
 
+#def index(request):
+    #profiles = Profile.objects.all()
+    #print(request)
+    #return render(request, 'index.html', {'users': users})
+
+def detail(request, book_id):
+    try:
+        book = Book.objects.get(pk=book_id)
+    except Book.DoesNotExist:
+        raise Http404("Question does not exist")
+
+    return render(request, 'detail.html', {'book': book})
 
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
@@ -174,6 +186,58 @@ class MyView(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
+def admin_users_list(request):
+    user_list = User.objects.all()
+    return render(request, "user_list.html", {"user_list": user_list})
+
+def user_edit_form(request,user_id):
+    user = User.objects.get(id = user_id)
+
+    form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.username = form.cleaned_data['username']
+            user.password = form.cleaned_data['password']
+            user.save()
+            return HttpResponseRedirect(reverse('users'))
+
+    else:
+        form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 
+        'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+    return render(request, "update_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name, 
+    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+
+def user_add_form(request):
+    form = AddUserForm(request.POST)
+
+    if request.method == 'POST':
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            User.objects.create(first_name=first_name)
+            user = User.objects.get(first_name=first_name)
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.username = form.cleaned_data['username']
+            user.password = form.cleaned_data['password']
+
+            user.save()
+            return HttpResponseRedirect(reverse('users'))
+
+    else:
+        form = AddUserForm(request.POST)
+    return render(request, "add_user.html", {'form': form})
+
+
+def list_users(request):                    #This is the Report Page
+    group_list = Group.objects.all()
+    user_list = User.objects.all()
+    return render(request, "activity.html", {"group_list": group_list, "user_list": user_list}) #connection with database
 
 @login_required(login_url='/accounts/login/')
 def activity(request):                    #This is the Report Page
@@ -264,7 +328,6 @@ def company_add_form(request):
             user.save()
             group.contact_user = user
             group.save()
-
             return HttpResponseRedirect(reverse('companies'))
 
     else:

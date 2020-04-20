@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
+
+    <h1>User List</h1>
+
+    {% if user_list %}
+    <ul>
+        {% for user in user_list %}
+            <li class='com_li'><a href="update/{{ user.id }}" class="clickable">{{ user.first_name }} {{ user.last_name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>No users are available</p>
+    {% endif %}
+    <p class="adder"><a href="{% url 'user_add_form' %}">+ Add New User</a></p>
+{% endblock %}

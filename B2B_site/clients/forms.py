@@ -5,6 +5,31 @@ from .models import *
 from .models import MY_FORMATS
 from .models import SITES_TO_SEARCH
 
+#creating our forms
+class SearchForm(forms.Form):
+	#django gives a number of predefined fields
+	#CharField and EmailField are only two of them
+	#go through the official docs for more field details
+	Title = forms.CharField(label='Title:', max_length=100)
+	Author = forms.CharField(label='Author:', max_length=100)
+	ISBN = forms.CharField(label='ISBN:', max_length=100)
+	Book_Url= forms.URLField(label='Book-url', max_length=100)
+	
+class UpdateUserForm(forms.Form):
+	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
+	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
+	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
+	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
+	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
+	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
+
+class AddUserForm(forms.Form):
+	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
+	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
+	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
+	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
+	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
+	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
 
 class TextForm(forms.Form):
 	title = forms.CharField(label = 'Title:', max_length=100)
@@ -25,8 +50,6 @@ class TextForm(forms.Form):
 		if sum(self.cleaned_data['isbn'].isdigit() for c in self.cleaned_data['isbn']) != 13:
 			raise forms.ValidationError("ISBN must contain 13 digits.")
 
-
-
 class JsonForm(forms.Form):
     json = forms.Textarea
 
@@ -40,8 +63,6 @@ class JsonForm(forms.Form):
          #if json data not valid:
             #raise forms.ValidationError("Invalid data in jsonfield")
          return jdata
-
-
 
 class EditForm(forms.Form):
 
