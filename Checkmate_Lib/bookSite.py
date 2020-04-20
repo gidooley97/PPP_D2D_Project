@@ -454,7 +454,7 @@ class BookSite(ABC):
         self.match_list = list(dict.fromkeys(self.match_list))
         #min score to the least points of our matches.
         if formats:
-            myList=list(filter(lambda x: x[0]>=0.3 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            myList=list(filter(lambda x: x[0]>=0.5 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
             self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:

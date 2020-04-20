@@ -27,9 +27,7 @@
       <input type="radio" name="inputRadio" 
              value="json"> Search by Json</label> 
   </div>
-  
-
-  <form action="{% url 'search' %}" id= "textform" class = 'form-inline' method="get">
+  <form id= "textform" class = 'form-inline'>
     {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
@@ -56,32 +54,24 @@
       </div>
       </div>
     <div class = "row">
-      <input class="text" type="submit" value="Search" > 
+    <button class="text" onclick="callApi()" value="Search" >Search</button> 
     </div>
   </form>
 
-  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="get" >
-    {% csrf_token %}
+  <form class = 'form-inline' id="jsonform"  >
     <div class= "row">
       <div class="col-25">
         <label>Json:</label>
       </div>
       <div class="col-75">
-        <textarea name= "json" class="json" id="myTextArea" cols=76 rows=15 placeholder="Search Json" ></textarea>
+        <textarea class="json" id="myTextArea" cols=76 rows=15 placeholder="Search Json" ></textarea>
       </div>
     </div>
   <div class= "row">
-    <input class="json" type="submit" value="Search" > 
+    <button class="json" onclick="callApi()" value="Search">Search</button>
   </div>  
     
 </form>
-
-{% for book in books %}
-      <li>
-        <button class="button button2 text-right" ><a href="">Book Url</a></button> </span>
-        <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
-      </li>
-    {% endfor %}
 
 </div>
     <h2>Search Results</h2 >
@@ -108,7 +98,7 @@
 
     {% for book in object_list %}
       <li>
-        <button class="button button2 text-right" ><a href="">Book Url</a></button> </span>
+        <button class="button button2 text-right" ><a href="{{ book.book_url }}">Book Url</a></button> </span>
         <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
       </li>
     {% endfor %}

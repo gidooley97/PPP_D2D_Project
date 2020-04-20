@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from  builtins import any as b_any
 from concurrent.futures import ThreadPoolExecutor
-
+import json
 
 # getting around the problem of importing modules.
 root= str(Path(__file__).resolve().parents[2])
@@ -59,7 +59,7 @@ def search(sites_allowed, formats, query):
         authors =None
     isbn_13 = query.get('isbn')
 
-    if book_title is None and authors is None and isbn_13 is None:
+    if book_title is None and authors is None and  isbn_13 is None:
         return [] 
 
     all_site_slugs = get_sites(sites_allowed)
@@ -77,7 +77,7 @@ Params:
     -book_title
     -authors: list of authors
     -isbn_13
-
+    -book_url
 return:
     -matches: list of site_book_data objects.
 """
