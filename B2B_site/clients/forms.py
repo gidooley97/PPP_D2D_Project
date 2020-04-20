@@ -83,6 +83,11 @@ class AddForm(forms.Form):
     contact_lname = forms.CharField(label="Last Name",widget=forms.TextInput(), required = True)
     contact_email = forms.CharField(label="Email",widget=forms.TextInput(), required = True)
 
+class DeleteForm(forms.Form):
+
+    company_name = forms.CharField(label = "Company Name", widget=forms.HiddenInput(), required=False)
+
+
 
 class FilterForm(forms.Form):
     TIME_RANGE_CHOICES=[("d", "Daily"),("w", "Weekly"),("m", "Monthly"),("y", "Yearly"),("a","All-time")]

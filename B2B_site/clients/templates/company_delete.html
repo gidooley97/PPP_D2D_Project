@@ -4,17 +4,14 @@
 {% if request.user.is_staff %}
 <link rel="stylesheet" type="text/css" href="{% static 'company_edit_style.css' %}">
 <div class = 'main'>
+        <p>Are you sure want to delete {{ company_name }}? </p>
         <form action="" method="POST">{% csrf_token %}
             {{form.as_p}}
             <button type="submit">Submit</button>
+
         </form>
 
     <br><br>
-    <h3> Company Contact:</h3>
-    <br>
-    <p class = 'contact'>First Name: {{ contact_fname }} </p> 
-    <p class = 'contact'>Last Name: {{ contact_lname }} </p> 
-    <p class = 'contact'>Email: {{ contact_email }} </p> 
 </div>
 {% else %}
 <p>You do not have access to this page.</p>

@@ -16,6 +16,7 @@ urlpatterns = [
     # path('logout/', views.logoutView.as_view(), name='logged_out'),
     # path('login/', views.loginView.as_view(), name='login'),  
 
+    path('companies/delete/<int:group_id>/',views.company_delete_form, name = 'company_delete_form'),
     path('activity/', views.activity, name='activity'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'), #to get the auth token send a POST request http://127.0.0.1:8000/clients/api-token-auth/ with the body{ username:<username>, password:<pass>}
     
