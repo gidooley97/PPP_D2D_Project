@@ -460,13 +460,9 @@ class BookSite(ABC):
         #min score to the least points of our matches.
         
         if formats:
-<<<<<<< HEAD
             # print('unfiltered', self.match_list)
             myList=list(filter(lambda x: x[0]>=0.5 and x[1].parse_status== "FULLY PARSED" and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
             # print('filtered', self.match_list)
-=======
-            myList=list(filter(lambda x: x[0]>=0.3 and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
->>>>>>> parent of c1f671d... Revert "Merge branch 'model_for_b2b' of https://github.com/gidooley97/PPP_D2D_Project into model_for_b2b"
             self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
         # if len(self.match_list)>5:
