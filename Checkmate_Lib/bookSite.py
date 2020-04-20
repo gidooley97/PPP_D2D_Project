@@ -344,7 +344,6 @@ class BookSite(ABC):
         if  xpath is  None or root is None: 
             return False
         url_elements = root.xpath(xpath)
-        #print('urls', url_elements)
         if len(url_elements)==0 and formats:
             if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
                 self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
@@ -454,9 +453,9 @@ class BookSite(ABC):
     """
     def filter_results_by_score(self, formats):
         
-        print('formats',formats)
+        #print('formats',formats)
         #temp_dict= {b[1] : b for b in self.match_list}
-        print('dict',list(dict.fromkeys(self.match_list)))
+        #print('dict',list(dict.fromkeys(self.match_list)))
         #self.match_list = list(temp_dict.values())
         #min score to the least points of our matches.
         
