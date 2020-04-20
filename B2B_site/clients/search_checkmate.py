@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from  builtins import any as b_any
 from concurrent.futures import ThreadPoolExecutor
-import json
+
 
 # getting around the problem of importing modules.
 root= str(Path(__file__).resolve().parents[2])
@@ -59,10 +59,15 @@ def search(sites_allowed, formats, query):
         authors =None
     isbn_13 = query.get('isbn')
 
+<<<<<<< HEAD
     if book_title is None and authors is None and  isbn_13 is None:
         return None
     #print('formats', formats)
     #print('site_allowed',sites_allowed)
+=======
+    if book_title is None and authors is None and isbn_13 is None:
+        return [] 
+>>>>>>> parent of c1f671d... Revert "Merge branch 'model_for_b2b' of https://github.com/gidooley97/PPP_D2D_Project into model_for_b2b"
 
     all_site_slugs = get_sites(sites_allowed)
 
@@ -80,7 +85,7 @@ Params:
     -book_title
     -authors: list of authors
     -isbn_13
-    -book_url
+
 return:
     -matches: list of site_book_data objects.
 """
