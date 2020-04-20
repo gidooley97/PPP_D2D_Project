@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
-{% if request.user.is_staff %}
+
 <link rel="stylesheet" type="text/css" href="{% static 'company_edit_style.css' %}">
 <div class = 'main'>
         <form action="" method="POST">{% csrf_token %}
@@ -17,8 +17,4 @@
     <p class = 'contact'>Last Name: {{ contact_lname }} </p> 
     <p class = 'contact'>Email: {{ contact_email }} </p> 
 </div>
-{% else %}
-<p>You do not have access to this page.</p>
-{% endif %}
-
 {% endblock %}

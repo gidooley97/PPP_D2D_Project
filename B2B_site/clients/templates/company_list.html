@@ -1,7 +1,6 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
-{% if request.user.is_staff %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
 
@@ -11,7 +10,7 @@
         <ul>
         {% for group in group_list %}
 
-                <li class = 'com_li'>{{ group.name }} <a href="edit/{{ group.id }}/" class = "clickable">Edit</a> </li>
+                <li class = 'com_li'>{{ group.name }} <a href="details/{{ group.id }}/" class = "clickable">View Details</a> <a href="edit/{{ group.id }}/" class = "clickable">Edit</a> </li>
 
         {% endfor %}
         </ul>
@@ -19,8 +18,4 @@
         <p>No group are available.</p>
     {% endif %}
     <p class = "adder"> <a href = "{% url 'company_add_form' %}">+ Add New Company</a></p>
-{% else %}
-<p>You do not have access to this page.</p>
-{% endif %}
-
 {% endblock %}
