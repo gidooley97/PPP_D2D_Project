@@ -154,7 +154,7 @@ returns:
 """
 def addQuery(user):
     try:
-        q_m  = Query_Manager.objects.get(user=p,last_date__exact=datetime.date.today())
+        q_m  = Query_Manager.objects.get(user=user,last_date__exact=datetime.date.today())
         q_m.num_queries +=1
         q_m.save() 
                 
