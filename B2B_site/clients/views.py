@@ -148,7 +148,7 @@ def search(request):
         except Exception as e:
             print(e)
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
-            return HttpResponse(content) 
+            return render(request, 'search.html', content) 
 
         p = Profile.objects.get(user=user)
         if book_matches:

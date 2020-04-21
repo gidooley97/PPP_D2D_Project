@@ -27,7 +27,7 @@
       <input type="radio" name="inputRadio" 
              value="json"> Search by Json</label> 
   </div>
-  
+  {{ content.error }}
 
   <form action="{% url 'search' %}" id= "textform" class = 'form-inline' method="get">
     {% csrf_token %}
