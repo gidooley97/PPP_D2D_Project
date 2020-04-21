@@ -187,6 +187,7 @@ class MyView(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
+
 def admin_users_list(request):
     user_list = User.objects.all()
     return render(request, "user_list.html", {"user_list": user_list})
@@ -272,17 +273,16 @@ def activity(request):                    #This is the Report Page
     #return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
     return render(request, "activity.html", {"form":form,"group": group }) #connection with database
 
-
+#view to edit the company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):
-    group = Group.objects.get(id = group_id)
-    contact = group.contact_user
-    # ------ Get Company Contact ----------
+    group = Group.objects.get(id = group_id) #getting our company by group_id
+    contact = group.contact_user #getting our company contact_user
     
     form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
 
     if request.method == 'POST':
-        form = EditForm(request.POST) # if post method then form will be validated
+        form = EditForm(request.POST) 
         if form.is_valid():
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
@@ -298,26 +298,26 @@ def company_edit_form(request,group_id):
     return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
      'contact_lname': contact.last_name, 'contact_email': contact.email})
 
+#view to add a company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')
 def company_add_form(request):
-    # ------ Get Company Contact ----------
 
     form = AddForm(request.POST)
 
     if request.method == 'POST':
-        form = AddForm(request.POST) # if post method then form will be validated
+        form = AddForm(request.POST)
         if form.is_valid():
-            
+            #company creation
             clean_name = form.cleaned_data['company_name']
-            Group.objects.create(name=clean_name)
+            Group.objects.create(name=clean_name) #creates group based on what is in the company_name field
             group = Group.objects.get(name=clean_name)
             clean_format =  form.cleaned_data['formats']
             group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
-            
+            #contact_user creation
             clean_username = form.cleaned_data['username']
-            User.objects.create(username=clean_username)
+            User.objects.create(username=clean_username) #creates user object based on what is in the username field
             user = User.objects.get(username=clean_username)  
             clean_fname = form.cleaned_data['contact_fname']
             user.first_name = clean_fname
@@ -325,9 +325,8 @@ def company_add_form(request):
             user.last_name = clean_lname
             clean_email = form.cleaned_data['contact_email']
             user.email = clean_email
-
-            user.save()
-            group.contact_user = user
+            user.save() 
+            group.contact_user = user #assigns our created as contact_user in company
             group.save()
             return HttpResponseRedirect(reverse('companies'))
 
@@ -335,20 +334,17 @@ def company_add_form(request):
         form = AddForm(request.POST)
     return render(request, "company_add.html", {'form': form})
 
+#view to delete a company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')
 def company_delete_form(request, group_id):
     group = Group.objects.get(id = group_id)
 
-    # ------ Get Company Contact ----------
     form = DeleteForm(request.POST)
 
     if request.method == 'POST':
         form = DeleteForm(request.POST)
-        if form.is_valid():
-                
-            Group.objects.get(id = group_id).delete()
-
-
+        if form.is_valid():  
+            Group.objects.get(id = group_id).delete() #gets company to delete by group_id
             return HttpResponseRedirect(reverse('companies'))
 
     else:
