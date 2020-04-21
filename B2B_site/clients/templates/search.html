@@ -60,7 +60,7 @@
     </div>
   </form>
 
-  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="get" >
+  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="POST" >
     {% csrf_token %}
     <div class= "row">
       <div class="col-25">

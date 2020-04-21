@@ -29,7 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteForm
 from datetime import date
 from .filter_dates import filter_dates
 import json
@@ -131,8 +131,8 @@ def search(request):
             sites_allowed = list(company.search_sites)
             formats = list(company.formats) 
             
-            query = request.GET
-            data =None
+            query = request.POST
+            data = None
             print(query)
             if request.method=="POST":
                 data = request.data
@@ -151,7 +151,8 @@ def search(request):
             return HttpResponse(content) 
 
         p = Profile.objects.get(user=user)
-        addQuery(p)
+        if book_matches:
+            addQuery(p)
         
     return render(request, 'search.html', context)
     

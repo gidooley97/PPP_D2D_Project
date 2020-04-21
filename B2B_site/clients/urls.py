@@ -13,8 +13,8 @@ urlpatterns = [
     path('users/', views.admin_users_list, name='users'),
     path('users/update/<int:user_id>', views.user_edit_form, name='user_edit_form'),
     path('users/add/', views.user_add_form, name='user_add_form'),
-    path('logout/', views.logoutView.as_view(), name='logged_out'),
-    path('login/', views.loginView.as_view(), name='login'),  
+    #path('logout/', views.logoutView.as_view(), name='logged_out'),
+    #path('login/', views.loginView.as_view(), name='login'),  
 
     path('companies/delete/<int:group_id>/',views.company_delete_form, name = 'company_delete_form'),
     path('activity/', views.activity, name='activity'),
