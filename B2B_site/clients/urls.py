@@ -13,10 +13,8 @@ urlpatterns = [
     path('users/', views.admin_users_list, name='users'),
     path('users/update/<int:user_id>', views.user_edit_form, name='user_edit_form'),
     path('users/add/', views.user_add_form, name='user_add_form'),
-    path('logout/', views.logoutView.as_view(), name='logged_out'),
-    path('login/', views.loginView.as_view(), name='login'),  
+    path('users/delete/<int:user_id>', views.user_delete_form, name = "user_delete_form"), 
 
     path('activity/', views.activity, name='activity'),
-    path('api-token-auth/', obtain_auth_token, name='api_token_auth'), #to get the auth token send a POST request http://127.0.0.1:8000/clients/api-token-auth/ with the body{ username:<username>, password:<pass>}
-    
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'), #to get the auth token send a POST request http://127.0.0.1:8000/clients/api-token-auth/ with the body{ username:<username>, password:<pass>}   
 ]

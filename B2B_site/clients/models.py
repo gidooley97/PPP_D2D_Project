@@ -29,6 +29,8 @@ Group.add_to_class('formats',MultiSelectField(choices=MY_FORMATS, max_length=50,
 Group.add_to_class('search_sites',MultiSelectField(choices=SITES_TO_SEARCH, max_length=80, blank = True))
 Group.add_to_class('contact_user', models.OneToOneField(User, on_delete=models.CASCADE,  null = True))
 
+#User.add_to_class('company_name', models.ForeignKey(Group, on_delete=models.CASCADE, null = True, related_name='company_name'))
+
 class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
