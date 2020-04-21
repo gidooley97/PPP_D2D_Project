@@ -4,11 +4,11 @@ This repo has two folders of interest inside of the ppp_proj folder.
 
 Use the master branch to see the full project.
 
------------------------------ Test Book Store -----------------------------------
+----------------------------- Test Book Store ----------------------------------- <br />
 The PPP_Test_Bookstore folder contains the Django site for the Test Book Store.
 The manage.py file is in the nested test_bookstore file.
 
------------------------------- Checkmate Library -----------------------------
+------------------------------ Checkmate Library ----------------------------- <br />
 The Checkmate_Lib folder contains the Checkmate Library. This folder contains
 two other folders for organizational reasons.
 
@@ -22,10 +22,10 @@ The parsers folder contains files for each parser.
 
 The BookSite.py file and the site_book_data.py file file contain the corresponding classes.
 
--------------------------------- B2B Site ------------------------------------------
+-------------------------------- B2B Site ------------------------------------------ <br />
 The B2B_Site folder contains the business to business site that works as an interface for our Checkmate Library. Through this site you are able to make searches on an api to find books availble on sites, these sites are decided via the various parsers. Additionally the site allows for tracking of api calls made per user. The manage.py file is in the nested B2B_site folder.
 
-------------------------------- General ------------------------------------------
+------------------------------- General ------------------------------------------ <br />
 Install the requirements.txt file to install all dependencies.
 
   
