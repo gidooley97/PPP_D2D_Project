@@ -23,7 +23,7 @@ returns:
 	none
 '''
 class UpdateUserForm(forms.Form):
-	#company = forms.ModelChoiceField(queryset=Group.objects.all())
+	company = forms.ModelChoiceField(label="Company", queryset=Group.objects.all())
 	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
 	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
 	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
@@ -38,7 +38,7 @@ returns:
 	none
 '''
 class AddUserForm(forms.Form):
-	#company = forms.ModelChoiceField(queryset=Group.objects.all())
+	company = forms.ModelChoiceField(label="Company", queryset=Group.objects.all())
 	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
 	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
 	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)

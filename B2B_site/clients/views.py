@@ -202,28 +202,30 @@ returns:
 @login_required(login_url='/accounts/login/')
 def user_edit_form(request,user_id):
     user = User.objects.get(id = user_id)
-    #company = user.company
 
-    form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 
+    form = UpdateUserForm(initial = { 'company': request.user.groups.all(), 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 
         'password': user.password, 'is_staff': user.is_staff})
 
     if request.method == 'POST':
         form = UpdateUserForm(request.POST)
         if form.is_valid():
-            #user.company = Group.objects.all().order_by('company')
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.email = form.cleaned_data['email']
             user.username = form.cleaned_data['username']
             user.is_staff = form.cleaned_data['is_staff']
+            group = Group.objects.get(name=form.cleaned_data['company'])
+            user.groups.add(group)
+
             user.save()
+            group.save()
             return HttpResponseRedirect(reverse('users'))
 
     else:
         form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 
-        'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+        'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.filter(user=request.user)})
     return render(request, "update_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name, 
-    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.filter(user=request.user)})
 
 """
 Get the add user form in forms.py and displays the add user view
@@ -240,7 +242,6 @@ def user_add_form(request):
     if request.method == 'POST':
         form = AddUserForm(request.POST)
         if form.is_valid():
-            #user.company = Group.objects.all().order_by('company')
             first_name = form.cleaned_data['first_name']
             User.objects.create(first_name=first_name)
             user = User.objects.get(first_name=first_name)
@@ -249,7 +250,10 @@ def user_add_form(request):
             user.username = form.cleaned_data['username']
             user.password = form.cleaned_data['password']
             user.is_staff = form.cleaned_data['is_staff']
+            group = Group.objects.get(name=form.cleaned_data['company'])
+            group.user_set.add(user)
 
+            group.save
             user.save()
             return HttpResponseRedirect(reverse('users'))
 
