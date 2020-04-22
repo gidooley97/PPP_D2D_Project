@@ -55,7 +55,7 @@ python-Levenshtein==0.12.0
 python-mimeparse==1.6.0
 pytz==2019.3
 pyxdg==0.25
-PyYAML==3.12
+PyYAML==5.1
 reportlab==3.4.0
 requests==2.18.4
 requests-unixsocket==0.1.5
