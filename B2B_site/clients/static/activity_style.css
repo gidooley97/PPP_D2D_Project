@@ -9,6 +9,12 @@ h1 {
     padding-bottom: 3%;
 }
 
+ol, ul {
+    list-style: none;
+    text-align: center;
+    padding-top: 2%;
+}
+
 .com_li {
     margin-left: 9%;
     font-family: sans-serif, times;
@@ -53,7 +59,7 @@ form {
 }
 label {
     font-weight: bold;
-
+    text-align: center;
 }
 p {
     text-align: center;
