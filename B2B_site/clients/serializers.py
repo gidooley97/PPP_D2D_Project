@@ -21,4 +21,5 @@ class SiteBookDataSerializer(serializers.Serializer):
     url=serializers.CharField()
     content=serializers.CharField()
     ready_for_sale=serializers.CharField()
+    score=serializers.CharField()
     extra=serializers.DictField()

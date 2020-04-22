@@ -28,6 +28,7 @@ class SiteBookData:
         self.content=None
         self.ready_for_sale=None
         self.extra=None
+        self.score=None
 
         if 'format' in kwargs:
             self.format = kwargs['format']
@@ -64,7 +65,9 @@ class SiteBookData:
         if 'price' in kwargs:
             self.price = kwargs['price'] 
         if 'url' in kwargs:
-            self.url = kwargs['url'] 
+            self.url = kwargs['url']
+        if 'score' in kwargs:
+            self.score = kwargs['score'] 
         if 'extra' in kwargs:
             self.extra = kwargs['extra']
     """

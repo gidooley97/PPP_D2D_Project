@@ -94,10 +94,10 @@ def get_matches(site_slug, book_title, authors,isbn_13, formats):
         site_book_data = SiteBookData(book_title=book_title, authors=authors,
                             isbn_13=isbn_13)
         matches =  book_site.find_book_matches_at_site(site_book_data,formats=formats)
-        # for book in matches:
-        #         print("=======================================================================================")
-        #         print("Score    : ", str(book[0]))
-        #         book[1].print_all()
+
+        for book in matches:
+            book[1].score = round(book[0]*100)
+
         return list(map(lambda x:x[1],matches))
     except:
         return []

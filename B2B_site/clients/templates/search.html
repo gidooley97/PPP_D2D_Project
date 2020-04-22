@@ -14,7 +14,7 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'search_style.css' %}">
 <div class = "nav" style="padding-top: 0%;padding-left: 2%;">
-   
+   <h1>Search Books</h1>
   <div class = "container">
     <p>You can search by using either json or attributes entered in text box, but not both.</p><br>
     <div class = "row">
@@ -29,7 +29,7 @@
   </div>
   {{ content.error }}
 
-  <form action="{% url 'search' %}" id= "textform" class = 'form-inline' method="GET">
+  <form name = "text" action="{% url 'search' %}" id= "textform" class = 'form-inline' onsubmit="return validateForm()" method="GET" >
     {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
@@ -60,7 +60,7 @@
     </div>
   </form>
 
-  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="POST" >
+  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" onsubmit="return validateForm()" method="POST" >
     {% csrf_token %}
     <div class= "row">
       <div class="col-25">
@@ -77,70 +77,89 @@
 </form>
 </div>
 
-<div class = "container">
-<h2>Search Results</h2 >
-
-<ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
-<div>
-  <h2>---Scribd Books---</h2>
+<div class = "container" style ="outline: 3px black solid;">
+<h1 id="result head">Search Results</h1>
+<p style = "padding-bottom: 4px; text-align: center;">Click result listing for more info</p>
+<ul class="col-sm-10" style="border-top:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
+<div class="booksite">
+  <h2 class="book head"> Scribd Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'SC' %}      
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop" >Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}</span>
         </li>
-  </div>
+  
   {% endif %}
   {% endfor %}
-  <div>
-  <h2>---Google Books---</h2>
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Google Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'GB' %}
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}</span>
         </li>
-  </div>
+  
   {% endif %}
   {% endfor %}
-  <div>
-  <h2>---Kobo Books---</h2>
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Kobo Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'KO' %}
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}</span>
         </li>
-  </div>
+  
   {% endif %}
   {% endfor %}
-  <div>
-  <h2>---Test Bookstore Books---</h2>
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Test Bookstore Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'TB' %}
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}</span>
         </li>
-  </div>
+  
   {% endif %}
   {% endfor %}
-  <div>
-  <h2>---Livraria Culture Books---</h2>
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Livraria Culture Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'LC' %}
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}</span>
         </li>
-  </div>
+  
   {% endif %}
   {% endfor %}
-  <div>
-  <h2>---Audio Books---</h2>
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Audio Books </h2>
   {% for book in books %}
   {% if book.site_slug == 'AU' %}
         <li>
-          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }}
+             &nbsp Parse status: {{book.parse_status}} &nbsp URL: {{ book.url }}</span>
         </li>
-  </div>
+  
   {% endif %}
 {% endfor %}
+</div>
 </ul> 
       
 {% endblock %}
