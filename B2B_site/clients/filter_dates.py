@@ -20,9 +20,7 @@ class CompanyReport:
     def __init__(self, c_name):
         self.company_name=c_name
         self.user_reports = []
-        self.total_queries = 0
-
-        
+        self.total_queries = 0      
 
 """
 gets all company users' activity.
@@ -33,17 +31,21 @@ params:
 returns:
     company_report: company report
 """
-def filter_dates(group, time_range):
-    company_report = CompanyReport(group.name)
-    users_in_group = User.objects.filter(groups__name=group) 
-    for user in users_in_group:
-        profile = Profile.objects.get(user=user)
-        query_count = get_query_for_user(time_range, profile)
-        user_report = UserReport(user.first_name,user.last_name, query_count)
-        company_report.user_reports.append(user_report)
-        company_report.total_queries+=query_count
-
-    return company_report
+def filter_dates(groups, time_range):
+    if not groups:
+        return None
+    companies_report=[]
+    for group in groups:
+        company_report = CompanyReport(group.name)
+        users_in_group = User.objects.filter(groups__name=group) 
+        for user in users_in_group:
+            profile = Profile.objects.get(user=user)
+            query_count = get_query_for_user(time_range, profile)
+            user_report = UserReport(user.first_name,user.last_name, query_count)
+            company_report.user_reports.append(user_report)
+            company_report.total_queries+=query_count
+        companies_report.append(company_report)
+    return companies_report
 
 
 """
@@ -77,3 +79,19 @@ def get_query_for_user(range, p ):
     
     
 
+def get_time_range(range):
+    if "d" in range.lower():
+        return str(datetime.date.today())
+    if "w" in range.lower():
+        start_date = datetime.date.today() - datetime.timedelta( days=datetime.date.today().weekday())#weekdays:sun 0-sat 6
+        end_date = datetime.date.today() 
+        return str(start_date)+"-"+str(end_date)
+    if "m" in range.lower():
+        month = datetime.date.today().month
+        year = datetime.date.today().year
+        return str(month)+"/"+str(year)
+    if "y" in range.lower():
+        year = datetime.date.today().year
+        return str(year)
+    if "a" in range.lower():
+        return "All time"    

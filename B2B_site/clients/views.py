@@ -31,21 +31,9 @@ import datetime
 from rest_framework.permissions import IsAuthenticated
 from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteForm
 from datetime import date
-from .filter_dates import filter_dates
+from .filter_dates import filter_dates, get_time_range
 import json
 
-#def index(request):
-    #profiles = Profile.objects.all()
-    #print(request)
-    #return render(request, 'index.html', {'users': users})
-
-def detail(request, book_id):
-    try:
-        book = Book.objects.get(pk=book_id)
-    except Book.DoesNotExist:
-        raise Http404("Question does not exist")
-
-    return render(request, 'detail.html', {'book': book})
 
 """
 This API calls the checkmate search module that uses the checkmate library to search for a given book.
@@ -58,7 +46,7 @@ Return:
 # GET /clients/api/search?params and headers Authorizatio:<>
 # TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
-    #permission_classes = (IsAuthenticated,)   requires authentication
+    permission_classes = (IsAuthenticated,)  # requires authentication
 
     def get(self, request,):
         return request_processor(request)
@@ -242,35 +230,27 @@ def list_users(request):                    #This is the Report Page
 
 @login_required(login_url='/accounts/login/')
 def activity(request):                    #This is the Report Page
-    # group_list = Group.objects.all() #no need to get all groups
     user = request.user 
-    if not user.groups.all():
-        raise Http404("User does not belong to any group")
-    group = user.groups.all()[0]
-    if user == 'admin':
-        # do something
-        pass
-    p = Profile.objects.get(user=user)
-    q_m= Query_Manager.objects.filter(user=p) #, last_date__range=(date(2020,1,1), date(2020, 2, 9)))[0]
-    perm = group.permissions.all()
-    print('group',perm[0].name)
-    users_in_group = User.objects.filter(groups__name=group)
-    # Take care of getting queries made
-   
+    groups = None
+    if user.is_staff:
+        groups = Group.objects.all()
+    elif user.groups.all():
+        groups = user.groups.all()
+
+    companies_report = filter_dates(groups, "d")
+    time_range= get_time_range('d')
     form = FilterForm()
     if request.method == 'POST':
         form = FilterForm(request.POST) # if post method then form will be validated      try with: 2020-4-10 to 2020-4-12 : output should be 19
         if form.is_valid():
-            company_report = filter_dates(group, form.cleaned_data['time_range'])
-            #print("time range", form.cleaned_data['time_range'])
-            #q_m = Query_Manager.objects.filter(user=p, last_date__range=(form.cleaned_data['start_date'], form.cleaned_data['end_date']))[0]
-            #q_m.save()
-            #return HttpResponseRedirect(reverse(request, "activity", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}))
-            return render(request, "activity.html", {"form":form, "group": group,"company_report":company_report})
+            companies_report = filter_dates(groups, form.cleaned_data['time_range'])
+            time_range= get_time_range(form.cleaned_data['time_range'])
+            time_range = "showing results for "+time_range
+            return render(request, "activity.html", {"form":form, "companies_report":companies_report,"time_range":time_range})
     else:
         form = FilterForm()
-    #return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
-    return render(request, "activity.html", {"form":form,"group": group }) #connection with database
+    time_range = "showing results for "+time_range
+    return render(request, "activity.html", {"form":form,"companies_report":companies_report, "time_range":time_range }) 
 
 #view to edit the company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')

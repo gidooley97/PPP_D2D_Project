@@ -5,21 +5,26 @@
 <link rel="stylesheet" type="text/css" href="{% static 'activity_style.css' %}">
 
     <h1> Activity </h1>
-
     
+    {% if companies_report %}
+    <form action="" method="POST">{% csrf_token %}
+        {{ form.as_p }}<button type="submit" >Apply</button> 
+        
+    </form>
+    <p style="font-size:24px; text-align:center;">{{time_range }}</p>
+    
+    {% for company_report in companies_report %}
         <ul>
-            <label for="company">Company Name:</label> {{ group.name }}
+            
+            <label for="company">Company Name:</label> {{ company_report.company_name }}
                      
                 
             
         </ul>
 
-        <form action="" method="POST">{% csrf_token %}
-            {{ form.as_p }}<button type="submit" >Apply</button> 
-            
-        </form>
+      
 
-        {% if company_report.user_reports %}
+       
             
             <table>
                 <tr>
@@ -38,9 +43,10 @@
                     <td>{{ company_report.total_queries }}</td>
                 </tr>
             </table>
+        {% endfor %}
         {% else %}
-            <p>No Report to show</p>
-        {% endif %}
+        <p style="font-size:24px;">Group for user not found</p>
+    {% endif %}
 
    
 
