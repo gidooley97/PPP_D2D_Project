@@ -29,7 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteUserForm, DeleteForm
 from datetime import date
 from .filter_dates import filter_dates
 import json
@@ -174,27 +174,37 @@ def addQuery(user):
         new_q_m= Query_Manager.objects.create(user=user, num_queries=1, last_date=datetime.date.today(),)
 
 
-@login_required(login_url='/accounts/login/')
-def list_companies(request):
-    if not request.user.is_staff:
-        return HttpResponseRedirect(reverse('search') )
-    group_list = Group.objects.all()
-    return render(request, "company_list.html", {"group_list": group_list})
-
-
 class MyView(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
 
-
+"""
+List out all the users in B2B database
+params:
+    request: the request for the list view
+returns:
+    User list view
+"""
+@login_required(login_url='/accounts/login/')
 def admin_users_list(request):
     user_list = User.objects.all()
     return render(request, "user_list.html", {"user_list": user_list})
 
+"""
+Gets the edit form from forms.py and displays the edit view
+params:
+    request: the request for the edit view
+    user_id: the id of the user so the exact person can be aquired 
+returns:
+    If success, return the user list view
+    If fail, return update view to original state
+"""
+@login_required(login_url='/accounts/login/')
 def user_edit_form(request,user_id):
     user = User.objects.get(id = user_id)
 
-    form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+    form = UpdateUserForm(initial = { 'company': Group.objects.get(user=user), 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 
+        'password': user.password, 'is_staff': user.is_staff})
 
     if request.method == 'POST':
         form = UpdateUserForm(request.POST)
@@ -203,16 +213,30 @@ def user_edit_form(request,user_id):
             user.last_name = form.cleaned_data['last_name']
             user.email = form.cleaned_data['email']
             user.username = form.cleaned_data['username']
-            user.password = form.cleaned_data['password']
+            user.is_staff = form.cleaned_data['is_staff']
+            group = Group.objects.get(name=form.cleaned_data['company'])
+            user.groups.clear()
+            user.groups.add(group)
+
             user.save()
+            group.save()
             return HttpResponseRedirect(reverse('users'))
 
     else:
         form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 
-        'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+        'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.get(user=user)})
     return render(request, "update_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name, 
-    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff})
+    'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.filter(user=request.user)})
 
+"""
+Get the add user form in forms.py and displays the add user view
+params:
+    request: the request for the add view
+returns:
+    If success, return list view
+    If fail, return the empty form
+"""
+@login_required(login_url='/accounts/login/')
 def user_add_form(request):
     form = AddUserForm(request.POST)
 
@@ -226,13 +250,42 @@ def user_add_form(request):
             user.email = form.cleaned_data['email']
             user.username = form.cleaned_data['username']
             user.password = form.cleaned_data['password']
+            user.is_staff = form.cleaned_data['is_staff']
+            group = Group.objects.get(name=form.cleaned_data['company'])
+            group.user_set.add(user)
 
+            group.save
             user.save()
             return HttpResponseRedirect(reverse('users'))
 
     else:
         form = AddUserForm(request.POST)
     return render(request, "add_user.html", {'form': form})
+
+"""
+Get the add user form in forms.py and displays the add user view
+params:
+    request: the request for the add view
+returns:
+    If success, return list view
+    If fail, return the empty form
+"""
+@login_required(login_url='/accounts/login/')
+def user_delete_form(request, user_id):
+    user = User.objects.get(id = user_id)
+
+    form = DeleteUserForm(request.POST)
+
+    if request.method == 'POST':
+        form = DeleteUserForm(request.POST)
+        if form.is_valid():
+            User.objects.get(id = user_id).delete()
+
+            return HttpResponseRedirect(reverse('users'))
+
+    else:
+        form = DeleteUserForm(request.POST)
+    return render(request, "delete_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name})
 
 
 def list_users(request):                    #This is the Report Page
@@ -271,6 +324,13 @@ def activity(request):                    #This is the Report Page
         form = FilterForm()
     #return render(request, "activity.html", {"group": group, "user_list":users_in_group, "q_m":q_m, "form":form}) #connection with database
     return render(request, "activity.html", {"form":form,"group": group }) #connection with database
+
+@login_required(login_url='/accounts/login/')
+def list_companies(request):
+    if not request.user.is_staff:
+        return HttpResponseRedirect(reverse('search') )
+    group_list = Group.objects.all()
+    return render(request, "company_list.html", {"group_list": group_list})
 
 #view to edit the company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')

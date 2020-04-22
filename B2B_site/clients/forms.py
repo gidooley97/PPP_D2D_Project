@@ -11,8 +11,31 @@ class SearchForm(forms.Form):
 	Author = forms.CharField(label='Author:', max_length=100)
 	ISBN = forms.CharField(label='ISBN:', max_length=100)
 	Book_Url= forms.URLField(label='Book-url', max_length=100)
-	
+
+'''
+Sets the fields for the Update User Form
+params:
+	forms.Form: gets Form from django forms
+returns:
+	none
+'''
 class UpdateUserForm(forms.Form):
+	company = forms.ModelChoiceField(label="Company", queryset=Group.objects.all())
+	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
+	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
+	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
+	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
+	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
+
+'''
+Sets the fields for the Add User Form
+params:
+	forms.Form: gets Form from django forms
+returns:
+	none
+'''
+class AddUserForm(forms.Form):
+	company = forms.ModelChoiceField(label="Company", queryset=Group.objects.all())
 	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
 	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
 	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
@@ -20,13 +43,9 @@ class UpdateUserForm(forms.Form):
 	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
 	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
 
-class AddUserForm(forms.Form):
-	first_name = forms.CharField(label="First Name", widget=forms.TextInput(), required = True)
-	last_name = forms.CharField(label="Last Name", widget=forms.TextInput(), required = True)
-	email = forms.CharField(label="Email Address", widget=forms.TextInput(), required = True)
-	username = forms.CharField(label="Username", widget=forms.TextInput(), required = True)
-	password = forms.CharField(label="Password", widget=forms.PasswordInput(), required = True)
-	is_staff = forms.BooleanField(label = "Is Staff?", required = False)
+class DeleteUserForm(forms.Form):
+	first_name = forms.CharField(label="First Name", widget=forms.HiddenInput(), required = False)
+	last_name = forms.CharField(label="Last Name", widget=forms.HiddenInput(), required = False)
 
 class TextForm(forms.Form):
 	title = forms.CharField(label = 'Title:', max_length=100)

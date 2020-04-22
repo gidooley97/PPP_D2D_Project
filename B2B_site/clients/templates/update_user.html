@@ -1,23 +1,18 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
+{% if request.user.is_staff %}
 <link rel='stylesheet' type="text/css" href="{% static 'company_edit_style.css' %}">
 <div class='main'>
     <form action='' method='POST'>{% csrf_token %}
         {{ form.as_p}}
-        <button type="submit" style="width: 6%; height: .8%; font-size: .8em; text-align: center;
-        vertical-align: middle; border-color: black;">Submit</button>
+        <button type="submit">Submit</button>
     </form>
 
     <br><br>
-    <h3>User Info</h3>
-    <br>
-    <p class='user'>First Name: {{ first_name }}</p>
-    <p class='user'>Last Name: {{ last_name }}</p>
-    <p class='user'>Email Address: {{ email }}</p>
-    <p class='user'>Username: {{ username }}</p>
-    <p class='user'>Password: {{ password }}</p>
-    <p class='user'>Is Staff: {{ is_staff }}</p>
 </div>
+{% else %}
+<p>You do not have access to this page.</p>
+{% endif %}
 
 {% endblock %}
