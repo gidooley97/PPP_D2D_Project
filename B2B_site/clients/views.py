@@ -203,7 +203,7 @@ returns:
 def user_edit_form(request,user_id):
     user = User.objects.get(id = user_id)
 
-    form = UpdateUserForm(initial = { 'company': request.user.groups.all(), 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 
+    form = UpdateUserForm(initial = { 'company': Group.objects.get(user=user), 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 'username': user.username, 
         'password': user.password, 'is_staff': user.is_staff})
 
     if request.method == 'POST':
@@ -215,6 +215,7 @@ def user_edit_form(request,user_id):
             user.username = form.cleaned_data['username']
             user.is_staff = form.cleaned_data['is_staff']
             group = Group.objects.get(name=form.cleaned_data['company'])
+            user.groups.clear()
             user.groups.add(group)
 
             user.save()
@@ -223,7 +224,7 @@ def user_edit_form(request,user_id):
 
     else:
         form = UpdateUserForm(initial = {'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email, 
-        'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.filter(user=request.user)})
+        'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.get(user=user)})
     return render(request, "update_user.html", {'form': form, 'first_name': user.first_name, 'last_name': user.last_name, 
     'email': user.email, 'username': user.username, 'password': user.password, 'is_staff': user.is_staff, 'company': Group.objects.filter(user=request.user)})
 
