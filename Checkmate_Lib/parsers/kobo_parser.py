@@ -66,15 +66,16 @@ class KoboSite(BookSite):
             desc_element_list = root.xpath(path)[0]
             xmlstr = etree.tostring(desc_element_list, encoding='utf8', method='xml')  
             desc = BeautifulSoup(xmlstr,features="lxml") 
+            desc = desc.get_text()
         except:
             desc = None    
-        return desc.get_text()
+        return desc
     #override
     def format_parser(self, root):
         path = self.get_format_path()
         try: 
             format_element = root.xpath(path)[0]
-            format = format_element.text.strip().split(' ')[0]
+            format = super().format_mapper(format_element.text.strip().split(' ')[0])
         except:
             format = None
         return format

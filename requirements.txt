@@ -1,6 +1,6 @@
 appdirs==1.4.3
 apturl==0.5.2
-asgiref==3.2.3
+asgiref==3.2.7
 asn1crypto==0.24.0
 beautifulsoup4==4.8.2
 Brlapi==0.6.6
@@ -13,7 +13,10 @@ cupshelpers==1.0
 defer==1.0.6
 distlib==0.3.0
 distro-info===0.18ubuntu0.18.04.1
-Django==3.0.2
+Django==3.0.5
+django-multiselectfield==0.1.12
+django-tastypie==0.14.3
+djangorestframework==3.11.0
 filelock==3.0.12
 html5lib==1.0.1
 httplib2==0.9.2
@@ -46,8 +49,10 @@ pymacaroons==0.13.0
 PyNaCl==1.1.2
 pyRFC3339==1.0
 python-apt==1.6.5+ubuntu0.2
-python-dateutil==2.6.1
+python-dateutil==2.8.1
 python-debian==0.1.32
+python-Levenshtein==0.12.0
+python-mimeparse==1.6.0
 pytz==2019.3
 pyxdg==0.25
 PyYAML==3.12
@@ -58,7 +63,7 @@ SecretStorage==2.3.1
 simplejson==3.13.2
 six==1.14.0
 soupsieve==2.0
-sqlparse==0.3.0
+sqlparse==0.3.1
 system-service==0.3
 systemd-python==234
 ubuntu-drivers-common==0.0.0

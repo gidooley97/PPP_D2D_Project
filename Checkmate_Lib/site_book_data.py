@@ -28,6 +28,7 @@ class SiteBookData:
         self.content=None
         self.ready_for_sale=None
         self.extra=None
+        self.score=None
 
         if 'format' in kwargs:
             self.format = kwargs['format']
@@ -64,7 +65,9 @@ class SiteBookData:
         if 'price' in kwargs:
             self.price = kwargs['price'] 
         if 'url' in kwargs:
-            self.url = kwargs['url'] 
+            self.url = kwargs['url']
+        if 'score' in kwargs:
+            self.score = kwargs['score'] 
         if 'extra' in kwargs:
             self.extra = kwargs['extra']
     """
@@ -79,6 +82,7 @@ class SiteBookData:
     def print_all(self):
         print("Format: " , self.format if self.format!=None else 'Not found')
         print("Title: " ,self.book_title if self.book_title !=None else 'Not found')
+        print("Subtitle: " ,self.subtitle if self.subtitle !=None else 'Not found')
         print("Authors: " , ','.join(self.authors) if self.authors else 'Not found')
         print("Series: " , self.series if self.series !=None else 'Not found')
         print("Volume:  ", self.volume if self.volume != None else 'Not found')
@@ -90,8 +94,23 @@ class SiteBookData:
         print("Direct book Url: ", self.url if self.url else 'Not found')
         print("Extra: ", self.extra if self.extra else 'Not found')
 
+    """
+    This method overrides the == operations between 2 objects of this class
+
+
+    """
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return (self.book_title.strip() == other.book_title.strip() and ''.join(self.authors).strip() ==''.join(other.authors).strip() and
+            self.book_img_url == other.book_img_url and self.parse_status == other.parse_status and self.site_slug == other.site_slug)
+        return False
+
+    def __hash__(self):
+        return hash(('book_title', self.book_title, 'book_img_url',self.book_img_url, 'parse_status',self.parse_status,'site_slug',self.site_slug
+                 ))
+
 """
-convert isbn10 to isbn13.
+convert isbn10 to isbn13. Utility method
 
 1. take the 10 digit ISBN (10 digits)
 2. drop the last character (9 digits)
@@ -126,6 +145,7 @@ def isbn_10_to_isbn_13(isbn_10):
     t = abs(t-10) #finally, compute the absolute value of subtract the result from 10
     y = y+str(t)  
     return y
+
 
     
 

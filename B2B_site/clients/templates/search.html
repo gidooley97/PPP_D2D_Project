@@ -1,129 +1,179 @@
 {% extends "base_generic.html" %}
 
+
 {% block content %}
 
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'detail_style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'search_style.css' %}">
 <body>
-<style> /* NEED TO CREATE FOLDER WITH ALL CSS OF THE PROJECT.
-    /* Style the form - display items horizontally */
-.form-inline { 
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-}
-/* Add some margins for each label */
-.form-inline label {
-  margin: 9px 50px 5px 0;
-}
+  <script src= 
+"https://code.jquery.com/jquery-1.12.4.min.js"> 
+    </script>
+  <script src="{% static 'search_type_control.js' %}"></script>
 
-/* Style the input fields */
-.form-inline input {
-  vertical-align: middle;
-  margin: 5px 10px 5px 0;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-}
-
-/* Style the submit button */
-.form-inline button {
-  padding: 10px 20px;
-  background-color: dodgerblue;
-  border: 1px solid #ddd;
-  color: white;
-}
-
-.form-inline button:hover {
-  background-color: royalblue;
-}
-
-/* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
-@media (max-width: 800px) {
-  .form-inline input {
-    margin: 10px 0;
-  }
-
-  .form-inline {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-</style>
 
 <link rel="stylesheet" type="text/css" href="{% static 'search_style.css' %}">
 <div class = "nav" style="padding-top: 0%;padding-left: 2%;">
-  <p>Search Instructions:</p> 
-  <p>Option1: Search by using the title, author, isbn, and book url.(No need to fill out all the fields)</p>
-  <p>Option2: Search by using Json.</p>
-  <p>You can search by using either option 1 or option2, but not both.</p><br>
-  <form class = 'form-inline' action="{% url 'search' %}" method="get"  >
-    <label for="s_bar1">Title:</label>
-    <input  name= "s_bar1"type="text" size="75%" >
-    <label for="s_bar2">Author:</label>
-    <input  name= "s_bar2" type="text"  size="75%" >
-    <label for="s_bar3">ISBN:</label>
-    <input  name= "s_bar3"  type="text"  size="75%" >
-    <label for="s_bar4">Book-Url:</label>
-    <input  name= "s_bar4" type="text"  size="75%" >
-    <input type="submit" value="Search">
+   <h1>Search Books</h1>
+  <div class = "container">
+    <p>You can search by using either json or attributes entered in text box, but not both.</p><br>
+    <div class = "row">
+    <label> 
+      <input type="radio" name="inputRadio" checked="checked"
+             value="text"> Search by attribute</label> 
+    </div>
+  <div class = "row">
+  <label> 
+      <input type="radio" name="inputRadio" 
+             value="json"> Search by Json</label> 
+  </div>
+  {{ content.error }}
+
+  <form name = "text" action="{% url 'search' %}" id= "textform" class = 'form-inline' onsubmit="return validateForm()" method="GET" >
+    {% csrf_token %}
+    <div class = "row">
+    <div class = "col-25">
+      <label for="s_bar1">Title:</label>
+    </div>
+    <div class = "col-75">
+      <input  name= "title" class="text" type="text" size="75%" >
+    </div>
+    </div>
+    <div class = "row">
+    <div class = "col-25">
+      <label for="s_bar2">Author:</label>
+    </div>
+    <div class = "col-75">
+      <input  name= "authors"  class="text"  type="text"  size="75%" >
+    </div>
+    </div>
+    <div class = "row">
+      <div class = "col-25">
+        <label for="s_bar1">ISBN:</label>
+      </div>
+      <div class = "col-75">
+        <input  name= "isbn" class="text" type="text" size="75%" >
+      </div>
+      </div>
+    <div class = "row">
+      <input class="text" type="submit" value="Search" > 
+    </div>
   </form>
 
-  <form class = 'search-json' action="{% url 'search' %}" method="get" >
-    <textarea id="myTextArea" cols=30 rows=15 placeholder="Search Json"></textarea>
-    <input type="submit" value="Search" style = "padding: 1%; font-size:1.3em;">
+  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" onsubmit="return validateForm()" method="POST" >
+    {% csrf_token %}
+    <div class= "row">
+      <div class="col-25">
+        <label>Json:</label>
+      </div>
+      <div class="col-75">
+        <textarea name= "json" class="json" id="myTextArea" cols=76 rows=15 placeholder="Search Json" ></textarea>
+      </div>
+    </div>
+  <div class= "row">
+    <input class="json" type="submit" value="Search" > 
+  </div>  
+    
 </form>
+</div>
 
-  <h2>Search Results</h2 >
-    <div class="col-sm-10 text-right">
-
-      {% if is_paginated %}
-      <div class="pagination">
-          <span class="page-links">
-              {% if page_obj.has_previous %}
-                  <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-              {% endif %}
-              <span class="page-current">
-                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-              </span>
-              {% if page_obj.has_next %}
-                  <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-              {% endif %}
+<div class = "container" style ="outline: 3px black solid;">
+<h1 id="result head">Search Results</h1>
+<p style = "padding-bottom: 4px; text-align: center;">Click result listing for more info</p>
+<ul class="col-sm-10" style="border-top:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
+<div class="booksite">
+  <h2 class="book head"> Scribd Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'SC' %}      
+        <li>
+          <button class="button button2" name="drop" >Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}
+            &nbsp URL: {{ book.url }}
           </span>
-      </div>
-      {% endif %}
-      </div>
-</div>
-  <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
-
-  {% for book in object_list %}
-    <li>
-      <button class="button button2 text-right" ><a href="{% url 'detail' book_id=book.id%}">Details</a></button> </span>
-      <span> {{ book.title }} -  {{ book.subtitle }} by {{ book.authors }} &nbsp;
-    </li>
-  {% endfor %}
-  </ul> 
+        </li>
   
-<div class="col-sm-10 text-right">
-
-{% if is_paginated %}
-<div class="pagination pull ">
-    <span class="page-links">
-        {% if page_obj.has_previous %}
-            <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-        <span class="page-current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-        {% endif %}
-    </span>
+  {% endif %}
+  {% endfor %}
 </div>
-{% endif %}
-
+  <div class="booksite">
+  <h2 class="book head"> Google Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'GB' %}
+        <li>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}
+            &nbsp URL: {{ book.url }}
+          </span>
+        </li>
+  
+  {% endif %}
+  {% endfor %}
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Kobo Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'KO' %}
+        <li>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}
+            &nbsp URL: {{ book.url }}
+          </span>
+        </li>
+  
+  {% endif %}
+  {% endfor %}
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Test Bookstore Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'TB' %}
+        <li>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}
+            &nbsp URL: {{ book.url }}
+          </span>
+        </li>
+  
+  {% endif %}
+  {% endfor %}
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Livraria Culture Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'LC' %}
+        <li>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }} &nbsp Parse status: {{book.parse_status}}
+            &nbsp URL: {{ book.url }}
+          </span>
+        </li>
+  
+  {% endif %}
+  {% endfor %}
+</div>
+  <div class="booksite">
+  <h2 class="book head"> Audio Books </h2>
+  {% for book in books %}
+  {% if book.site_slug == 'AU' %}
+        <li>
+          <button class="button button2" name="drop">Score: {{ book.score }}%  &nbsp  Title: {{ book.book_title }} &nbsp   
+            by:   {{ book.authors|join:", " }} &nbsp ISBN: {{ book.isbn_13 }}  &nbsp  Available: {{ book.ready_for_sale }}</button>
+          <span class="more"> Format: {{ book.format }} &nbsp Series: {{book.series}} &nbsp Volume: {{ book.volume }}
+             &nbsp Parse status: {{book.parse_status}} &nbsp URL: {{ book.url }}</span>
+        </li>
+  
+  {% endif %}
+{% endfor %}
+</div>
+</ul> 
+      
 {% endblock %}
+
 </div>
 
 </body>

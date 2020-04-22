@@ -49,7 +49,7 @@ class GoogleBooks(BookSite):
         match:List[Tuple[SiteBookData, float]]
     """
     #override
-    def find_book_matches_at_site(self, site_book_data,pages=2):
+    def find_book_matches_at_site(self, site_book_data, formats=None,pages=2):
         url = self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
@@ -69,15 +69,17 @@ class GoogleBooks(BookSite):
 
         res = br.submit()
         content = res.read()
-        self.get_search_book_data_from_page(content,br, site_book_data)
+        found=self.get_search_book_data_from_page(content,br, site_book_data,formats)
         page=2
         offset =10
-        while page<=pages:
+        while page<=pages and not found:
             url = 'https://www.google.com/search?tbm=bks&q='+search_txt+'&start='+str(offset)
             res = br.open(url)
-            self.get_search_book_data_from_page(res.read(), br, site_book_data)
+            #br.select_form(id="oc-search-form")
+            found=self.get_search_book_data_from_page(res.read(), br, site_book_data,formats)
             offset+=10
             page+=1
+        self.filter_results_by_score(formats)
         return self.match_list
     """
     returns a list of tuple(score, book_data).
@@ -93,7 +95,7 @@ class GoogleBooks(BookSite):
         None: 
     """
     #override
-    def get_search_book_data_from_page(self, content, br, book_site_data_original):
+    def get_search_book_data_from_page(self, content, br, book_site_data_original, formats):
         root =super().get_root(url=None, content=content)
         url_elements = root.xpath('//a[@class="fuLhoc ZWRArf"]/@href')
         for url in url_elements:
@@ -101,9 +103,16 @@ class GoogleBooks(BookSite):
             if not book_site_dat_temp:
                 continue
             score = self.match_percentage(book_site_data_original, book_site_dat_temp)
+            #print('score', score)
+            #book_site_dat_temp.print_all()
+            if score >=0.90 and book_site_dat_temp.format.lower() in formats:#Perfect match found
+                self.match_list=[]
+                book_data_score =tuple([score,book_site_dat_temp])
+                self.match_list.append(book_data_score)
+                return True
             book_data_score = tuple([score,book_site_dat_temp])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score()
+        return False
 
     """
     goes to the page where book details can be found.
@@ -115,7 +124,6 @@ class GoogleBooks(BookSite):
     def navigate_to_view_ebook_page(self,br, url):
         try:
             res=br.follow_link(text="View eBook")
-            print('view ebook found!')
         except mechanize._mechanize.LinkNotFoundError:
             return self.get_book_data_from_site(url)
                     
@@ -235,14 +243,18 @@ class GoogleBooks(BookSite):
     #override
     def format_parser(self, root):
         fmt = None
-        sales_element = root.xpath("//*[@id='gb-get-book-content']")[0].text
-        if "print" in sales_element.lower():
-            fmt = "Print"
-        elif "ebook" in sales_element.lower():
-            fmt = "Ebook"
-        elif "pre-order" in sales_element.lower():
-            fmt = "Pre-order"
-        return fmt
+        try:
+            sales_element = root.xpath("//*[@id='gb-get-book-content']")[0].text
+            if "print" in sales_element.lower():
+                format = "print"
+            elif "ebook" in sales_element.lower():
+                format = "ebook"
+            elif "pre-order" in sales_element.lower():
+                format = "pre-order"
+            format=super().format_mapper(format)
+        except:
+            format=None
+        return format
 
     #method specific to this parser.
     def price_parser(self, root):
@@ -260,6 +272,14 @@ class GoogleBooks(BookSite):
     #override
     def volume_parser(self, root):
         return None
+    #override
+    def get_parse_status(self,title, isbn13, desc, authors):
+         #determine parse_status checks if we have the most basic data about a book
+        if title and isbn13 and authors:
+            return "FULLY PARSED"
+        if title or isbn13 or desc or authors:
+            return "PARTIALLY PARSED"
+        return "UNSUCCESSFUL"
 
         
    

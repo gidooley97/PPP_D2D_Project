@@ -67,7 +67,7 @@
             <div id="navbar-top-piece-links" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{% url 'search' %}"><span>Search</span></a></li>
-                    <li><a href="{% url 'search' %}"><span>Activity</span></a></li> 
+                    <li><a href="{% url 'activity' %}"><span>Activity</span></a></li> 
                     
                         
                     
@@ -96,21 +96,26 @@
             
                 <ul class="nav navbar-nav pull-right">
                     <li class="selected"><a class="main-page-nav" href="{% url 'search' %}"><span>Search</span></a></li>
-                    <li class=""><a class="main-page-nav" href="{% url 'search' %}"><span>Activity</span></a></li>
-                    <li class=""><a class="main-page-nav" href="{% url 'search' %}"><span>Logout</span></a></li>
+                    <li class=""><a class="main-page-nav" href="{% url 'activity' %}"><span>Activity</span></a></li>
+                    {% if user.is_authenticated and user.is_staff %}<li class=""><a class="main-page-nav" href="{% url 'companies' %}"><span>Companies</span></a></li>{% endif %}
+                    {% if user.is_authenticated and user.is_staff %}<li class=""><a class="main-page-nav" href="{% url 'users' %}"><span>Users</span></a></li>{% endif %} 
+                    <li class=""><a class="main-page-nav" href="{% url 'logout' %}"><span>Logout</span></a></li>
                 </ul>
             
         </div>
     </nav>
     <div class="navbar-top-space"></div>
     <div class="navbar-bottom-space hidden-xs"></div>
-    
+                {% if user.is_authenticated %}
+                    User: {{ user.get_username }}
+                {% endif %} 
             {% endblock %}
       </div>
       
       <div class="content1" style = "position:relative; display:block; padding-top: 5%;"> 
 
         {% block content %}{% endblock %}
+        
          <!--The content of the page goes here-->
 
       </div>

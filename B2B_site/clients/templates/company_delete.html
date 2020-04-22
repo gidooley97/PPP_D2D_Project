@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+{% if request.user.is_staff %}
+<link rel="stylesheet" type="text/css" href="{% static 'company_edit_style.css' %}">
+<div class = 'main'>
+        <p>Are you sure want to delete {{ company_name }}? </p>
+        <form action="" method="POST">{% csrf_token %}
+            {{form.as_p}}
+            <button type="submit">Submit</button>
+
+        </form>
+
+    <br><br>
+</div>
+{% else %}
+<p>You do not have access to this page.</p>
+{% endif %}
+
+{% endblock %}

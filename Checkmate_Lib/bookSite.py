@@ -10,6 +10,7 @@ from io import BytesIO
 import urllib.request
 import mechanize
 from abc import ABC, abstractmethod
+import Levenshtein as lev
 
 
 #BookSite is the parent class for all parsers, it does most of the default work for parsing, 
@@ -137,8 +138,18 @@ class BookSite(ABC):
             format = root.xpath(path)[0].text
         except:
             format = None
-        return format
+        return format_mapper(format)
    
+    def format_mapper(self, format):
+        if format is None:
+            return None
+        if "print" in format.lower() or 'hard' in format.lower():
+             return "hard_cover"
+        elif "audio" in format.lower():
+            return "audio"
+        else:
+            return "ebook"
+
     def image_parser(self, url):
         image =None
         try:
@@ -275,7 +286,7 @@ class BookSite(ABC):
         match:List[Tuple[SiteBookData, float]]
     """
     
-    def find_book_matches_at_site(self, site_book_data, pages=2):
+    def find_book_matches_at_site(self, site_book_data, formats=None,pages=2):
         url =self.search_url
         br = mechanize.Browser()
         br.set_handle_robots(False)
@@ -283,14 +294,14 @@ class BookSite(ABC):
         #selects the form to populate 
         br.select_form(class_="search-form")
         search_txt =None
+        
         #populate the field. You may need to check if this is actually working
-        if site_book_data.isbn_13:
-            search_txt= site_book_data.isbn_13
-        elif site_book_data.book_title:
+        if site_book_data.book_title:
             search_txt=site_book_data.book_title
+        elif site_book_data.isbn_13:
+            search_txt= site_book_data.isbn_13
         elif site_book_data.authors:
             search_txt = site_book_data.authors[0]
-        
         if not search_txt:
             return []
         if self.site_slug=='KO':
@@ -301,15 +312,19 @@ class BookSite(ABC):
         self.match_list=[]
         #submit the form and get the returned page.
         res=br.submit()
-        self.get_search_book_data_from_page(res.read(), site_book_data)#get page 1 of results
-        page=2
-        while page <=pages:#limit the results we will get
+        found = False
+        page=1
+        while page <=pages and not found:#limit the results we will get
             try:
+                content =res.read()
+                found=self.get_search_book_data_from_page(content, site_book_data, formats=formats)
                 res=br.follow_link(text="Next")
-                self.get_search_book_data_from_page(res.read(), site_book_data)
                 page+=1
             except mechanize._mechanize.LinkNotFoundError:#end of results
                 break
+        # print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        # print('formts', formats)
+        self.filter_results_by_score(formats)
         return self.match_list
 
     """
@@ -325,22 +340,36 @@ class BookSite(ABC):
     return: 
         None: 
     """
-    def get_search_book_data_from_page(self, content,  book_site_data_original):
+    def get_search_book_data_from_page(self, content,  book_site_data_original, formats=None):
         root = self.get_root(url=None, content=content)#force this method to work with content
-        
+        xpath = self.get_search_urls_after_search_path()
         #expects a path that will help us get the urls
-        url_elements = root.xpath(self.get_search_urls_after_search_path())
-        
+        if  xpath is  None or root is None: 
+            return False
+        url_elements = root.xpath(xpath)
+        if len(url_elements)==0 and formats:
+            if super().get_book_data_from_site(url=None, content=content).format.lower() in ','.join(formats).lower():
+                self.match_list.append(tuple([1.00,super().get_book_data_from_site(url=None, content=content)]))
+                return True
+            else:
+                return False
         for url in url_elements:
             if self.site_slug == 'TB':
                 url='http://127.0.0.1:8000'+url
             book_site_data_new= self.get_book_data_from_site(url)
+            #book_site_data_new.print_all()
             score = self.match_percentage(book_site_data_original, book_site_data_new) 
+            if score >=0.90 and book_site_data_new.format.lower() in formats:#Perfect match found
+                # print('-------------------------------------')
+                self.match_list=[]
+                #book_site_data_new.print_all()
+                book_data_score =tuple([score,book_site_data_new])
+                self.match_list.append(book_data_score)
+                return True
             book_data_score =tuple([score,book_site_data_new])
             self.match_list.append(book_data_score)
-            self.filter_results_by_score()
+        return False
 
-    
 
     """
     match_percentage takes 2 sitebookdata objects and compares them.  
@@ -349,6 +378,7 @@ class BookSite(ABC):
     We do not want to compare book_id,site_slug, url, or book_img_url since that changes from site to site
     This function also does not compare content, extra, or parse_status
     This function does not compare format since as of now all books are ebooks.
+    !!!Update: Made sure to only count what is available inorder to have a better view of how similar the matches are.
     params:
         site_book1: first SiteBookData object
         site_book2: second SiteBookData object
@@ -357,37 +387,63 @@ class BookSite(ABC):
     """
     def match_percentage(self,site_book1, site_book2):
         matching_points = 0 # Keeps track of matching attributes
+        total =0
+        if site_book1.book_title and site_book2.book_title:
+            matching_points += lev.ratio(site_book1.book_title.strip().lower(), site_book2.book_title.strip().lower())*200
+            total += 200
 
-        if site_book1.book_title and site_book2.book_title and site_book1.book_title.strip().lower() == site_book2.book_title.strip().lower():
-            matching_points += 200
+        if site_book1.isbn_13 and site_book2.isbn_13:
+            matching_points += lev.ratio(site_book1.isbn_13.strip().lower(),site_book2.isbn_13.strip().lower())*750
+            total += 750
+        
+        if site_book1.description and site_book2.description:
+            matching_points += lev.ratio(site_book1.description.strip().lower(),site_book2.description.strip().lower())* 5
+            total += 5
+        
+        if site_book1.series and site_book2.series:
+            matching_points += lev.ratio(site_book1.series.strip().lower(), site_book2.series.strip().lower())*5
+            total += 5
 
-        if site_book1.isbn_13 and site_book2.isbn_13 and  site_book1.isbn_13.strip().lower() == site_book2.isbn_13.strip().lower():
-            matching_points += 750
+        if site_book1.volume and site_book2.volume:
+            matching_points += lev.ratio(site_book1.volume.strip().lower(),site_book2.volume.strip().lower())*5
+            total += 5
         
-        if site_book1.description and site_book2.description and site_book1.description.strip().lower() == site_book2.description.strip().lower():
-            matching_points += 5
-        
-        if site_book1.series and site_book2.series and site_book1.series.strip().lower() == site_book2.series.strip().lower():
-            matching_points += 5
-        
-        if site_book1.volume and site_book2.volume and site_book1.volume.strip().lower() == site_book2.volume.strip().lower():
-            matching_points += 5
-        
-        if site_book1.subtitle and site_book2.subtitle and site_book1.subtitle.strip().lower() == site_book2.subtitle.strip().lower():
-            matching_points += 5
+        if site_book1.subtitle and site_book2.subtitle:
+            matching_points += lev.ratio(site_book1.subtitle.lower(), site_book2.subtitle.lower())*5
+            total += 5
 
         # Compare author lists
-        if site_book1.authors and site_book2.authors and set(site_book1.authors) == set(site_book2.authors):
-            matching_points += 20
-
+        if site_book1.authors and site_book2.authors:
+            matching_points += self.compare_authors(site_book1.authors, site_book2.authors)*20
+            total += 20
             
         if site_book1.ready_for_sale and site_book2.ready_for_sale and site_book1.ready_for_sale.strip().lower() == site_book2.ready_for_sale.strip().lower():
-            matching_points += 5
+            matching_points += lev.ratio(site_book1.ready_for_sale.strip().lower(), site_book2.ready_for_sale.strip().lower())*5
+            total += 5
 
         # Allows a small margin of difference
-        if self.book_img_matcher(site_book1, site_book2) <= 10:
-            matching_points += 5
-        return matching_points/1000
+        if site_book1.book_img_url and   site_book2.book_img_url:
+            if self.book_img_matcher(site_book1, site_book2) <= 10:
+                matching_points += 5
+            total += 5
+        if total ==0:
+            return 0
+        return matching_points/total
+
+    """
+    Compares the authors in SiteBookData 1 and SiteBookData2 objects
+
+    Params:
+        auth1: the list of authors in site_book_data1
+        auth2: the list of authors in site_book_data2
+    return:
+        cumulative levenshtein ratio.
+    """
+    def compare_authors(self,auth1, auth2):
+        auth_str1 =  ','.join(auth1)
+        auth_str2 = ','.join(auth2)
+        #print("score",lev.ratio(auth_str1, auth_str2) )
+        return lev.ratio(auth_str1, auth_str2)
 
     """
     loops over the match(List(tuple(score, bookSiteData))) list and 
@@ -398,15 +454,22 @@ class BookSite(ABC):
     return:
         None
     """
-    def filter_results_by_score(self):
-        #Remove duplicates
-        self.match_list = list(dict.fromkeys(self.match_list))
+    def filter_results_by_score(self, formats):
+        
+        #print('formats',formats)
+        #temp_dict= {b[1] : b for b in self.match_list}
+        #print('dict',list(dict.fromkeys(self.match_list)))
+        #self.match_list = list(temp_dict.values())
         #min score to the least points of our matches.
-        myList=list(filter(lambda x: x[0]>=0.005,self.match_list))
-        self.match_list=myList
+        
+        if formats:
+            # print('unfiltered', self.match_list)
+            myList=list(filter(lambda x: x[0]>=0.5 and x[1].parse_status== "FULLY PARSED" and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+            #print('filtered', self.match_list)
+            self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
-        if len(self.match_list)>5:
-            self.match_list=self.match_list[:5]
+        # if len(self.match_list)>5:
+        #     self.match_list=self.match_list[:5]
         
     """
     Utility function for image comparison. 

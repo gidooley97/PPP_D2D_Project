@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+{% if request.user.is_staff %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'company_list_style.css' %}">
+
+    <h1>User List</h1>
+
+    {% if user_list %}
+    <ul>
+        {% for user in user_list %}
+            <li class='com_li'>{{ user.first_name }} {{ user.last_name }} 
+                <a href="update/{{ user.id }}" class="clickable">Edit</a>
+                {% if user.is_staff %}{% else %}<a href="delete/{{ user.id }}" class="clickable">Delete</a>{% endif %}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>No users are available</p>
+    {% endif %}
+    <p class="adder"><a href="{% url 'user_add_form' %}">+ Add New User</a></p>
+{% else %}
+<p>You do not have access to this page.</p>
+{% endif %}
+{% endblock %}
