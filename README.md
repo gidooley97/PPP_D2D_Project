@@ -27,6 +27,8 @@ The B2B_Site folder contains the business to business site that works as an inte
 
 ------------------------------- General ------------------------------------------ <br />
 Install the requirements.txt file to install all dependencies.
+A virtual environment needs to be installed in the ppp_proj folder.
+Here is a tutorial on virtual environments - https://programwithus.com/learn-to-code/Pip-and-virtualenv-on-Windows/
 
   
 
