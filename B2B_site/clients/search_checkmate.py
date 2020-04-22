@@ -35,8 +35,10 @@ return:
 def  process(sites_allowed, formats, query=0, data=0):
     if data:#json
         params = data
+        print(params)
     else:#attribut fields
         params = query
+        print(params)
     return search(sites_allowed,formats,params)    
 
 
@@ -91,7 +93,6 @@ def get_matches(site_slug, book_title, authors,isbn_13, formats):
      
         site_book_data = SiteBookData(book_title=book_title, authors=authors,
                             isbn_13=isbn_13)
-
         matches =  book_site.find_book_matches_at_site(site_book_data,formats=formats)
         # for book in matches:
         #         print("=======================================================================================")

@@ -58,7 +58,7 @@ Return:
 # GET /clients/api/search?params and headers Authorizatio:<>
 # TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
-    permission_classes = (IsAuthenticated,)  # requires authentication
+    #permission_classes = (IsAuthenticated,)   requires authentication
 
     def get(self, request,):
         return request_processor(request)
@@ -129,21 +129,20 @@ def search(request):
             user = request.user
             company = user.groups.all()[0]
             sites_allowed = list(company.search_sites)
-            formats = list(company.formats) 
+            formats = list(company.formats)
+            query = ""
+            data = "" 
             
-            query = request.POST
-            data = None
-            print(query)
-            if request.method=="POST":
-                data = request.data
-    
-            if data:  # we can only use json or the other attributs
-                query = None          
-            
+            if request.method == "GET":
+                query = request.GET
+            if request.method == "POST":
+                data = json.loads(request.POST['json'])
+
             book_matches = process(sites_allowed,formats,query,data)
             print( book_matches)        
             book_dict = SiteBookDataSerializer( book_matches, many=True)
             context = {"books":book_dict.data}
+            
 
         except Exception as e:
             print(e)
