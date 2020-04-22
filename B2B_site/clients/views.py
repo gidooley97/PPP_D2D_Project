@@ -29,7 +29,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from rest_framework.permissions import IsAuthenticated
-from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteUserForm
+from .forms import EditForm, AddForm, FilterForm, TextForm, JsonForm, UpdateUserForm, AddUserForm, DeleteUserForm, DeleteForm
 from datetime import date
 from .filter_dates import filter_dates
 import json
@@ -58,7 +58,7 @@ Return:
 # GET /clients/api/search?params and headers Authorizatio:<>
 # TO generate auth token:run python3 manage.py drf_create_token <username>
 class SearchAPIView(APIView):
-    permission_classes = (IsAuthenticated,)  # requires authentication
+    #permission_classes = (IsAuthenticated,)   requires authentication
 
     def get(self, request,):
         return request_processor(request)
@@ -129,29 +129,29 @@ def search(request):
             user = request.user
             company = user.groups.all()[0]
             sites_allowed = list(company.search_sites)
-            formats = list(company.formats) 
+            formats = list(company.formats)
+            query = ""
+            data = "" 
             
-            query = request.GET
-            data =None
-            print(query)
-            if request.method=="POST":
-                data = request.data
-    
-            if data:  # we can only use json or the other attributs
-                query = None          
-            
+            if request.method == "GET":
+                query = request.GET
+            if request.method == "POST":
+                data = json.loads(request.POST['json'])
+
             book_matches = process(sites_allowed,formats,query,data)
             print( book_matches)        
             book_dict = SiteBookDataSerializer( book_matches, many=True)
             context = {"books":book_dict.data}
+            
 
         except Exception as e:
             print(e)
             content ={"Error":"Something went wrong. Make sure you have access to this API."}
-            return HttpResponse(content) 
+            return render(request, 'search.html', content) 
 
         p = Profile.objects.get(user=user)
-        addQuery(p)
+        if book_matches:
+            addQuery(p)
         
     return render(request, 'search.html', context)
     
@@ -332,16 +332,16 @@ def list_companies(request):
     group_list = Group.objects.all()
     return render(request, "company_list.html", {"group_list": group_list})
 
+#view to edit the company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')
 def company_edit_form(request,group_id):
-    group = Group.objects.get(id = group_id)
-    contact = group.contact_user
-    # ------ Get Company Contact ----------
+    group = Group.objects.get(id = group_id) #getting our company by group_id
+    contact = group.contact_user #getting our company contact_user
     
     form = EditForm(initial = {'company_name': group.name, 'search_these' : group.search_sites, 'formats': group.formats})
 
     if request.method == 'POST':
-        form = EditForm(request.POST) # if post method then form will be validated
+        form = EditForm(request.POST) 
         if form.is_valid():
             clean_name = form.cleaned_data['company_name']
             group.name = clean_name
@@ -357,26 +357,26 @@ def company_edit_form(request,group_id):
     return render(request, "company_edit.html",{'form': form, 'contact_fname' : contact.first_name,
      'contact_lname': contact.last_name, 'contact_email': contact.email})
 
+#view to add a company, login required, staff members only have access
 @login_required(login_url='/accounts/login/')
 def company_add_form(request):
-    # ------ Get Company Contact ----------
 
     form = AddForm(request.POST)
 
     if request.method == 'POST':
-        form = AddForm(request.POST) # if post method then form will be validated
+        form = AddForm(request.POST)
         if form.is_valid():
-            
+            #company creation
             clean_name = form.cleaned_data['company_name']
-            Group.objects.create(name=clean_name)
+            Group.objects.create(name=clean_name) #creates group based on what is in the company_name field
             group = Group.objects.get(name=clean_name)
             clean_format =  form.cleaned_data['formats']
             group.formats = clean_format
             clean_sites = form.cleaned_data['search_these']
             group.search_sites = clean_sites
-            
+            #contact_user creation
             clean_username = form.cleaned_data['username']
-            User.objects.create(username=clean_username)
+            User.objects.create(username=clean_username) #creates user object based on what is in the username field
             user = User.objects.get(username=clean_username)  
             clean_fname = form.cleaned_data['contact_fname']
             user.first_name = clean_fname
@@ -384,12 +384,28 @@ def company_add_form(request):
             user.last_name = clean_lname
             clean_email = form.cleaned_data['contact_email']
             user.email = clean_email
-
-            user.save()
-            group.contact_user = user
+            user.save() 
+            group.contact_user = user #assigns our created as contact_user in company
             group.save()
             return HttpResponseRedirect(reverse('companies'))
 
     else:
         form = AddForm(request.POST)
     return render(request, "company_add.html", {'form': form})
+
+#view to delete a company, login required, staff members only have access
+@login_required(login_url='/accounts/login/')
+def company_delete_form(request, group_id):
+    group = Group.objects.get(id = group_id)
+
+    form = DeleteForm(request.POST)
+
+    if request.method == 'POST':
+        form = DeleteForm(request.POST)
+        if form.is_valid():  
+            Group.objects.get(id = group_id).delete() #gets company to delete by group_id
+            return HttpResponseRedirect(reverse('companies'))
+
+    else:
+        form = DeleteForm(request.POST)
+    return render(request, "company_delete.html", {'form': form,'company_name': group.name})

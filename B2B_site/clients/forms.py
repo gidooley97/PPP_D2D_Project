@@ -7,9 +7,6 @@ from .models import SITES_TO_SEARCH
 
 #creating our forms
 class SearchForm(forms.Form):
-	#django gives a number of predefined fields
-	#CharField and EmailField are only two of them
-	#go through the official docs for more field details
 	Title = forms.CharField(label='Title:', max_length=100)
 	Author = forms.CharField(label='Author:', max_length=100)
 	ISBN = forms.CharField(label='ISBN:', max_length=100)
@@ -83,8 +80,11 @@ class JsonForm(forms.Form):
             #raise forms.ValidationError("Invalid data in jsonfield")
          return jdata
 
-class EditForm(forms.Form):
 
+#Edit Form used in editing company information, containing company name, 
+# formats, and a search_these which authorizes certain sites to parse, 
+#additionally it displays company contanct information, it cannot edit it
+class EditForm(forms.Form):
     company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'com_name'},))
     formats = MultiSelectFormField(label = "Formats", choices=MY_FORMATS,widget=forms.CheckboxSelectMultiple(attrs={'class':'frmts'}))
     search_these = MultiSelectFormField(label = "Searchable Sites", choices=SITES_TO_SEARCH, widget=forms.CheckboxSelectMultiple(attrs={'class':'sites'}))
@@ -92,8 +92,10 @@ class EditForm(forms.Form):
     contact_lname = forms.CharField(widget = forms.HiddenInput(), required = False)
     contact_email = forms.CharField(widget = forms.HiddenInput(), required = False)
 
+#Add Form used in adding a company, containing company name, 
+#formats, and a search_these which authorizes certain sites to parse, 
+#it also creates a contact user for the company
 class AddForm(forms.Form):
-
     company_name = forms.CharField(max_length=50, label = "Company Name", widget=forms.TextInput(attrs={'class' : 'com_name'},))
     formats = MultiSelectFormField(label = "Formats", choices=MY_FORMATS,widget=forms.CheckboxSelectMultiple(attrs={'class':'frmts'}))
     search_these = MultiSelectFormField(label = "Searchable Sites", choices=SITES_TO_SEARCH, widget=forms.CheckboxSelectMultiple(attrs={'class':'sites'}))
@@ -101,6 +103,11 @@ class AddForm(forms.Form):
     contact_fname = forms.CharField(label="First Name",widget=forms.TextInput(), required = True)
     contact_lname = forms.CharField(label="Last Name",widget=forms.TextInput(), required = True)
     contact_email = forms.CharField(label="Email",widget=forms.TextInput(), required = True)
+
+#Delete Form deletes company
+class DeleteForm(forms.Form):
+    company_name = forms.CharField(label = "Company Name", widget=forms.HiddenInput(), required=False)
+
 
 
 class FilterForm(forms.Form):

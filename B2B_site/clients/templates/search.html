@@ -27,9 +27,9 @@
       <input type="radio" name="inputRadio" 
              value="json"> Search by Json</label> 
   </div>
-  
+  {{ content.error }}
 
-  <form action="{% url 'search' %}" id= "textform" class = 'form-inline' method="get">
+  <form action="{% url 'search' %}" id= "textform" class = 'form-inline' method="GET">
     {% csrf_token %}
     <div class = "row">
     <div class = "col-25">
@@ -60,7 +60,7 @@
     </div>
   </form>
 
-  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="get" >
+  <form action="{% url 'search' %}"class = 'form-inline' id="jsonform" method="POST" >
     {% csrf_token %}
     <div class= "row">
       <div class="col-25">
@@ -75,65 +75,74 @@
   </div>  
     
 </form>
-
-{% for book in books %}
-      <li>
-        <button class="button button2 text-right" ><a href="">Book Url</a></button> </span>
-        <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
-      </li>
-    {% endfor %}
-
 </div>
-    <h2>Search Results</h2 >
-      <div class="col-sm-10 text-right">
 
-        {% if is_paginated %}
-        <div class="pagination">
-            <span class="page-links">
-                {% if page_obj.has_previous %}
-                    <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-                {% endif %}
-                <span class="page-current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                </span>
-                {% if page_obj.has_next %}
-                    <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-                {% endif %}
-            </span>
-        </div>
-        {% endif %}
-        </div>
-  </div>
-    <ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
+<div class = "container">
+<h2>Search Results</h2 >
 
-    {% for book in object_list %}
-      <li>
-        <button class="button button2 text-right" ><a href="">Book Url</a></button> </span>
-        <span> {{ book.book_title }} -  {{ book.subtitle }} by {{ book.authors|join:", " }} &nbsp;
-      </li>
-    {% endfor %}
-    </ul> 
-    
-  <div class="col-sm-10 text-right">
-
-  {% if is_paginated %}
-  <div class="pagination pull ">
-      <span class="page-links">
-          {% if page_obj.has_previous %}
-              <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.previous_page_number }}">previous</a>
-          {% endif %}
-          <span class="page-current">
-              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-          </span>
-          {% if page_obj.has_next %}
-              <a href="?{{request.META.QUERY_STRING }}&page={{ page_obj.next_page_number }}">next</a>
-          {% endif %}
-      </span>
+<ul class="col-sm-10" style="border:1px solid #042a7a; width: 80%; margin-left: 10%; margin-bottom: 3%;" >
+<div>
+  <h2>---Scribd Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'SC' %}      
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
   </div>
   {% endif %}
-
-
-
+  {% endfor %}
+  <div>
+  <h2>---Google Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'GB' %}
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
+  </div>
+  {% endif %}
+  {% endfor %}
+  <div>
+  <h2>---Kobo Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'KO' %}
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
+  </div>
+  {% endif %}
+  {% endfor %}
+  <div>
+  <h2>---Test Bookstore Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'TB' %}
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
+  </div>
+  {% endif %}
+  {% endfor %}
+  <div>
+  <h2>---Livraria Culture Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'LC' %}
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
+  </div>
+  {% endif %}
+  {% endfor %}
+  <div>
+  <h2>---Audio Books---</h2>
+  {% for book in books %}
+  {% if book.site_slug == 'AU' %}
+        <li>
+          <span> {{ book.book_title }} by: {{ book.authors|join:", " }} ISBN: {{ book.isbn_13 }} </span>
+        </li>
+  </div>
+  {% endif %}
+{% endfor %}
+</ul> 
+      
 {% endblock %}
 
 </div>

@@ -11,7 +11,7 @@
         <ul>
         {% for group in group_list %}
 
-                <li class = 'com_li'>{{ group.name }} <a href="edit/{{ group.id }}/" class = "clickable">Edit</a> </li>
+                <li class = 'com_li'>{{ group.name }} <a href="edit/{{ group.id }}/" class = "clickable">Edit</a><a href="delete/{{ group.id }}/" class = "clickable">Delete</a></li>
 
         {% endfor %}
         </ul>
