@@ -455,21 +455,11 @@ class BookSite(ABC):
         None
     """
     def filter_results_by_score(self, formats):
-        
-        #print('formats',formats)
-        #temp_dict= {b[1] : b for b in self.match_list}
-        #print('dict',list(dict.fromkeys(self.match_list)))
-        #self.match_list = list(temp_dict.values())
-        #min score to the least points of our matches.
-        
-        if formats:
-            # print('unfiltered', self.match_list)
-            myList=list(filter(lambda x: x[0]>=0.5 and x[1].parse_status== "FULLY PARSED" and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
-            #print('filtered', self.match_list)
-            self.match_list=myList
+        if not formats:
+            return  []
+        myList=list(filter(lambda x: x[0]>=0.7 and x[1].parse_status== "FULLY PARSED" and x[1].format.lower() in ','.join(formats).lower(),self.match_list))
+        self.match_list=myList
         self.match_list.sort(key = lambda x: x[0],reverse=True)
-        # if len(self.match_list)>5:
-        #     self.match_list=self.match_list[:5]
         
     """
     Utility function for image comparison. 
