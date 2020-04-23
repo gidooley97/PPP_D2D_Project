@@ -33,9 +33,9 @@ class TestAudioBooksParser(unittest.TestCase):
         site_book_data.description =None
         site_book_data.book_img =None
 
-        site_book_data_expected = SiteBookData(book_title="Lord Jim", format="Audiobook", authors=["Joseph Conrad"],
+        site_book_data_expected = SiteBookData(book_title="Lord Jim", format="audio", authors=["Joseph Conrad"],
                         description =None, book_img_url="http://covers.audiobooks.com/images/covers/full/9789176391921.jpg",
-                        parse_status="PARTIALLY PARSED", site_slug = "AU", url=None, extra={"Narrator":["Stewart Wills"]})
+                        parse_status="FULLY PARSED", site_slug = "AU", url=None, extra={"Narrator":["Stewart Wills"]})
         
         self.assertEqual( site_book_data, site_book_data_expected)
        
@@ -44,7 +44,10 @@ class TestAudioBooksParser(unittest.TestCase):
     def test_find_book_matches_at_site(self):
         book_site = get_book_site("AU")
         site_book_data = SiteBookData (book_title="Lord Jim")
-        urls = book_site.find_book_matches_at_site(site_book_data, pages =1, is_unittest =True)
+        file = open("lord_jim_search_results.html", "r",encoding='UTF-8')
+        content = file.read().encode('UTF-8')
+        file.close()
+        urls = book_site.get_search_book_data_from_page(content=content,  book_site_data_original=site_book_data, formats=["audio"], is_unittest=True)
         urls_expected =['https://www.audiobooks.com/audiobook/lord-jim/427769', 'https://www.audiobooks.com/audiobook/lord-jim/117787', 
         'https://www.audiobooks.com/audiobook/lord-jim/165035', 'https://www.audiobooks.com/audiobook/lord-jim/272485',
         'https://www.audiobooks.com/audiobook/lord-jim/248483', 'https://www.audiobooks.com/audiobook/lord-jim/199173', 
