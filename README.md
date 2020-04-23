@@ -22,6 +22,9 @@ The parsers folder contains files for each parser.
 
 The BookSite.py file and the site_book_data.py file file contain the corresponding classes.
 
+The unit_test folder contains the unittest script for Audiobooks parser. To run the testcases, 
+Run python3 -m unittest <filename>.py.
+
 -------------------------------- B2B Site ------------------------------------------ <br />
 The B2B_Site folder contains the business to business site that works as an interface for our Checkmate Library. Through this site you are able to make searches on an api to find books availble on sites, these sites are decided via the various parsers. Additionally the site allows for tracking of api calls made per user. The manage.py file is in the nested B2B_site folder.
 
