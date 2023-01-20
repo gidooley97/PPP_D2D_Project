@@ -34,7 +34,7 @@ lxml==4.5.0
 macaroonbakery==1.1.3
 Mako==1.0.7
 MarkupSafe==1.0
-mechanize==0.4.5
+mechanize==0.4.6
 netifaces==0.10.4
 oauth==1.0.1
 olefile==0.45.1
